@@ -1,0 +1,1133 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Shatter2 · 中长跑训练课表</title>
+<meta name="description" content="Shatter2 训练课表：中长跑周计划、配速换算、打卡与训练说明，手机和电脑都能打开。">
+<meta name="theme-color" content="#f4f6f9">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Shatter2">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%232f5597'/%3E%3Cpath d='M36 20a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm-7.5 28 2.1-9.4 4.4 4.2V54h4.2V38l-4.4-4.2 1.3-6.3c2.7 3.1 6.9 5.2 11.5 5.2v-4.2c-4 0-7.3-2.1-9-5l-2.1-3.4c-.8-1.3-2.1-2.1-3.6-2.1-.6 0-1 .2-1.7.4l-10.9 4.6v9.8h4.2v-7.1l3.8-1.5-3.4 17-10.3-2.1-.8 4.2 14.7 2.9z' fill='%23fff'/%3E%3C/svg%3E">
+<style>/* ===== Shatter2 · 训练课表 ===== */
+*,*::before,*::after{box-sizing:border-box}
+:root{
+  --brand:#1f3864; --brand-2:#2f5597; --brand-3:#4b7bec;
+  --accent:#ff6b3d; --accent-soft:rgba(255,107,61,.13);
+  --teal:#0f9d8f; --teal-soft:rgba(15,157,143,.13);
+  --ink:#0e1626; --muted:#5f6f86; --line:rgba(15,23,42,.09);
+  --bg:#f4f6f9; --surface:#fff; --surface-2:#eef2f8; --surface-3:#e6ecf5;
+  --shadow:0 1px 2px rgba(16,24,40,.05),0 14px 30px -20px rgba(16,24,40,.35);
+  --radius:18px; --radius-sm:12px;
+  --safe-b:env(safe-area-inset-bottom,0px);
+  --fs:1;
+}
+html[data-theme="dark"]{
+  --ink:#e9effa; --muted:#93a4bd; --line:rgba(255,255,255,.10);
+  --bg:#070c15; --surface:#111a2b; --surface-2:#16223a; --surface-3:#1c2b46;
+  --brand:#8db0ff; --brand-2:#5f87e8; --brand-3:#7aa2ff;
+  --accent:#ff8a5f; --accent-soft:rgba(255,138,95,.16);
+  --teal:#3ddbc7; --teal-soft:rgba(61,219,199,.14);
+  --shadow:0 1px 2px rgba(0,0,0,.5),0 20px 44px -26px rgba(0,0,0,.9);
+}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","HarmonyOS Sans SC","Microsoft YaHei","Noto Sans SC",system-ui,sans-serif;
+  font-size:calc(15px * var(--fs)); line-height:1.6;
+  -webkit-font-smoothing:antialiased; overflow-x:hidden;
+  transition:background .25s ease,color .25s ease;
+}
+body.no-scroll{overflow:hidden}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+::selection{background:var(--accent-soft)}
+
+/* ---------- layout ---------- */
+.app{display:flex;min-height:100vh}
+.side{
+  position:fixed;inset:0 auto 0 0;width:248px;padding:28px 20px;
+  background:var(--surface);border-right:1px solid var(--line);
+  display:flex;flex-direction:column;gap:26px;z-index:30;
+}
+.brand{display:flex;align-items:center;gap:11px}
+.brand-mark{
+  width:42px;height:42px;border-radius:13px;flex:none;
+  background:linear-gradient(140deg,var(--brand-2),var(--brand-3) 55%,var(--accent));
+  display:grid;place-items:center;box-shadow:0 10px 22px -12px var(--brand-3);
+}
+.brand-mark svg{width:22px;height:22px;fill:#fff;stroke:none}
+.brand-name{font-size:19px;font-weight:800;letter-spacing:-.3px;line-height:1.1}
+.brand-name em{font-style:normal;background:linear-gradient(90deg,var(--brand-2),var(--accent));-webkit-background-clip:text;background-clip:text;color:transparent}
+.brand-sub{font-size:11.5px;color:var(--muted);letter-spacing:.4px}
+.side-nav{display:flex;flex-direction:column;gap:4px}
+.nav-btn{
+  display:flex;align-items:center;gap:11px;padding:11px 13px;border-radius:12px;
+  font-size:14.5px;font-weight:600;color:var(--muted);transition:.18s;
+}
+.nav-btn svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.nav-btn:hover{background:var(--surface-2);color:var(--ink)}
+.nav-btn.is-active{background:var(--brand);color:#fff;box-shadow:0 10px 20px -14px var(--brand)}
+html[data-theme="dark"] .nav-btn.is-active{color:#0a1220}
+.side-foot{margin-top:auto;font-size:11.5px;color:var(--muted);line-height:1.7}
+.side-foot b{color:var(--ink);font-weight:600}
+
+.topbar{display:none}
+main{flex:1;margin-left:248px;padding:34px 40px calc(40px + var(--safe-b));width:100%;max-width:1180px}
+.view{display:none;animation:rise .32s cubic-bezier(.2,.7,.3,1)}
+.view.is-active{display:block}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* ---------- shared bits ---------- */
+.eyebrow{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);font-weight:700}
+h1.page-title{font-size:26px;line-height:1.25;margin:6px 0 4px;letter-spacing:-.5px;font-weight:800}
+.page-sub{color:var(--muted);font-size:13.5px;margin:0 0 22px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.section{margin-top:26px}
+.section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 12px}
+.section-head h2{font-size:16px;margin:0;font-weight:750;letter-spacing:-.2px}
+.section-head .hint{font-size:12px;color:var(--muted)}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  padding:10px 16px;border-radius:12px;font-size:13.5px;font-weight:650;
+  border:1px solid var(--line);background:var(--surface);transition:.18s;white-space:nowrap;
+}
+.btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.btn:hover{transform:translateY(-1px);box-shadow:var(--shadow)}
+.btn:active{transform:none}
+.btn-primary{background:var(--brand);border-color:transparent;color:#fff}
+html[data-theme="dark"] .btn-primary{color:#08101f}
+.btn-accent{background:var(--accent);border-color:transparent;color:#fff}
+.btn-ghost{background:transparent}
+.btn-sm{padding:7px 12px;font-size:12.5px;border-radius:10px}
+.icon-btn{width:38px;height:38px;border-radius:11px;border:1px solid var(--line);background:var(--surface);display:grid;place-items:center;transition:.18s}
+.icon-btn:hover{background:var(--surface-2)}
+.icon-btn svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+
+.chip{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;font-size:11.5px;font-weight:700;letter-spacing:.01em;white-space:nowrap}
+.chip-q{background:var(--accent-soft);color:var(--accent)}
+.chip-e{background:var(--teal-soft);color:var(--teal)}
+.chip-r{background:var(--surface-3);color:var(--muted)}
+.chip-brand{background:var(--brand);color:#fff}
+html[data-theme="dark"] .chip-brand{color:#08101f}
+
+/* ---------- today ---------- */
+.today-top{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.date-big{font-size:34px;font-weight:800;letter-spacing:-1.2px;line-height:1}
+.date-big small{font-size:14px;font-weight:600;color:var(--muted);letter-spacing:0;margin-left:8px}
+.pickers{display:flex;gap:8px;flex-wrap:wrap}
+select.sel{
+  appearance:none;background:var(--surface) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path d='M2 4l4 4 4-4' fill='none' stroke='%236b7a92' stroke-width='1.6' stroke-linecap='round'/></svg>") no-repeat right 10px center;
+  border:1px solid var(--line);border-radius:11px;padding:9px 30px 9px 12px;font-size:13px;font-weight:600;color:var(--ink);
+}
+.hero{
+  position:relative;overflow:hidden;margin-top:20px;border-radius:22px;color:#fff;
+  background:linear-gradient(135deg,#1b2f57 0%,#22406f 45%,#2f5597 100%);
+  padding:26px 26px 22px;box-shadow:0 26px 50px -30px rgba(31,56,100,.9);
+}
+.hero::after{content:"";position:absolute;width:280px;height:280px;right:-90px;top:-120px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,107,61,.55),transparent 65%);filter:blur(6px)}
+.hero::before{content:"";position:absolute;inset:auto -40px -120px auto;width:260px;height:260px;border-radius:50%;
+  background:radial-gradient(circle,rgba(120,170,255,.35),transparent 70%)}
+.hero-label{position:relative;font-size:12px;letter-spacing:.18em;text-transform:uppercase;opacity:.72;font-weight:700}
+.hero-type{position:relative;display:flex;align-items:center;gap:10px;margin:10px 0 8px;flex-wrap:wrap}
+.hero-type h2{font-size:23px;margin:0;font-weight:800;letter-spacing:-.4px}
+.hero-body{position:relative;font-size:14.5px;line-height:1.75;opacity:.94;max-width:62ch}
+.hero-actions{position:relative;display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
+.hero .btn{border-color:rgba(255,255,255,.22);background:rgba(255,255,255,.10);color:#fff;backdrop-filter:blur(4px)}
+.hero .btn:hover{background:rgba(255,255,255,.18)}
+.hero .btn-accent{background:var(--accent);border-color:transparent;color:#fff}
+.hero .btn.is-done{background:rgba(255,255,255,.9);color:#16233c;border-color:transparent}
+.hero-rest{background:linear-gradient(135deg,#20303f,#2c4257 60%,#3a5266)}
+
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}
+.stat{padding:15px 16px;border-radius:16px;background:var(--surface);border:1px solid var(--line)}
+.stat .k{font-size:11.5px;color:var(--muted);font-weight:650;letter-spacing:.04em}
+.stat .v{font-size:21px;font-weight:800;letter-spacing:-.6px;margin-top:3px}
+.stat .v span{font-size:12px;font-weight:600;color:var(--muted);letter-spacing:0;margin-left:3px}
+
+.week-strip{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-top:14px}
+.daycell{
+  position:relative;padding:12px 6px 10px;border-radius:14px;text-align:center;
+  background:var(--surface);border:1px solid var(--line);transition:.18s;
+}
+.daycell:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.daycell .w{font-size:11.5px;color:var(--muted);font-weight:700}
+.daycell .d{font-size:17px;font-weight:800;letter-spacing:-.4px;margin-top:1px}
+.daycell .dot{width:6px;height:6px;border-radius:50%;margin:6px auto 0;background:var(--line)}
+.daycell .dot.q{background:var(--accent)}
+.daycell.is-today{border-color:var(--brand-3);box-shadow:0 0 0 2px rgba(75,123,236,.18)}
+.daycell.is-done{background:var(--teal-soft);border-color:transparent}
+.daycell.is-done .dot{background:var(--teal)}
+.daycell.is-done .d{color:var(--teal)}
+.daycell .check{position:absolute;top:-6px;right:-6px;width:19px;height:19px;border-radius:50%;background:var(--teal);
+  display:grid;place-items:center;box-shadow:0 4px 10px -4px var(--teal);animation:pop .28s cubic-bezier(.2,1.4,.4,1)}
+.daycell .check svg{width:11px;height:11px;stroke:#fff;fill:none;stroke-width:3}
+@keyframes pop{0%{transform:scale(.2);opacity:0}100%{transform:scale(1);opacity:1}}
+
+.ring-wrap{display:flex;align-items:center;gap:16px}
+.ring{transform:rotate(-90deg)}
+.ring circle{fill:none;stroke-width:7;stroke-linecap:round}
+.ring .bg{stroke:var(--surface-3)}
+.ring .fg{stroke:url(#ringGrad);transition:stroke-dasharray .6s cubic-bezier(.2,.8,.3,1)}
+.ring-num{font-size:23px;font-weight:800;letter-spacing:-.8px;line-height:1}
+.ring-num span{font-size:12px;color:var(--muted);font-weight:600;letter-spacing:0}
+
+/* ---------- plan ---------- */
+.filter-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:18px}
+.seg{display:inline-flex;padding:4px;background:var(--surface);border:1px solid var(--line);border-radius:13px;gap:2px;overflow-x:auto;max-width:100%}
+.seg::-webkit-scrollbar{display:none}
+.seg button{padding:8px 14px;border-radius:10px;font-size:13px;font-weight:650;color:var(--muted);white-space:nowrap;transition:.16s}
+.seg button.is-active{background:var(--brand);color:#fff;box-shadow:0 8px 16px -12px var(--brand)}
+html[data-theme="dark"] .seg button.is-active{color:#08101f}
+.search{position:relative;flex:1;min-width:190px}
+.search input{
+  width:100%;padding:11px 14px 11px 38px;border-radius:12px;border:1px solid var(--line);
+  background:var(--surface);color:var(--ink);font-size:13.5px;outline:none;transition:.18s;
+}
+.search input:focus{border-color:var(--brand-3);box-shadow:0 0 0 3px rgba(75,123,236,.14)}
+.search svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:16px;height:16px;stroke:var(--muted);fill:none;stroke-width:2}
+
+.week-card{margin-bottom:16px;overflow:hidden}
+.week-head{padding:16px 18px 14px;border-bottom:1px solid var(--line);display:block}
+.week-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.week-title{font-size:14.5px;font-weight:750;letter-spacing:-.2px;margin:0}
+.week-title .wname{color:var(--brand-3)}
+.week-sub{font-size:12.5px;color:var(--muted);margin-top:4px;max-width:74ch}
+.week-badge{font-size:11.5px;font-weight:700;color:var(--muted);background:var(--surface-2);padding:4px 10px;border-radius:999px;white-space:nowrap}
+.days{display:flex;flex-direction:column}
+.day{display:grid;grid-template-columns:58px 1fr;gap:14px;padding:14px 18px;border-bottom:1px solid var(--line);cursor:pointer;transition:.16s;position:relative}
+.day:last-child{border-bottom:0}
+.day:hover{background:var(--surface-2)}
+.day.is-today::before{content:"";position:absolute;left:0;top:10px;bottom:10px;width:3px;border-radius:0 3px 3px 0;background:var(--brand-3)}
+.day-w{font-size:13px;font-weight:750;color:var(--muted);padding-top:1px}
+.day-main{min-width:0}
+.day-line{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:3px}
+.day-content{font-size:13.5px;color:var(--ink);line-height:1.7;overflow-wrap:anywhere}
+.day.is-rest .day-content{color:var(--muted)}
+.day-done{position:absolute;right:14px;top:14px;width:18px;height:18px;border-radius:50%;background:var(--teal);display:grid;place-items:center}
+.day-done svg{width:10px;height:10px;stroke:#fff;fill:none;stroke-width:3}
+.empty{padding:36px 20px;text-align:center;color:var(--muted);font-size:13.5px;background:var(--surface);border:1px dashed var(--line);border-radius:14px}
+.search-meta{font-size:12.5px;color:var(--muted);margin:0 2px 10px}
+.search input[type="search"]::-webkit-search-cancel-button{cursor:pointer}
+
+/* ---------- pace ---------- */
+.pace-grid{display:grid;grid-template-columns:1fr;gap:16px}
+.pb-card{padding:18px}
+.pb-row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end}
+.field{display:flex;flex-direction:column;gap:6px;flex:1;min-width:130px}
+.field label{font-size:11.5px;font-weight:700;color:var(--muted);letter-spacing:.05em}
+.field input{
+  padding:11px 13px;border-radius:12px;border:1px solid var(--line);background:var(--surface-2);
+  color:var(--ink);font-size:15px;font-weight:700;font-variant-numeric:tabular-nums;outline:none;transition:.18s;
+}
+.field input:focus{border-color:var(--brand-3);background:var(--surface);box-shadow:0 0 0 3px rgba(75,123,236,.14)}
+.calc-note{font-size:11.5px;color:var(--muted);margin-top:10px}
+.pace-out{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-top:14px}
+.pace-item{padding:12px 13px;border-radius:14px;background:var(--surface-2);border:1px solid transparent}
+.pace-item.hi{background:var(--accent-soft);border-color:rgba(255,107,61,.25)}
+.pace-item .k{font-size:11.5px;font-weight:700;color:var(--muted)}
+.pace-item .v{font-size:19px;font-weight:800;letter-spacing:-.6px;font-variant-numeric:tabular-nums}
+.pace-item .s{font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:14px;border:1px solid var(--line)}
+table.tbl{border-collapse:collapse;width:100%;min-width:520px;font-size:13px;background:var(--surface)}
+table.tbl th{
+  text-align:left;padding:11px 13px;background:var(--surface-2);color:var(--muted);
+  font-size:11.5px;font-weight:750;letter-spacing:.04em;white-space:nowrap;border-bottom:1px solid var(--line);
+}
+table.tbl td{padding:11px 13px;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.65}
+table.tbl tr:last-child td{border-bottom:0}
+table.tbl tr:hover td{background:var(--surface-2)}
+table.tbl td:first-child{font-weight:700;white-space:nowrap}
+table.num td{font-variant-numeric:tabular-nums;text-align:center}
+table.num td:first-child{text-align:left}
+table.num tr.near td{background:var(--accent-soft)}
+table.num tr.near td:first-child{color:var(--accent)}
+
+.steps{display:flex;flex-direction:column;gap:0;border-radius:14px;overflow:hidden;border:1px solid var(--line)}
+.step{display:grid;grid-template-columns:150px 1fr;gap:14px;padding:13px 16px;background:var(--surface);border-bottom:1px solid var(--line);font-size:13px;line-height:1.7}
+.step:last-child{border-bottom:0}
+.step .lbl{font-weight:700;color:var(--brand-3)}
+.notes-card{padding:16px 18px;border-radius:14px;background:var(--surface);border:1px solid var(--line);font-size:13px;line-height:1.75;margin-top:12px}
+.notes-card b{color:var(--brand-3)}
+.bullets{padding:14px 18px;border-radius:14px;background:var(--surface);border:1px solid var(--line);font-size:13px;line-height:1.8}
+.bullets div{padding:3px 0}
+
+/* ---------- notes ---------- */
+.acc{border:1px solid var(--line);border-radius:16px;background:var(--surface);overflow:hidden;margin-bottom:10px}
+.acc-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 18px;cursor:pointer;font-weight:750;font-size:14px}
+.acc-head:hover{background:var(--surface-2)}
+.acc-head .arw{transition:.25s;flex:none}
+.acc-head .arw svg{width:16px;height:16px;stroke:var(--muted);fill:none;stroke-width:2.2;stroke-linecap:round}
+.acc.is-open .arw{transform:rotate(180deg)}
+.acc-body{display:none;padding:0 18px 16px;border-top:1px solid var(--line)}
+.acc.is-open .acc-body{display:block;animation:rise .22s ease}
+.nrow{display:grid;grid-template-columns:132px 1fr;gap:12px;padding:10px 0;border-bottom:1px dashed var(--line);font-size:13px;line-height:1.75}
+.nrow:last-child{border-bottom:0}
+.nrow .lbl{font-weight:700;color:var(--muted);font-size:12.5px}
+
+/* ---------- tabbar (mobile) ---------- */
+.tabbar{
+  display:none;position:fixed;left:0;right:0;bottom:0;z-index:40;
+  background:color-mix(in srgb,var(--surface) 88%,transparent);
+  backdrop-filter:saturate(180%) blur(14px);border-top:1px solid var(--line);
+  padding:8px 8px calc(8px + var(--safe-b));
+  grid-template-columns:repeat(4,1fr);
+}
+.tab{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 4px;border-radius:12px;color:var(--muted);font-size:10.5px;font-weight:700;transition:.16s}
+.tab svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.tab.is-active{color:var(--brand-3)}
+.tab.is-active svg{filter:drop-shadow(0 4px 10px rgba(75,123,236,.4))}
+
+/* ---------- sheet / toast ---------- */
+.backdrop{position:fixed;inset:0;background:rgba(9,15,26,.5);backdrop-filter:blur(3px);opacity:0;pointer-events:none;transition:.25s;z-index:50}
+.backdrop.show{opacity:1;pointer-events:auto}
+.sheet{
+  position:fixed;z-index:60;left:50%;bottom:0;transform:translate(-50%,102%);
+  width:min(560px,100%);max-height:86vh;overflow:auto;
+  background:var(--surface);border-radius:22px 22px 0 0;padding:10px 20px calc(24px + var(--safe-b));
+  transition:transform .3s cubic-bezier(.2,.8,.3,1);box-shadow:0 -20px 50px -20px rgba(0,0,0,.4);
+  border:1px solid var(--line);
+}
+.sheet.show{transform:translate(-50%,0)}
+.sheet-grab{width:44px;height:4px;border-radius:99px;background:var(--surface-3);margin:4px auto 16px}
+.sheet h3{margin:0 0 4px;font-size:19px;letter-spacing:-.4px}
+.sheet .meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+.sheet .body{font-size:14.5px;line-height:1.8;white-space:pre-wrap}
+.sheet .acts{display:flex;gap:10px;margin-top:20px}
+.toast{
+  position:fixed;left:50%;bottom:calc(84px + var(--safe-b));transform:translate(-50%,16px);z-index:70;
+  background:rgba(12,20,34,.92);color:#fff;font-size:13px;font-weight:600;padding:11px 18px;border-radius:12px;
+  opacity:0;pointer-events:none;transition:.25s;backdrop-filter:blur(6px);
+}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+/* ---------- responsive ---------- */
+@media (max-width:1024px){
+  .app{display:block}
+  main{padding:26px 26px calc(96px + var(--safe-b));margin-left:0;max-width:none}
+  .side{display:none}
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:14px 18px 10px;position:sticky;top:0;z-index:25;
+    background:color-mix(in srgb,var(--bg) 85%,transparent);backdrop-filter:blur(12px);
+  }
+  .topbar .brand-mark{width:34px;height:34px;border-radius:11px}
+  .topbar .brand-name{font-size:16px}
+  .topbar .tools{display:flex;gap:8px}
+  .tabbar{display:grid}
+  .stats{grid-template-columns:repeat(3,1fr)}
+  .date-big{font-size:30px}
+}
+@media (max-width:640px){
+  main{padding:16px 14px calc(96px + var(--safe-b))}
+  .hero{padding:20px 18px;border-radius:20px}
+  .hero-type h2{font-size:20px}
+  .hero-body{font-size:13.5px}
+  .stats{grid-template-columns:1fr 1fr;gap:10px}
+  .stat:nth-child(3){grid-column:span 2}
+  .week-strip{gap:6px}
+  .daycell{padding:10px 2px 8px;border-radius:11px}
+  .daycell .d{font-size:15px}
+  .day{grid-template-columns:44px 1fr;gap:10px;padding:12px 14px}
+  .day-w{font-size:12px}
+  .day-content{font-size:13px}
+  .step{grid-template-columns:1fr;gap:3px}
+  .nrow{grid-template-columns:1fr;gap:2px;padding:9px 0}
+  table.tbl{min-width:460px;font-size:12.5px}
+  .pb-row{gap:10px}
+  .field{min-width:calc(50% - 5px)}
+  h1.page-title{font-size:22px}
+}
+@media print{
+  .side,.topbar,.tabbar,.hero-actions,.toast,.backdrop,.sheet,.filter-row,.seg,.search{display:none!important}
+  main{margin:0;padding:0;max-width:none}
+  .view{display:block!important;page-break-after:always}
+  .card,.hero{box-shadow:none;border:1px solid #ccc}
+  body{background:#fff;color:#000}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <aside class="side">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M13.49 5.48c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm-3.6 13.9 1-4.4 2.1 2v6h2v-7.5l-2.1-2 .6-3c1.3 1.5 3.3 2.5 5.5 2.5v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.2l-5.2 2.2v4.7h2v-3.4l1.8-.7-1.6 8.1-4.9-1-.4 2 7 1.4z"/></svg>
+      </div>
+      <div>
+        <div class="brand-name">Shatter<em>2</em></div>
+        <div class="brand-sub">中长跑训练课表</div>
+      </div>
+    </div>
+
+    <nav class="side-nav" aria-label="主导航">
+      <button class="nav-btn" data-tab="today">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.2"/><path d="M12 7.6V12l2.8 2.8"/></svg>今天
+      </button>
+      <button class="nav-btn" data-tab="plan">
+        <svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="3"/><path d="M8 3v3M16 3v3M3 9.5h18"/></svg>训练课表
+      </button>
+      <button class="nav-btn" data-tab="pace">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 13l3.6-3.6M12 5V3M19.2 6.2 20.6 4.8"/></svg>配速换算
+      </button>
+      <button class="nav-btn" data-tab="notes">
+        <svg viewBox="0 0 24 24"><path d="M5 4.5h11l3 3V20a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5.5a1 1 0 0 1 1-1z"/><path d="M8 9h7M8 13h7M8 17h4"/></svg>训练说明
+      </button>
+    </nav>
+
+    <div class="side-foot">
+      <div id="weekmeta">中距离-基础期 · 第 1 周</div>
+      <div>内容取自你的 Excel 课表，未改动</div>
+      <div style="margin-top:8px;display:flex;gap:8px">
+        <button class="icon-btn" data-act="theme" title="切换深浅色" aria-label="切换深浅色">
+          <svg viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>
+        </button>
+        <button class="icon-btn" data-act="font" title="调整字号" aria-label="调整字号">
+          <svg viewBox="0 0 24 24"><path d="M4 7V5h9v2M8.5 5v14M6.5 19h4M14 12v-1.5h7V12M17.5 10.5V19M15.8 19h3.4"/></svg>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M13.49 5.48c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm-3.6 13.9 1-4.4 2.1 2v6h2v-7.5l-2.1-2 .6-3c1.3 1.5 3.3 2.5 5.5 2.5v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.2l-5.2 2.2v4.7h2v-3.4l1.8-.7-1.6 8.1-4.9-1-.4 2 7 1.4z"/></svg>
+      </div>
+      <div class="brand-name">Shatter<em>2</em></div>
+    </div>
+    <div class="tools">
+      <button class="icon-btn" data-act="font" aria-label="调整字号">
+        <svg viewBox="0 0 24 24"><path d="M4 7V5h9v2M8.5 5v14M6.5 19h4M14 12v-1.5h7V12M17.5 10.5V19M15.8 19h3.4"/></svg>
+      </button>
+      <button class="icon-btn" data-act="theme" aria-label="切换深浅色">
+        <svg viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <section class="view" id="view-today" aria-label="今天"></section>
+    <section class="view" id="view-plan" aria-label="训练课表"></section>
+    <section class="view" id="view-pace" aria-label="配速换算"></section>
+    <section class="view" id="view-notes" aria-label="训练说明"></section>
+  </main>
+
+  <nav class="tabbar" aria-label="底部导航">
+    <button class="tab" data-tab="today"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.2"/><path d="M12 7.6V12l2.8 2.8"/></svg>今天</button>
+    <button class="tab" data-tab="plan"><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="3"/><path d="M8 3v3M16 3v3M3 9.5h18"/></svg>课表</button>
+    <button class="tab" data-tab="pace"><svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 13l3.6-3.6M12 5V3"/></svg>配速</button>
+    <button class="tab" data-tab="notes"><svg viewBox="0 0 24 24"><path d="M5 4.5h11l3 3V20a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5.5a1 1 0 0 1 1-1z"/><path d="M8 9h7M8 13h7"/></svg>说明</button>
+  </nav>
+</div>
+
+<div class="backdrop" id="backdrop"></div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true"></div>
+<div class="toast" id="toast" role="status"></div>
+<noscript><p style="padding:24px">这个页面需要 JavaScript 才能显示课表。</p></noscript>
+
+<script>window.__PLAN__ = {"title":"中长跑训练课表","plans":[{"key":"中距离-基础期","group":"中距离","phase":"基础期","head":["星期","训练类型","训练内容"],"blocks":[{"title":"中距离周A（基础期）——阈值 + 速度耐力：快的那天只跑 300 米，短而足歇，不追求顶到力竭","days":[{"day":"周一","type":"轻松跑","content":"轻松跑 40-50 分钟（P1500+110 秒/公里），动态拉伸，6 个 80 米加速跑","quality":false,"rest":false},{"day":"周二","type":"阈值跑","content":"热身，4 个 1000 米按阈值配速（P1500+30 秒/公里），组间慢跑 3 分钟","quality":true,"rest":false},{"day":"周三","type":"轻松跑 + 轻力量","content":"轻松跑 30-40 分钟；轻力量（组次见「训练说明·六」）","quality":false,"rest":false},{"day":"周四","type":"轻松跑","content":"轻松跑 30-40 分钟，结束后 4 个 60 米加速跑","quality":false,"rest":false},{"day":"周五","type":"轻松跑","content":"轻松跑 30-40 分钟","quality":false,"rest":false},{"day":"周六","type":"速度耐力","content":"热身，速度耐力：4 个 300 米（P1500−10 秒/公里，约 800 米配速），组间走+慢跑 4-5 分钟；或 6 个 150 米，组间休息 3 分钟。总量 900-1200 米","quality":true,"rest":false},{"day":"周日","type":"休息","content":"休息（散步、拉伸、睡够）","quality":false,"rest":true}]},{"title":"中距离周B（基础期）——VO2max 入门 + 阈值节奏 + 首次长距离（本周期第二轮此周为减载周：量减 25%，质量课减 1 组）","days":[{"day":"周一","type":"轻松跑","content":"轻松跑 40-50 分钟，动态拉伸，6 个 80 米加速跑","quality":false,"rest":false},{"day":"周二","type":"VO2max 间歇","content":"热身，3 个 600 米（1500 米配速），组间慢跑 3 分钟","quality":true,"rest":false},{"day":"周三","type":"轻松跑 + 轻力量","content":"轻松跑 30 分钟；轻力量（组次见「训练说明·六」）","quality":false,"rest":false},{"day":"周四","type":"轻松跑","content":"轻松跑 30 分钟","quality":false,"rest":false},{"day":"周五","type":"阈值跑","content":"热身，3 个 6 分钟按阈值配速，组间慢跑 2 分钟","quality":true,"rest":false},{"day":"周六","type":"长距离有氧","content":"长距离有氧 60-70 分钟（P1500+125 秒/公里，全程能说话）","quality":false,"rest":false},{"day":"周日","type":"休息","content":"休息","quality":false,"rest":true}]},{"title":"中距离周C（基础期）——VO2max 为主，周六回到阈值；力量维持轻量","days":[{"day":"周一","type":"轻松跑","content":"轻松跑 40-50 分钟，动态拉伸，6 个 80 米加速跑","quality":false,"rest":false},{"day":"周二","type":"VO2max 间歇","content":"热身，4 个 400 米或 4 个 500 米（偏 800 米）；4 个 600 米（偏 1500 米），组间休息 2-3 分钟","quality":true,"rest":false},{"day":"周三","type":"轻松跑","content":"轻松跑 30 分钟","quality":false,"rest":false},{"day":"周四","type":"轻松跑 + 轻力量","content":"轻松跑 30 分钟；轻力量","quality":false,"rest":false},{"day":"周五","type":"轻松跑","content":"轻松跑 30-40 分钟","quality":false,"rest":false},{"day":"周六","type":"阈值跑","content":"热身，阈值持续跑 20-25 分钟（P1500+30 秒/公里）","quality":true,"rest":false},{"day":"周日","type":"休息","content":"休息","quality":false,"rest":true}]}]},{"key":"中距离-专项期","group":"中距离","phase":"专项期","head":["星期","训练类型","训练内容"],"blocks":[{"title":"中距离周A（专项期）——阈值 + VO2max + 乳酸耐受：3 节质量课的一周，轻松跑一律取下限","days":[{"day":"周一","type":"轻松跑","content":"轻松跑 30-45 分钟（本周 3 节质量课，轻松跑取短），动态拉伸，6 个 80 米加速跑","quality":false,"rest":false},{"day":"周二","type":"阈值跑","content":"热身，4 个 1000 米按阈值配速，组间慢跑 3 分钟","quality":true,"rest":false},{"day":"周三","type":"轻松跑 + 轻力量","content":"轻松跑 30 分钟；轻力量","quality":false,"rest":false},{"day":"周四","type":"VO2max 间歇","content":"热身，6 个 400 米或 5 个 500 米（偏 800 米）；5 个 600-800 米（偏 1500 米），组间休息 2-3 分钟","quality":true,"rest":false},{"day":"周五","type":"轻松跑","content":"轻松跑 30 分钟","quality":false,"rest":false},{"day":"周六","type":"乳酸耐受间歇","content":"热身，5 个 300 米（800 米配速，P1500−10 秒/公里），组间休息 90 秒；或 4 个 600 米（1500 米配速），组间休息 2 分钟","quality":true,"rest":false},{"day":"周日","type":"休息","content":"休息","quality":false,"rest":true}]},{"title":"中距离周B（专项期）——VO2max + 阈值节奏 + 长距离；周三换高质量力量（第二轮此周为减载周）","days":[{"day":"周一","type":"轻松跑","content":"轻松跑 40-55 分钟，动态拉伸，6 个 80 米加速跑","quality":false,"rest":false},{"day":"周二","type":"VO2max 间歇","content":"热身，4 个 600 米（1500 米配速），组间休息 3 分钟","quality":true,"rest":false},{"day":"周三","type":"轻松跑 + 高质量力量","content":"轻松跑 30 分钟；高质量力量（组次见「训练说明·六」）","quality":false,"rest":false},{"day":"周四","type":"轻松跑","content":"轻松跑 30 分钟","quality":false,"rest":false},{"day":"周五","type":"阈值跑","content":"热身，4 个 5 分钟按阈值配速，组间慢跑 2 分钟","quality":true,"rest":false},{"day":"周六","type":"长距离有氧","content":"长距离有氧 75-85 分钟","quality":false,"rest":false},{"day":"周日","type":"休息","content":"休息","quality":false,"rest":true}]},{"title":"中距离周C（专项期）——VO2max + 高质量力量 + 比赛配速专项课","days":[{"day":"周一","type":"轻松跑","content":"轻松跑 40-55 分钟，动态拉伸，6 个 80 米加速跑","quality":false,"rest":false},{"day":"周二","type":"VO2max 间歇","content":"热身，6 个 400 米或 5 个 500 米（偏 800 米）；5 个 600-800 米（偏 1500 米），组间休息 2-3 分钟","quality":true,"rest":false},{"day":"周三","type":"轻松跑","content":"轻松跑 30 分钟","quality":false,"rest":false},{"day":"周四","type":"轻松跑 + 高质量力量","content":"轻松跑 30 分钟；高质量力量","quality":false,"rest":false},{"day":"周五","type":"轻松跑","content":"轻松跑 30-40 分钟","quality":false,"rest":false},{"day":"周六","type":"专项配速课","content":"热身，800 米专项：2 组（600+200）比赛配速，大间歇 15 分钟、小间歇 2 分钟；1500 米专项：2 组（1000+500）比赛配速，大间歇 15 分钟、小间歇 3 分钟。赛前 10-14 天只做 1 组","quality":true,"rest":false},{"day":"周日","type":"休息","content":"休息","quality":false,"rest":true}]}]},{"key":"中距离-减量期","group":"中距离","phase":"减量期","head":["星期","训练类型","训练内容"],"blocks":[{"title":"中距离周A（减量期）——只留周四 1 节 VO2max：强度略提、组数减半，其余全是轻松跑","days":[{"day":"周一","type":"轻松跑","content":"轻松跑 30-40 分钟，动态拉伸，6 个 80 米加速跑","quality":false,"rest":false},{"day":"周二","type":"轻松跑","content":"轻松跑 30 分钟（减量：不排阈值）","quality":false,"rest":false},{"day":"周三","type":"轻松跑 + 轻力量","content":"轻松跑 20-30 分钟；轻力量","quality":false,"rest":false},{"day":"周四","type":"VO2max 间歇","content":"热身，4 个 400 米或 3 个 500 米，组间休息 2-3 分钟（较专项期减 2 组，配速快 2-3 秒/公里）","quality":true,"rest":false},{"day":"周五","type":"轻松跑","content":"轻松跑 30 分钟","quality":false,"rest":false},{"day":"周六","type":"轻松跑","content":"轻松跑 30-40 分钟（减量：不排乳酸耐受）","quality":false,"rest":false},{"day":"周日","type":"休息","content":"休息","quality":false,"rest":true}]},{"title":"中距离周B（减量期）——只留周二 1 节 VO2max，力量停、长距离缩到 40-50 分钟","days":[{"day":"周一","type":"轻松跑","content":"轻松跑 30-40 分钟","quality":false,"rest":false},{"day":"周二","type":"VO2max 间歇","content":"热身，3 个 600 米（1500 米配速），组间休息 3 分钟（较专项期减 1 组）","quality":true,"rest":false},{"day":"周三","type":"轻松跑","content":"轻松跑 30 分钟（力量停，可做轻核心）","quality":false,"rest":false},{"day":"周四","type":"轻松跑","content":"轻松跑 30 分钟","quality":false,"rest":false},{"day":"周五","type":"轻松跑","content":"轻松跑 30 分钟","quality":false,"rest":false},{"day":"周六","type":"轻松跑","content":"轻松跑 40-50 分钟（长距离缩短）","quality":false,"rest":false},{"day":"周日","type":"休息","content":"休息","quality":false,"rest":true}]},{"title":"中距离周C（减量期）——赛前一周用这套：只留 1 节 VO2max，赛前 48 小时全是轻松跑","days":[{"day":"周一","type":"轻松跑","content":"轻松跑 30-40 分钟","quality":false,"rest":false},{"day":"周二","type":"VO2max 间歇","content":"热身，5 个 400 米或 4 个 500 米（偏 800 米）；4 个 600-800 米（偏 1500 米），组间休息 2-3 分钟（减 1 组）","quality":true,"rest":false},{"day":"周三","type":"轻松跑","content":"轻松跑 30 分钟","quality":false,"rest":false},{"day":"周四","type":"轻松跑","content":"轻松跑 30 分钟（力量停，可做轻核心）","quality":false,"rest":false},{"day":"周五","type":"轻松跑","content":"轻松跑 30-40 分钟","quality":false,"rest":false},{"day":"周六","type":"轻松跑","content":"轻松跑 30-40 分钟（赛前 48 小时不排质量课）","quality":false,"rest":false},{"day":"周日","type":"休息","content":"休息","quality":false,"rest":true}]}]},{"key":"长距离-基础期","group":"长距离","phase":"基础期","head":["星期","训练类型","训练内容"],"blocks":[{"title":"长距离周A（基础期）——阈值 3×2000 + 有氧型专项耐力（比赛配速慢 5-8 秒）","days":[{"day":"周一","type":"轻松跑","content":"轻松跑 50-60 分钟（P5k+70 秒/公里），动态拉伸，6 个 80 米加速跑","quality":false,"rest":false},{"day":"周二","type":"阈值跑","content":"热身，3 个 2000 米按阈值配速（P5k+14 秒/公里），组间休息 3 分钟","quality":true,"rest":false},{"day":"周三","type":"轻松跑 + 轻力量","content":"轻松跑 40 分钟；轻力量（组次见「训练说明·六」）","quality":false,"rest":false},{"day":"周四","type":"轻松跑","content":"轻松跑 40 分钟，结束后 6 个 10 秒坡跑或短冲（走回起点）","quality":false,"rest":false},{"day":"周五","type":"轻松跑","content":"轻松跑 40 分钟","quality":false,"rest":false},{"day":"周六","type":"专项耐力","content":"热身，3 个 2000 米或 5 个 1000 米（比赛配速慢 5-8 秒/公里），组间休息 2-3 分钟","quality":true,"rest":false},{"day":"周日","type":"休息","content":"休息","quality":false,"rest":true}]},{"title":"长距离周B（基础期）——VO2max + 阈值 + 90 分钟长距离（本周期第二轮此周为减载周：量减 25%）","days":[{"day":"周一","type":"轻松跑","content":"轻松跑 50-60 分钟，动态拉伸，6 个 80 米加速跑","quality":false,"rest":false},{"day":"周二","type":"VO2max 间歇","content":"热身，3 个 1200 米或 5 个 800 米（P5k−5 秒/公里），组间休息 2 分 30 秒","quality":true,"rest":false},{"day":"周三","type":"轻松跑 + 高质量力量","content":"轻松跑 40 分钟；高质量力量","quality":false,"rest":false},{"day":"周四","type":"轻松跑","content":"轻松跑 40 分钟","quality":false,"rest":false},{"day":"周五","type":"阈值跑","content":"热身，阈值持续跑 15-20 分钟（P5k+14 秒/公里），或 3 个 6 分钟，组间慢跑 2 分钟","quality":true,"rest":false},{"day":"周六","type":"长距离有氧","content":"长距离有氧 90 分钟（P5k+80 秒/公里）","quality":false,"rest":false},{"day":"周日","type":"休息","content":"休息","quality":false,"rest":true}]}]},{"key":"长距离-专项期","group":"长距离","phase":"专项期","head":["星期","训练类型","训练内容"],"blocks":[{"title":"长距离周A（专项期）——阈值 4×2000 + VO2max + 专项耐力 4×2000（比赛配速）","days":[{"day":"周一","type":"轻松跑","content":"轻松跑 55-70 分钟，动态拉伸，6 个 80 米加速跑","quality":false,"rest":false},{"day":"周二","type":"阈值跑","content":"热身，4 个 2000 米按阈值配速，组间休息 3 分钟","quality":true,"rest":false},{"day":"周三","type":"轻松跑 + 轻力量","content":"轻松跑 45 分钟；轻力量","quality":false,"rest":false},{"day":"周四","type":"VO2max 间歇","content":"热身，5 个 1000 米（5 公里配速），组间休息 3 分钟","quality":true,"rest":false},{"day":"周五","type":"轻松跑","content":"轻松跑 40-50 分钟","quality":false,"rest":false},{"day":"周六","type":"专项耐力","content":"热身，4 个 2000 米或 6 个 1000 米（比赛配速），组间休息 2 分钟","quality":true,"rest":false},{"day":"周日","type":"休息","content":"休息","quality":false,"rest":true}]},{"title":"长距离周B（专项期）——VO2max + 阈值持续跑 + 100-120 分钟长距离","days":[{"day":"周一","type":"轻松跑","content":"轻松跑 55-70 分钟，动态拉伸，6 个 80 米加速跑","quality":false,"rest":false},{"day":"周二","type":"VO2max 间歇","content":"热身，4 个 1200 米或 6 个 800 米（P5k−5 秒/公里），组间休息 2 分 30 秒","quality":true,"rest":false},{"day":"周三","type":"轻松跑 + 高质量力量","content":"轻松跑 45 分钟；高质量力量","quality":false,"rest":false},{"day":"周四","type":"轻松跑","content":"轻松跑 45 分钟，结束后 6 个 10 秒坡跑","quality":false,"rest":false},{"day":"周五","type":"阈值跑","content":"热身，阈值持续跑 20-25 分钟（P5k+14 秒/公里），或 3 个 8 分钟，组间慢跑 2 分钟","quality":true,"rest":false},{"day":"周六","type":"长距离有氧","content":"长距离有氧 100-120 分钟（练到后半程不加速）","quality":false,"rest":false},{"day":"周日","type":"休息","content":"休息","quality":false,"rest":true}]}]},{"key":"长距离-减量期","group":"长距离","phase":"减量期","head":["星期","训练类型","训练内容"],"blocks":[{"title":"长距离周A（减量期）——只留周四 1 节 VO2max（5 公里配速），长距离缩到 60-70 分钟","days":[{"day":"周一","type":"轻松跑","content":"轻松跑 40 分钟","quality":false,"rest":false},{"day":"周二","type":"轻松跑","content":"轻松跑 40 分钟（减量：不排阈值）","quality":false,"rest":false},{"day":"周三","type":"轻松跑 + 轻力量","content":"轻松跑 30-40 分钟；轻力量","quality":false,"rest":false},{"day":"周四","type":"VO2max 间歇","content":"热身，4 个 1000 米（5 公里配速），组间休息 3 分钟（较专项期减 1 组）","quality":true,"rest":false},{"day":"周五","type":"轻松跑","content":"轻松跑 30-40 分钟","quality":false,"rest":false},{"day":"周六","type":"轻松跑","content":"轻松跑 60-70 分钟（减量：只跑轻松，总量缩短）","quality":false,"rest":false},{"day":"周日","type":"休息","content":"休息","quality":false,"rest":true}]},{"title":"长距离周B（减量期）——只留周二 1 节 VO2max，力量停、长距离缩到 60-70 分钟","days":[{"day":"周一","type":"轻松跑","content":"轻松跑 40 分钟","quality":false,"rest":false},{"day":"周二","type":"VO2max 间歇","content":"热身，3 个 1200 米或 4 个 800 米，组间休息 2 分 30 秒（减 1-2 组）","quality":true,"rest":false},{"day":"周三","type":"轻松跑","content":"轻松跑 30-40 分钟（力量停，可做轻核心）","quality":false,"rest":false},{"day":"周四","type":"轻松跑","content":"轻松跑 30-40 分钟","quality":false,"rest":false},{"day":"周五","type":"轻松跑","content":"轻松跑 30-40 分钟","quality":false,"rest":false},{"day":"周六","type":"轻松跑","content":"轻松跑 60-70 分钟","quality":false,"rest":false},{"day":"周日","type":"休息","content":"休息","quality":false,"rest":true}]}]},{"key":"新手入门","group":"新手入门","phase":"","head":["星期","训练类型","训练内容"],"blocks":[{"title":"新手入门——前 4 周只跑轻松，不排节奏跑；每周总时长加 5-10 分钟、第 4 周回落 20%；连续 2-3 周轻松完成且无疼痛再进基础期","days":[{"day":"周一","type":"跑走结合","content":"跑 2 分钟走 1 分钟，共 20-25 分钟","quality":false,"rest":false},{"day":"周二","type":"轻松跑 + 加速跑","content":"轻松跑 25-30 分钟，4 个 60 米加速跑","quality":false,"rest":false},{"day":"周三","type":"休息","content":"休息（可散步 20 分钟、拉伸）","quality":false,"rest":true},{"day":"周四","type":"轻松跑","content":"轻松跑 20-25 分钟；第 5 周起可改为 3 个 3 分钟「较累配速」，组间慢跑 2 分钟","quality":false,"rest":false},{"day":"周五","type":"基础力量","content":"徒手深蹲 3×12、平板支撑 3×30 秒、俯卧撑 3×8-12、臀桥 3×15","quality":false,"rest":false},{"day":"周六","type":"轻松跑","content":"轻松跑 35-45 分钟（比 1500 米配速慢 2 分钟以上，全程能说话）","quality":false,"rest":false},{"day":"周日","type":"休息","content":"休息","quality":false,"rest":true}]}]},{"key":"过渡期","group":"过渡期","phase":"","head":["星期","训练类型","训练内容"],"blocks":[{"title":"过渡期——赛后恢复 1-2 周：几乎无质量课，只做轻松跑与轻量核心","days":[{"day":"周一","type":"轻松跑","content":"轻松跑 30 分钟","quality":false,"rest":false},{"day":"周二","type":"轻松跑","content":"轻松跑 30-40 分钟","quality":false,"rest":false},{"day":"周三","type":"轻量核心","content":"平板支撑 3×30 秒、臀桥 3×15、徒手深蹲 3×12；或休息、游泳 30 分钟","quality":false,"rest":false},{"day":"周四","type":"轻松跑","content":"轻松跑 30-40 分钟","quality":false,"rest":false},{"day":"周五","type":"轻松跑","content":"轻松跑 30 分钟","quality":false,"rest":false},{"day":"周六","type":"轻松跑","content":"轻松跑 40-50 分钟（强度放松）","quality":false,"rest":false},{"day":"周日","type":"休息","content":"休息","quality":false,"rest":true}]}]}],"pace":{"title":"配速表 · 由主项成绩推出全部训练强度（配速 = 分:秒/公里，括号内为 400 米单圈）","note":"P1500 = 1500 米比赛配速（每公里），P5k = 5000 米比赛配速（每公里）。表内取区间中值，实际按心率/体感在 ±5 秒内微调。","blocks":[{"type":"steps","title":"一、怎么推（6 步）","items":[{"kind":"step","label":"第 1 步 取成绩","text":"用近 2 个月内的正式比赛或全力测试：中距离用 1500 米，长距离用 5000 米。不用训练中的估算值。"},{"kind":"step","label":"第 2 步 换配速","text":"P1500 = 1500 米成绩 ÷ 1.5；P5k = 5000 米成绩 ÷ 5。例：1500 米 4:30 → 270 秒 ÷ 1.5 = 180 秒 = 3:00/公里。"},{"kind":"step","label":"第 3 步 推强度","text":"按下面各表的秒数加减。水平越高、1500 与 5 公里的差距越小，就越贴近区间下限（更快那端）。"},{"kind":"step","label":"第 4 步 上跑道","text":"400 米一圈 = 每公里配速 × 0.4。例：3:30/公里 → 84 秒/圈。跑前把单圈写在手背，前 200 米不许抢。"},{"kind":"step","label":"第 5 步 校准","text":"配速、心率、体感三者不一致时，以体感和心率为准；配速在 ±5 秒/公里内浮动不算跑错。"},{"kind":"step","label":"第 6 步 更新","text":"每 4-6 周或比赛后重测；1500 米进步 3-5 秒，整张表重算一次。"}]},{"type":"rules","title":"二、中距离（800 / 1500 米）：以 1500 米成绩为锚（P1500）","head":["强度","配速（每公里）","心率","体感与典型课"],"rows":[["轻松跑","P1500 + 110 秒","65-75%","能完整说话、鼻子呼吸为主。例：4:30 的 1500 选手 ≈ 4:50/公里。宁慢勿快，真正的恢复课"],["长距离有氧","P1500 + 125 秒","65-75%","60-90 分钟，全程能说话，后半程不加速。例：4:30 的选手 ≈ 5:05/公里"],["阈值跑（节奏跑）","P1500 + 25~35 秒","85-90%","只能短句、勉强坚持 20 分钟。4×1000 米或 20-25 分钟持续跑。水平越高取区间下限"],["VO2max 间歇","P1500 + 10~20 秒","90-95%","单组 3-5 分钟到很喘，跑休比 1:1。例：4:30 的选手 ≈ 3:15/公里，600 米 1:57"],["乳酸耐受间歇","P1500 − 10 ~ +10 秒","92-100%","顶酸，结束想躺下。单组 300-600 米，组间 90 秒-2 分钟。专项期周六的主课"],["速度耐力","P1500 − 5~15 秒（接近 800 米配速）","95-100%","快而可控、歇得足，终点还有 20% 余力。单组 150-300 米，组间 3-5 分钟，总量 600-1200 米"],["专项配速","800 米：P1500 − 10~15 秒；1500 米：P1500","比赛强度","比赛感觉、节奏控制。600+200、1000+500 拆分跑，组间用大间歇"],["加速跑 / 短冲","不设配速，全速 8-10 秒","—","放松、轻快、抬膝。6-8 个 80 米，组间走回，练跑姿不练累"]]},{"type":"grid","title":"三、1500 米成绩 → 各强度配速速查（找自己那一行抄走即可）","head":["1500 米成绩","P1500（每公里）","轻松跑","长距离有氧","阈值跑","VO2max 间歇","乳酸耐受","速度耐力"],"rows":[["4:00","2:40","4:30 (1:48)","4:45 (1:54)","3:10 (1:16)","2:55 (1:10)","2:40 (1:04)","2:30 (1:00)"],["4:15","2:50","4:40 (1:52)","4:55 (1:58)","3:20 (1:20)","3:05 (1:14)","2:50 (1:08)","2:40 (1:04)"],["4:30","3:00","4:50 (1:56)","5:05 (2:02)","3:30 (1:24)","3:15 (1:18)","3:00 (1:12)","2:50 (1:08)"],["4:45","3:10","5:00 (2:00)","5:15 (2:06)","3:40 (1:28)","3:25 (1:22)","3:10 (1:16)","3:00 (1:12)"],["5:00","3:20","5:10 (2:04)","5:25 (2:10)","3:50 (1:32)","3:35 (1:26)","3:20 (1:20)","3:10 (1:16)"]]},{"type":"rules","title":"四、长距离（5000 米 / 10000 米 / 半马，兼项马拉松）：以 5000 米成绩为锚（P5k）","head":["强度","配速（每公里）","心率","体感与典型课"],"rows":[["轻松跑","P5k + 65~75 秒","65-75%","能完整说话。例：5 公里 17:00 的选手 ≈ 4:30-4:40/公里"],["长距离有氧（LSD）","P5k + 75~85 秒","65-75%","60-120 分钟，能聊天，宁慢勿快；最后 10 分钟也不加速"],["阈值跑（节奏跑）","P5k + 10~18 秒","85-90%","20-40 分钟持续，或 3-4 个 2000 米。例：17:00 的选手 ≈ 3:35-3:40/公里"],["VO2max 间歇","P5k − 2~8 秒","90-95%","800-1200 米一组，跑休比 1:1。例：17:00 的选手 ≈ 3:19/公里"],["乳酸耐受 / 速度耐力","P5k − 15~25 秒（1500-3000 米配速）","92-100%","400-600 米一组，长距离选手每 2 周 1 次即可，不要每周都练"],["专项耐力（比赛配速）","5000/10000：比赛配速；半马：P5k + 16 秒","比赛强度","2000-3000 米一组，组间 2-3 分钟。基础期比比赛配速慢 5-8 秒，专项期就是比赛配速"],["兼项马拉松配速","P5k + 25~40 秒","75-80%","只在校内正式报马拉松时用：25-30 公里，其中 12-15 公里按此配速"]]},{"type":"grid","title":"五、5000 米成绩 → 各强度配速速查","head":["5000 米成绩","P5k（每公里）","轻松跑","长距离有氧","阈值跑","VO2max 间歇","10000 米配速","半马配速"],"rows":[["16:00","3:12","4:22 (1:45)","4:32 (1:49)","3:26 (1:22)","3:07 (1:15)","3:21 (1:20)","3:28 (1:23)"],["17:00","3:24","4:34 (1:50)","4:44 (1:54)","3:38 (1:27)","3:19 (1:20)","3:33 (1:25)","3:40 (1:28)"],["18:00","3:36","4:46 (1:54)","4:56 (1:58)","3:50 (1:32)","3:31 (1:24)","3:45 (1:30)","3:52 (1:33)"],["19:00","3:48","4:58 (1:59)","5:08 (2:03)","4:02 (1:37)","3:43 (1:29)","3:57 (1:35)","4:04 (1:38)"],["20:00","4:00","5:10 (2:04)","5:20 (2:08)","4:14 (1:42)","3:55 (1:34)","4:09 (1:40)","4:16 (1:42)"]]},{"type":"section","title":"六、用一次看看（1500 米 4:30 的队员，周二阈值课怎么跑）","items":[{"kind":"bullet","text":"· P1500 = 270 秒 ÷ 1.5 = 180 秒 = 3:00/公里；阈值 = 3:00 + 30 秒 = 3:30/公里。"},{"kind":"bullet","text":"· 400 米单圈 = 3:30 × 0.4 = 84 秒。4 个 1000 米，每个 3:30，组间慢跑 3 分钟。"},{"kind":"bullet","text":"· 第 1 个必须压到 84 秒，不要 80 秒冲出去；第 4 个掉到 86-87 秒算完成；掉到 90 秒以上，说明前面起跑太快或前一晚没睡好。"}]}]},"notes":[{"kind":"section","title":"一、训练类型与配速、心率对照"},{"kind":"row","label":"说明","text":"配速写法：P1500 = 1500 米比赛配速（每公里），P5k = 5000 米比赛配速（每公里）。具体换算与速查见「配速表」工作表。"},{"kind":"row","label":"轻松跑（E 跑）","text":"恢复与堆量。P1500+110 秒/公里（长距离选手 P5k+65~75 秒），心率 65-75%，能完整说话。宁慢勿快——轻松跑跑快了，质量课就练不动，这是业余选手最常见的错。"},{"kind":"row","label":"长距离有氧（LSD）","text":"有氧基础，对 5000 米以上尤其重要。P1500+125 秒/公里（P5k+75~85 秒），心率 65-75%，60-120 分钟，全程能聊天，后半程不加速。"},{"kind":"row","label":"阈值跑（节奏跑）","text":"升乳酸阈，提升「维持高速」的能力，是有氧基石。P1500+25~35 秒/公里（P5k+10~18 秒），心率 85-90%，强度是「只能短句、勉强坚持 20 分钟」。20-40 分钟持续跑，或拆成等量的 1000-2000 米间歇。"},{"kind":"row","label":"VO2max 间歇","text":"抬心肺上限与跑步经济性。P1500+10~20 秒/公里（P5k−2~8 秒），心率 90-95%，单组 3-5 分钟（中距离 400-800 米、长距离 800-1200 米），跑休比 1:1。"},{"kind":"row","label":"乳酸耐受间歇","text":"让身体顶住比赛后程的酸，800/1500 的头号专项课。P1500−10~+10 秒/公里，心率 92-100%，单组 300-600 米，组间 90 秒-2 分钟。每周最多 1 次，赛后 48 小时内不练。"},{"kind":"row","label":"速度耐力","text":"提高速度储备与跑步经济性：绝对速度变快，同样的比赛配速就变「轻松」。P1500−5~15 秒/公里（接近 800 米配速），单组 150-300 米，组间 3-5 分钟（心率降到 120 以下再开始），总量 600-1200 米。与乳酸耐受的区别是：跑得更快、歇得更足、总乳酸更低。放在基础期，专项期让位给乳酸耐受。"},{"kind":"row","label":"专项耐力 / 专项配速","text":"把身体素质换成比赛成绩。800/1500 用比赛配速；5000/10000 用比赛配速；半马用 P5k+16 秒；兼项马拉松用 P5k+25~40 秒。基础期比比赛配速慢 5-8 秒，专项期就是比赛配速。"},{"kind":"row","label":"速度 / 冲刺 / 坡跑","text":"终点冲刺、跑姿、跑步经济性。加速跑 6-8 个 80 米（组间走回）；坡跑 6-10 个 10 秒。放在轻松跑之后，不单独占一天。"},{"kind":"row","label":"力量与核心","text":"防伤、爆发、后程维持。轻力量与高质量力量的组数次数见第六节；课表里只标「轻力量 / 高质量力量」，照第六节做即可。"},{"kind":"section","title":"二、配速怎么推断"},{"kind":"row","label":"第 1 步 取成绩","text":"用近 2 个月内的正式比赛或全力测试成绩：中距离用 1500 米，长距离用 5000 米。不要用训练中的「感觉」估算——估出来的配速通常偏快，之后每一节课都会跑崩。"},{"kind":"row","label":"第 2 步 换配速","text":"P1500 = 1500 米成绩 ÷ 1.5；P5k = 5000 米成绩 ÷ 5，单位是秒/公里。例：1500 米 4:30 = 270 秒，270 ÷ 1.5 = 180 秒 = 3:00/公里。"},{"kind":"row","label":"第 3 步 加减推强度","text":"按第一节的秒数推出各强度，见「配速表」第二、四节。经验规律：阈值比 1500 米比赛配速慢 25-35 秒/公里（4:30 的队员 → 3:30；5:00 → 3:50），VO2max 间歇慢 10-20 秒，乳酸耐受慢 5 秒到快 10 秒，速度耐力快 5-15 秒，800 米配速快 10-15 秒。"},{"kind":"row","label":"倍数写法（跨水平通用）","text":"队员之间水平差得多时用倍数更稳：阈值 ≈ P1500 × 1.16-1.20，VO2max ≈ 1.06-1.10，乳酸耐受 ≈ 0.95-1.05，速度耐力 ≈ 0.90-0.97，轻松跑 ≈ 1.55-1.70，长距离有氧 ≈ 1.65-1.75。秒数用于临场心算，倍数用于排课表。"},{"kind":"row","label":"第 4 步 换算单圈","text":"400 米一圈 = 每公里配速 × 0.4。例：3:30/公里 → 84 秒/圈；4:50/公里 → 116 秒/圈。跑前把目标单圈写在手背上，前 200 米宁慢 1-2 秒，最后一组能维持才算配速对了。"},{"kind":"row","label":"第 5 步 三校","text":"配速、心率、体感三者对不上时，以体感和心率为准。夏天、疲劳、睡眠不足时，同样的配速心率会高 5-10 次/分，这种情况下降 5-10 秒/公里，而不是硬顶原配速。"},{"kind":"row","label":"第 6 步 更新","text":"每 4-6 周或一次比赛后重测主项，整张表重算。1500 米进步 3-5 秒、5000 米进步 10-15 秒，各强度配速整体要往前挪。"},{"kind":"row","label":"没有测试成绩怎么办","text":"用一次全力 1500 米（或 3000 米）计时替代，赛前 3-4 天做，之后按结果推表；不要用最大心率公式反推配速，误差太大。"},{"kind":"section","title":"三、各项目训练侧重点"},{"kind":"row","label":"800 米","text":"乳酸耐受间歇 > VO2max 间歇 > 速度耐力 > 阈值跑 > 力量 > 专项耐力"},{"kind":"row","label":"1500 米","text":"VO2max 间歇 > 阈值跑 > 乳酸耐受间歇 > 速度耐力 > 专项耐力 > 力量"},{"kind":"row","label":"3000 / 5000 米","text":"阈值跑 > 长距离有氧 > VO2max 间歇 > 专项耐力 > 力量 > 少量速度"},{"kind":"row","label":"10000 米","text":"阈值跑 > 长距离有氧 > 专项耐力 > VO2max 间歇 > 力量"},{"kind":"row","label":"半马","text":"阈值跑 > 专项配速（半马配速）> 长距离有氧 > VO2max 间歇 > 力量"},{"kind":"row","label":"兼项马拉松","text":"长距离有氧 > 阈值跑 > 马拉松配速长跑 > VO2max 间歇 > 力量。学校没有马拉松比赛，平时不需要专门练；正式报名时按「训练说明·十」的兼项做法加课即可。"},{"kind":"row","label":"排布规则","text":"轻松跑是恢复课，排在质量课次日；两节质量课不排连续两天、间隔至少 48 小时；重力量课不排在质量跑前一天，且质量跑后 24 小时内不做重力量；周一多为轻松跑，用来消化周末的量。"},{"kind":"section","title":"四、热身与放松"},{"kind":"row","label":"热身·慢跑","text":"按气温和体感慢跑 10-15 分钟，不看配速，身体热起来、微微出汗即可。"},{"kind":"row","label":"热身·动态拉伸","text":"滚雪球、正踢腿、抱膝提踝、拉伸大腿前侧、高抬腿走、最伟大拉伸、交叉下压、胳膊绕环、马克操，每个 10 米或 8-10 次。"},{"kind":"row","label":"热身·加速跑","text":"3-4 组 60-80 米加速跑，逐渐加到接近比赛配速；质量课前再加 2-3 个 60 米专项加速。"},{"kind":"row","label":"放松","text":"慢跑 5-10 分钟降心率 → 静态拉伸主要肌群每处 20-30 秒 → 泡沫轴 5 分钟。质量课后 30 分钟内补糖+蛋白（如牛奶+面包），比任何补剂都管用。"},{"kind":"section","title":"五、周期划分与模板轮换"},{"kind":"row","label":"各周期周数","text":"基础期约 6 周、专项期约 6 周、减量期 1-2 周、过渡期 1-2 周，一个完整周期约 14-16 周。按比赛日倒推，赛前 7-14 天进入减量期。"},{"kind":"row","label":"减载周（每 4 周 1 次）","text":"基础期第 4 周、专项期第 4 周为减载周（即本周期第二轮的周A/周B）：模板不变，轻松跑减 20-25%，质量课总量减 1/3（减 1-2 组），质量课不取消。12 周连续上量不减载，是学生队员最常出现的伤病来源。"},{"kind":"row","label":"中距离轮换","text":"周A → 周B → 周C 三周循环，循环两轮（6 周）为一个周期；周C 结束后回到周A。"},{"kind":"row","label":"长距离轮换","text":"周A → 周B 两周循环，三轮（6 周）为一个周期；需要三周循环时，第二个 A 周的阈值课减 1 组作过渡。"},{"kind":"row","label":"减量期怎么用","text":"减量期两周内不要轮换三套模板：第 1 周用「减量期·周A」（保留 1 节 VO2max），第 2 周（赛前周）用「减量期·周C」；周B 作为备用。"},{"kind":"row","label":"赛前一周","text":"套用减量期模板；最后 2-3 天只做 20-30 分钟轻松跑或休息，不排力量、不做新动作、不补课。"},{"kind":"row","label":"比赛在周六","text":"整周课表前移一天，确保赛前 48 小时没有质量课。"},{"kind":"row","label":"状态不好时","text":"把当天质量课降级为轻松跑，比硬顶更划算；降级后不要在同周加量补课。"},{"kind":"section","title":"六、力量课：具体组数次数"},{"kind":"row","label":"轻力量（25-30 分钟）","text":"组间 60-90 秒，不追求极限，练完不影响第二天跑步。背起 3×15；深蹲或弓步走 3×12/侧；负重抬腿 3×12/侧；高抬腿跑 30 米×3；髋外展（弹力带）3×15/侧；悬垂举腿 3×8-10。"},{"kind":"row","label":"高质量力量（40-45 分钟）","text":"组间 90-120 秒，重量以「最后一组仍能做标准」为准。背起 4×12（可负重）；深蹲 4×6-8（可负重）；弓步走 4×10/侧；负重抬腿 4×10/侧；高抬腿跑 30 米×4；髋外展 4×15/侧；悬垂举腿 4×10-12；单腿硬拉 3×10/侧；提踵 3×15。"},{"kind":"row","label":"安排原则","text":"先动作标准再加重量；高质量力量与质量跑间隔至少 48 小时；基础期前 2 周用轻力量，第 3 周起再上高质量力量；赛前 7 天停重力量，只留核心。"},{"kind":"row","label":"新手力量","text":"徒手深蹲 3×12、平板支撑 3×30 秒、俯卧撑 3×8-12、臀桥 3×15，每周 2 次，动作做满再增加次数。"},{"kind":"section","title":"七、跑鞋选择"},{"kind":"row","label":"普通厚底鞋","text":"轻松跑、恢复跑、长距离有氧。"},{"kind":"row","label":"薄底鞋","text":"力量训练、技术练习。"},{"kind":"row","label":"钉鞋","text":"短间歇、专项课、场地比赛；需要适应期，一周不要超过 1-2 次。"},{"kind":"row","label":"碳板厚底鞋","text":"阈值跑、节奏跑、路跑比赛；日常轻松跑不必穿。"},{"kind":"section","title":"八、补剂（仅供参考）"},{"kind":"row","label":"早餐后","text":"复合维生素 B 族 + 维生素 C + 鱼油 + 蓝莓叶黄素，随餐一把吞，脂溶性与水溶性互不干扰。"},{"kind":"row","label":"训练后","text":"肌酸，随餐或饮料。"},{"kind":"row","label":"睡前","text":"锌镁片（若产品以镁为主、用于助眠）。"},{"kind":"row","label":"比赛日","text":"按计划提前服用咖啡因、硝酸盐或碳酸氢钠，必须提前测试身体适应性。"},{"kind":"row","label":"提示","text":"任何补剂的重要性都不如休息与睡眠；先看成分是否适合自己，比赛日补剂不可临时加新东西。"},{"kind":"section","title":"九、安全提示"},{"kind":"row","label":"疼痛","text":"出现持续或加重的疼痛（胫骨内侧、跟腱、足底、膝前），立即停跑并就医；不要用「坚持」对抗疼痛。"},{"kind":"row","label":"高温","text":"气温高于 28℃ 或湿度大时，配速放慢 10-20 秒/公里、总量减 20-30%，及时补水和电解质。"},{"kind":"row","label":"睡眠","text":"睡眠不足 6 小时，或静息心率比平时高 5 次/分以上，当天质量课改为轻松跑。"},{"kind":"row","label":"间隔","text":"两节质量课之间至少间隔 48 小时；高质量力量课后 24 小时内不排质量跑。"},{"kind":"row","label":"女生队员","text":"经期不必停练，但把质量课降到轻松跑、去掉跳跃与重力量，按体感决定强度。"},{"kind":"row","label":"免责","text":"本表为校队通用训练模板，不替代教练、队医或医生的个体化建议；有基础伤病或长期未运动者，先做体检。"},{"kind":"section","title":"十、本版修订说明（配速版）"},{"kind":"row","label":"新增·配速表","text":"新增「配速表」工作表：6 步推断流程 + 中距离/长距离两套强度公式 + 1500 米、5000 米各 5 档成绩速查 + 400 米单圈换算 + 一个完整算例。"},{"kind":"row","label":"新增·速度耐力","text":"把速度耐力单独列为一类训练，放进基础期周六（150-300 米、组间 3-5 分钟、总量 900-1200 米），专项期周六改为乳酸耐受，形成「速度 → 耐乳酸 → 比赛配速」的递进。"},{"kind":"row","label":"调整·基础期强度","text":"原基础期周A 周六的 5×300 米（800 米配速）是全表最狠的一节课，已改为速度耐力；乳酸耐受整体后移到专项期，基础期不再出现。"},{"kind":"row","label":"调整·专项课递进","text":"长距离专项耐力由 3×2000（基础期、比赛配速慢 5-8 秒）递进到 4×2000（专项期、比赛配速）；阈值由 3×2000 到 4×2000。中距离专项配速课增加「赛前 10-14 天只做 1 组」。"},{"kind":"row","label":"新增·减载周","text":"每 4 周插 1 个减载周（基础期第 4 周、专项期第 4 周），量减 25-30%、质量课减 1-2 组，不再 12 周连续上量。"},{"kind":"row","label":"调整·有氧量","text":"基础期轻松跑 40-50 分钟 → 专项期 40-55（长距离 55-70），长距离有氧 90 → 100-120 分钟，让有氧底盘随周期抬升，而不是只在强度上加码。"},{"kind":"row","label":"调整·新手入门","text":"改为 4 个跑步日（周三全天休息）、前 4 周不排节奏跑、加入每周 5-10 分钟递进与每 4 周回落 20%。"},{"kind":"row","label":"调整·力量课","text":"具体组数次数写进第六节，课表内只保留「轻力量 / 高质量力量」标注，避免把训练内容撑得过长。"},{"kind":"row","label":"统一·术语","text":"乳酸耐受间歇（原「专项耐乳酸」）、阈值跑（节奏跑）、专项配速课（原「专项训练」）、组间休息（原「组休」）、800 米/1500 米配速（原「八百米/一千五配速」）、P1500/P5k。"},{"kind":"row","label":"调整·兼项马拉松","text":"学校没有马拉松比赛，长距离选手平时不排马拉松课；只在正式报名时按第十一节做法加课。"},{"kind":"section","title":"十一、兼项马拉松怎么做（可选）"},{"kind":"row","label":"前提","text":"只在正式报名全马/半马、且距比赛 8-12 周时启用；平时按 5000 米/10000 米课表练，成绩反而更好。"},{"kind":"row","label":"替换 1·周六","text":"把周六专项耐力换成「长距离 + 马拉松配速段」：25-30 公里，其中最后 12-15 公里按马拉松配速（P5k+25~40 秒）。"},{"kind":"row","label":"替换 2·周日或周三","text":"加 1 次 90-150 分钟纯有氧长距离；每 3 周把最长一次加到 150-180 分钟。"},{"kind":"row","label":"保留","text":"阈值课保留（对马拉松同样关键），VO2max 间歇减到每 2 周 1 次；力量减到每周 1 次轻力量。"},{"kind":"row","label":"赛前","text":"减量 2-3 周，最后 10 天不跑超过 90 分钟，赛前 3 天碳水加量。"}]};</script>
+<script>/* ===== Shatter2 · 训练课表 app ===== */
+(function () {
+  "use strict";
+  const DATA = window.__PLAN__;
+  const DAYS = ["周一", "周二", "周三", "周四", "周五", "周六", "周日"];
+  const LSKEY = "shatter2.v1";
+  const $ = (s, r) => (r || document).querySelector(s);
+  const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
+
+  const S = Object.assign({
+    tab: "today",
+    plan: "中距离-基础期",
+    block: 0,
+    checks: {},
+    theme: "auto",
+    fs: 1,
+    pb1500: "4:30",
+    pb5000: "17:00"
+  }, load());
+  let query = "";
+
+  function load() {
+    try {
+      const now = localStorage.getItem(LSKEY);
+      if (now) return JSON.parse(now);
+      const old = localStorage.getItem("ilr.v1"); // 旧版本数据迁移
+      return old ? JSON.parse(old) : {};
+    } catch (e) { return {}; }
+  }
+  function save() {
+    try { localStorage.setItem(LSKEY, JSON.stringify(S)); } catch (e) {}
+  }
+  const esc = (s) => String(s == null ? "" : s)
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+  const pad = (n) => (n < 10 ? "0" + n : "" + n);
+  function fmt(sec) {
+    sec = Math.round(sec);
+    return Math.floor(sec / 60) + ":" + pad(sec % 60);
+  }
+  function parseTime(v) {
+    if (!v) return null;
+    const t = String(v).trim().replace(/：/g, ":");
+    let m = t.match(/^(\d+):(\d{1,2})$/);
+    if (m) return (+m[1]) * 60 + (+m[2]);
+    m = t.match(/^(\d{1,2})\.(\d{1,2})$/);
+    if (m) return (+m[1]) * 60 + (+m[2]);
+    if (/^\d{2,4}$/.test(t)) return +t;
+    return null;
+  }
+
+  /* ---------------- theme & font ---------------- */
+  const mq = window.matchMedia("(prefers-color-scheme: dark)");
+  function applyTheme() {
+    const dark = S.theme === "dark" || (S.theme === "auto" && mq.matches);
+    document.documentElement.dataset.theme = dark ? "dark" : "light";
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute("content", dark ? "#070c15" : "#f4f6f9");
+    $$("[data-theme-label]").forEach((el) => (el.textContent = dark ? "深色" : "浅色"));
+  }
+  mq.addEventListener && mq.addEventListener("change", () => { if (S.theme === "auto") applyTheme(); });
+  function applyFont() {
+    document.documentElement.style.setProperty("--fs", S.fs);
+  }
+  function toggleTheme() {
+    S.theme = (S.theme === "auto") ? (mq.matches ? "light" : "dark")
+      : (S.theme === "dark" ? "light" : "dark");
+    applyTheme(); save();
+  }
+  function cycleFont() {
+    S.fs = S.fs >= 1.08 ? 0.94 : (S.fs >= 1 ? 1.08 : 1);
+    applyFont(); save();
+  }
+
+  /* ---------------- helpers: data ---------------- */
+  const planByKey = (k) => DATA.plans.find((p) => p.key === k) || DATA.plans[0];
+  const groups = ["中距离", "长距离", "新手入门", "过渡期"];
+  function phaseList(group) {
+    return DATA.plans.filter((p) => p.group === group);
+  }
+  function weekTitleParts(t) {
+    const i = t.indexOf("——");
+    return i > 0 ? [t.slice(0, i), t.slice(i + 2)] : [t, ""];
+  }
+  const todayIdx = (new Date().getDay() + 6) % 7;
+  const todayDate = new Date();
+  function dateOf(idxInWeek) {
+    const d = new Date(todayDate);
+    d.setDate(d.getDate() + (idxInWeek - todayIdx));
+    return d;
+  }
+  function ckey(pi, bi, di) { return pi + "|" + bi + "|" + di; }
+  function isDone(pi, bi, di) { return !!S.checks[ckey(pi, bi, di)]; }
+  function doneCount(planKey, block) {
+    let n = 0;
+    for (let d = 0; d < 7; d++) if (S.checks[planKey + "|" + block + "|" + d]) n++;
+    return n;
+  }
+  function streak() {
+    const days = new Set(Object.values(S.checks).map((ts) => new Date(ts).toDateString()));
+    let n = 0;
+    const d = new Date();
+    if (!days.has(d.toDateString())) d.setDate(d.getDate() - 1);
+    while (days.has(d.toDateString())) { n++; d.setDate(d.getDate() - 1); }
+    return n;
+  }
+
+  /* ---------------- icons ---------------- */
+  const IC = {
+    today: '<svg viewBox="0 0 24 24"><path d="M12 3v2M12 19v2M3 12h2M19 12h2"/><circle cx="12" cy="12" r="4.2"/></svg>',
+    plan: '<svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="3"/><path d="M8 3v3M16 3v3M3 9.5h18M8 14h3M8 17.5h6"/></svg>',
+    pace: '<svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 13l3.5-3.5M12 5V3M19 6l1.5-1.5"/></svg>',
+    notes: '<svg viewBox="0 0 24 24"><path d="M5 4.5h11l3 3V20a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5.5a1 1 0 0 1 1-1z"/><path d="M8 9h7M8 13h7M8 17h4"/></svg>',
+    sun: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M19.1 4.9l-1.4 1.4M6.3 17.7l-1.4 1.4"/></svg>',
+    copy: '<svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M15 6.5A2.5 2.5 0 0 0 12.5 4H6a2 2 0 0 0-2 2v6.5A2.5 2.5 0 0 0 6.5 15"/></svg>',
+    check: '<svg viewBox="0 0 24 24" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg>',
+    share: '<svg viewBox="0 0 24 24"><circle cx="18" cy="5.5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="18.5" r="2.5"/><path d="M8.2 10.8l7.6-4M8.2 13.2l7.6 4"/></svg>',
+    print: '<svg viewBox="0 0 24 24"><path d="M7 9V4h10v5M7 18H5a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2"/><rect x="7" y="14" width="10" height="7" rx="1.5"/></svg>',
+    search: '<svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg>',
+    arrow: '<svg viewBox="0 0 24 24" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>',
+    font: '<svg viewBox="0 0 24 24"><path d="M4 7V5h9v2M8.5 5v14M6.5 19h4M14 12v-1.5h7V12M17.5 10.5V19M15.8 19h3.4"/></svg>'
+  };
+
+  /* ---------------- navigation ---------------- */
+  function go(tab, opts) {
+    S.tab = tab; save();
+    $$(".view").forEach((v) => v.classList.toggle("is-active", v.id === "view-" + tab));
+    $$("[data-tab]").forEach((b) => b.classList.toggle("is-active", b.dataset.tab === tab));
+    if (tab === "today") renderToday();
+    if (tab === "plan") renderPlan();
+    if (tab === "pace") renderPace();
+    if (tab === "notes") renderNotes();
+    if (!(opts && opts.keepScroll)) window.scrollTo({ top: 0, behavior: "smooth" });
+    if (location.hash.slice(1) !== tab) {
+      try { history.replaceState(null, "", "#" + tab); } catch (e) { location.hash = tab; }
+    }
+  }
+
+  /* ---------------- toast ---------------- */
+  let toastTimer;
+  function toast(msg) {
+    const el = $("#toast");
+    el.textContent = msg;
+    el.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove("show"), 1900);
+  }
+
+  /* ---------------- today ---------------- */
+  function currentPlan() { return planByKey(S.plan); }
+  function ensureBlock() {
+    const p = currentPlan();
+    if (S.block >= p.blocks.length) S.block = 0;
+  }
+  function nextQuality(pi, block) {
+    const p = planByKey(pi);
+    const todayDay = p.blocks[block] && p.blocks[block].days[todayIdx];
+    if (todayDay && todayDay.quality && !isDone(p.key, block, todayIdx)) {
+      return { block, day: todayIdx, data: todayDay, today: true };
+    }
+    for (let step = 1; step <= 10; step++) {
+      const d = todayIdx + step;
+      const bi = block + Math.floor(d / 7);
+      const di = d % 7;
+      if (bi >= p.blocks.length) return null;
+      const day = p.blocks[bi].days[di];
+      if (day && day.quality) return { block: bi, day: di, data: day };
+    }
+    return null;
+  }
+
+  function renderToday() {
+    ensureBlock();
+    const p = currentPlan();
+    const block = p.blocks[S.block];
+    const day = block.days[todayIdx];
+    const done = isDone(p.key, S.block, todayIdx);
+    const total = doneCount(p.key, S.block);
+    const nq = nextQuality(p.key, S.block);
+    const hasQ = p.blocks.some((b) => b.days.some((d) => d.quality));
+    const d = dateOf(todayIdx);
+    const isRest = /休息/.test(day.type);
+
+    const planOpts = DATA.plans.map((x) =>
+      `<option value="${esc(x.key)}"${x.key === p.key ? " selected" : ""}>${esc(x.key)}</option>`).join("");
+    const blockOpts = p.blocks.map((b, i) => {
+      const [n] = weekTitleParts(b.title);
+      return `<option value="${i}"${i === S.block ? " selected" : ""}>第 ${(i * 1 + 1)} 周模板 · ${esc(n)}</option>`;
+    }).join("");
+
+    $("#view-today").innerHTML = `
+      <div class="today-top">
+        <div>
+          <div class="eyebrow">Shatter2 · 今日</div>
+          <div class="date-big">${d.getMonth() + 1} 月 ${d.getDate()} 日<small>${DAYS[todayIdx]}</small></div>
+        </div>
+        <div class="pickers">
+          <select class="sel" id="sel-plan" aria-label="选择课表">${planOpts}</select>
+          <select class="sel" id="sel-block" aria-label="选择周模板">${blockOpts}</select>
+        </div>
+      </div>
+
+      <div class="hero${isRest ? " hero-rest" : ""}">
+        <div class="hero-label">今日训练 · ${esc(weekTitleParts(block.title)[0])}</div>
+        <div class="hero-type">
+          <h2>${esc(day.type)}</h2>
+          ${day.quality ? '<span class="chip" style="background:rgba(255,255,255,.92);color:#16233c">质量课</span>' : ""}
+          ${done ? '<span class="chip" style="background:rgba(255,255,255,.9);color:#123">已打卡</span>' : ""}
+        </div>
+        <div class="hero-body">${esc(day.content)}</div>
+        <div class="hero-actions">
+          <button class="btn ${done ? "is-done" : "btn-accent"}" data-act="check-today">
+            ${done ? IC.check + " 已完成，点击撤销" : IC.check + " 打卡"}
+          </button>
+          <button class="btn" data-act="copy-today">${IC.copy} 复制</button>
+          <button class="btn" data-act="open-today">${IC.plan} 看详情</button>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat"><div class="k">本周完成</div><div class="v">${total}<span>/ 7 天</span></div></div>
+        <div class="stat"><div class="k">连续打卡</div><div class="v">${streak()}<span>天</span></div></div>
+        <div class="stat"><div class="k">下一节质量课</div><div class="v" style="font-size:15px;line-height:1.4">
+          ${nq ? (nq.today ? "今天 · " : esc(DAYS[nq.day]) + " · ") + esc(nq.data.type) : (hasQ ? "本周期已练完" : "本周没有质量课")}
+        </div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-head"><h2>本周进度</h2><span class="hint">点一下就能打卡</span></div>
+        <div class="card" style="padding:18px">
+          <div class="ring-wrap">
+            <div style="position:relative;flex:none">
+              <svg class="ring" width="76" height="76" viewBox="0 0 76 76">
+                <defs><linearGradient id="rg" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stop-color="#4b7bec"/><stop offset="1" stop-color="#ff6b3d"/>
+                </linearGradient></defs>
+                <circle class="bg" cx="38" cy="38" r="32"/>
+                <circle class="fg" cx="38" cy="38" r="32" stroke="url(#rg)" stroke-dasharray="${(total / 7 * 201).toFixed(1)} 201"/>
+              </svg>
+              <div style="position:absolute;inset:0;display:grid;place-items:center">
+                <div class="ring-num">${Math.round(total / 7 * 100)}<span>%</span></div>
+              </div>
+            </div>
+            <div style="flex:1;min-width:0">
+              <div class="week-strip" id="strip">
+                ${DAYS.map((w, i) => {
+                  const dd = dateOf(i);
+                  const dday = block.days[i] || {};
+                  const dn = isDone(p.key, S.block, i);
+                  return `<div class="daycell${i === todayIdx ? " is-today" : ""}${dn ? " is-done" : ""}" data-act="day" data-day="${i}" role="button" tabindex="0" aria-label="${w} ${esc(dday.type || "")}">
+                    <div class="w">${w.slice(1)}</div>
+                    <div class="d">${dd.getDate()}</div>
+                    <div class="dot${dday.quality ? " q" : ""}"></div>
+                    ${dn ? '<div class="check">' + IC.check + "</div>" : ""}
+                  </div>`;
+                }).join("")}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-head"><h2>周模板一览</h2><span class="hint">${p.blocks.length} 个模板 · ${esc(p.group)}${p.phase ? " · " + esc(p.phase) : ""}</span></div>
+        ${p.blocks.map((b, i) => {
+          const [n, sub] = weekTitleParts(b.title);
+          const c = doneCount(p.key, i);
+          return `<div class="card week-card" style="margin-bottom:10px">
+            <div class="week-head" style="border-bottom:0">
+              <div class="week-top">
+                <div class="week-title"><span class="wname">${esc(n)}</span></div>
+                <div class="week-badge">${c}/7 已完成</div>
+              </div>
+              <div class="week-sub">${esc(sub)}</div>
+            </div>
+          </div>`;
+        }).join("")}
+      </div>
+
+      <div class="section">
+        <div class="section-head"><h2>工具</h2></div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn" data-act="goto-pace">${IC.pace} 配速换算</button>
+          <button class="btn" data-act="goto-plan">${IC.plan} 完整课表</button>
+          <button class="btn" data-act="print">${IC.print} 打印 / 存 PDF</button>
+        </div>
+      </div>
+    `;
+
+    const sp = $("#sel-plan"), sb = $("#sel-block");
+    const wn = $("#weekmeta"); if (wn) wn.textContent = p.key + " · 第 " + (S.block + 1) + " 周";
+    sp && sp.addEventListener("change", () => { S.plan = sp.value; S.block = 0; save(); renderToday(); });
+    sb && sb.addEventListener("change", () => { S.block = +sb.value; save(); renderToday(); });
+  }
+
+  /* ---------------- plan ---------------- */
+  function planCard(cur, b, bi, q) {
+    const parts = weekTitleParts(b.title);
+    const n = parts[0], sub = parts[1];
+    const days = b.days.map((d, di) => ({ ...d, di })).filter((d) => {
+      if (!q) return true;
+      return (d.type + d.content + d.day).toLowerCase().indexOf(q.toLowerCase()) >= 0;
+    });
+    if (!days.length) return "";
+    const isCurBlock = bi === S.block;
+    return `<div class="card week-card" ${isCurBlock ? 'style="border-color:rgba(75,123,236,.45)"' : ""}>
+      <div class="week-head">
+        <div class="week-top">
+          <div class="week-title"><span class="wname">${esc(n)}</span>${isCurBlock ? ' <span class="chip chip-brand" style="margin-left:6px">今日所在</span>' : ""}</div>
+          <div class="week-badge">${doneCount(cur.key, bi)}/7 已完成</div>
+        </div>
+        <div class="week-sub">${esc(sub)}</div>
+      </div>
+      <div class="days">
+        ${days.map((d) => {
+          const rest = /休息/.test(d.type);
+          const done = isDone(cur.key, bi, d.di);
+          const isToday = isCurBlock && d.di === todayIdx;
+          return `<div class="day${isToday ? " is-today" : ""}${rest ? " is-rest" : ""}" data-act="day" data-day="${d.di}" data-block="${bi}">
+            <div class="day-w">${esc(d.day)}</div>
+            <div class="day-main">
+              <div class="day-line">
+                <span class="chip ${d.quality ? "chip-q" : rest ? "chip-r" : "chip-e"}">${esc(d.type)}</span>
+                ${done ? '<span class="chip chip-r" style="background:var(--teal-soft);color:var(--teal)">已打卡</span>' : ""}
+              </div>
+              <div class="day-content">${esc(d.content)}</div>
+            </div>
+            ${done ? '<div class="day-done">' + IC.check + "</div>" : ""}
+          </div>`;
+        }).join("")}
+      </div>
+    </div>`;
+  }
+
+  function countMatch(cur, q) {
+    if (!q) return 0;
+    const k = q.toLowerCase();
+    let n = 0;
+    cur.blocks.forEach((b) => b.days.forEach((d) => {
+      if ((d.type + d.content + d.day).toLowerCase().indexOf(k) >= 0) n++;
+    }));
+    return n;
+  }
+
+  function renderPlan() {
+    const cur = currentPlan();
+    const q0 = query.trim();
+
+    $("#view-plan").innerHTML = `
+      <div class="eyebrow">Training plan</div>
+      <h1 class="page-title">${esc(cur.key)}</h1>
+      <p class="page-sub">共 ${cur.blocks.length} 个周模板 · 内容与 Excel 课表一致，未作改动</p>
+
+      <div class="filter-row">
+        <div class="seg" id="seg-group">
+          ${groups.map((g) => `<button data-group="${g}" class="${g === cur.group ? "is-active" : ""}">${g}</button>`).join("")}
+        </div>
+        <div class="search">${IC.search}<input id="q" type="search" enterkeyhint="search" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="搜索：阈值 / 力量 / 休息 …" value="${esc(q0)}"></div>
+      </div>
+
+      ${(cur.group === "中距离" || cur.group === "长距离") ? `<div class="filter-row" style="margin-top:-8px"><div class="seg" id="seg-phase">
+        ${phaseList(cur.group).map((p) => `<button data-plan="${esc(p.key)}" class="${p.key === cur.key ? "is-active" : ""}">${esc(p.phase)}</button>`).join("")}
+      </div></div>` : ""}
+
+      <div id="plan-list"></div>
+
+      <div class="section-head" style="margin-top:26px"><h2>提示</h2></div>
+      <div class="notes-card">质量课（<span class="chip chip-q">橙色标签</span>）的日期不要随意挪动；两节质量课之间至少隔 48 小时。状态不好时把当天质量课降级为轻松跑，不要在同一周补课。点任意一天可以查看详情、打卡。</div>
+    `;
+
+    const paint = () => {
+      const list = $("#plan-list");
+      if (!list) return;
+      const q = query.trim();
+      const body = cur.blocks.map((b, bi) => planCard(cur, b, bi, q)).join("");
+      const meta = q ? `<div class="search-meta">「${esc(q)}」匹配到 ${countMatch(cur, q)} 个训练日</div>` : "";
+      list.innerHTML = meta + (body || '<div class="empty">没有匹配的训练日。搜索支持中文，试试：阈值 / 力量 / 休息 / 间歇。</div>');
+    };
+
+    const wm = $("#weekmeta");
+    if (wm) wm.textContent = cur.key + " · 第 " + (S.block + 1) + " 周";
+
+    $$("#seg-group button").forEach((b) => b.addEventListener("click", () => {
+      const g = b.dataset.group;
+      const first = planByKey(phaseList(g)[0].key);
+      S.plan = g === "中距离" || g === "长距离" ? (phaseList(g).find((x) => x.phase === "基础期") || phaseList(g)[0]).key : first.key;
+      S.block = 0; save(); renderPlan();
+    }));
+    $$("#seg-phase button").forEach((b) => b.addEventListener("click", () => {
+      S.plan = b.dataset.plan; S.block = 0; save(); renderPlan();
+    }));
+
+    const qi = $("#q");
+    if (qi) {
+      let composing = false;
+      qi.addEventListener("compositionstart", () => { composing = true; });
+      qi.addEventListener("compositionend", () => {
+        composing = false;
+        query = qi.value;
+        paint();
+      });
+      qi.addEventListener("input", (e) => {
+        if (composing || e.isComposing) return; // 输入法组词中不重绘，等上屏再过滤
+        query = qi.value;
+        paint();
+      });
+      qi.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") { query = qi.value; paint(); e.preventDefault(); }
+      });
+    }
+    paint();
+  }
+
+  /* ---------------- pace ---------------- */
+  const MID_OFF = [["轻松跑", 110], ["长距离有氧", 125], ["阈值跑", 30], ["VO2max 间歇", 15], ["乳酸耐受", 0], ["速度耐力", -10]];
+  const LONG_OFF = [["轻松跑", 70], ["长距离有氧", 80], ["阈值跑", 14], ["VO2max 间歇", -5], ["10000 米配速", 9], ["半马配速", 16]];
+
+  function renderPace() {
+    const t15 = parseTime(S.pb1500) || 270;
+    const t5 = parseTime(S.pb5000) || 1020;
+    const p15 = t15 / 1.5, p5 = t5 / 5;
+
+    const rows = (arr, base) => arr.map(([k, off]) => {
+      const v = base + off;
+      return `<div class="pace-item">
+        <div class="k">${esc(k)}</div>
+        <div class="v">${fmt(v)}<span style="font-size:11px;font-weight:600;color:var(--muted)">/km</span></div>
+        <div class="s">400 米 ${fmt(v * 0.4)}</div>
+      </div>`;
+    }).join("");
+
+    const blocksHtml = DATA.pace.blocks.map((b) => {
+      if (b.type === "steps") {
+        return `<div class="section"><div class="section-head"><h2>${esc(b.title)}</h2></div>
+          <div class="steps">${b.items.map((it) => `<div class="step"><div class="lbl">${esc(it.label)}</div><div>${esc(it.text)}</div></div>`).join("")}</div></div>`;
+      }
+      if (b.type === "rules") {
+        return `<div class="section"><div class="section-head"><h2>${esc(b.title)}</h2></div>
+          <div class="tbl-wrap"><table class="tbl"><thead><tr>${b.head.map((h) => `<th>${esc(h)}</th>`).join("")}</tr></thead>
+          <tbody>${b.rows.map((r) => `<tr>${r.map((c, i) => `<td${i === 3 ? ' style="min-width:280px"' : ""}>${esc(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div></div>`;
+      }
+      if (b.type === "grid") {
+        const is15 = /1500/.test(b.head[0]);
+        const anchor = is15 ? t15 : t5;
+        let best = -1, bd = 1e9;
+        b.rows.forEach((r, i) => {
+          const v = parseTime(r[0]);
+          if (v == null) return;
+          const diff = Math.abs(v - anchor);
+          if (diff < bd) { bd = diff; best = i; }
+        });
+        return `<div class="section"><div class="section-head"><h2>${esc(b.title)}</h2><span class="hint">高亮行 = 最接近你的成绩</span></div>
+          <div class="tbl-wrap"><table class="tbl num"><thead><tr>${b.head.map((h) => `<th style="text-align:center">${esc(h)}</th>`).join("")}</tr></thead>
+          <tbody>${b.rows.map((r, i) => `<tr class="${i === best ? "near" : ""}">${r.map((c) => `<td>${esc(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div></div>`;
+      }
+      if (b.type === "section") {
+        return `<div class="section"><div class="section-head"><h2>${esc(b.title)}</h2></div>
+          <div class="bullets">${b.items.map((it) => `<div>${esc(it.text)}</div>`).join("")}</div></div>`;
+      }
+      return "";
+    }).join("");
+
+    $("#view-pace").innerHTML = `
+      <div class="eyebrow">Pace</div>
+      <h1 class="page-title">配速换算</h1>
+      <p class="page-sub">${esc(DATA.pace.title)}</p>
+
+      <div class="card pb-card">
+        <div class="pb-row">
+          <div class="field"><label>1500 米成绩（中距离）</label><input id="pb15" value="${esc(S.pb1500)}" inputmode="numeric" placeholder="4:30" aria-label="1500 米成绩"></div>
+          <div class="field"><label>5000 米成绩（长距离）</label><input id="pb5" value="${esc(S.pb5000)}" inputmode="numeric" placeholder="17:00" aria-label="5000 米成绩"></div>
+        </div>
+        <div class="calc-note">格式 mm:ss，例如 4:30、17:00；也可以直接填秒数。改完立即重算并自动记住。${DATA.pace.note ? "　" + esc(DATA.pace.note) : ""}</div>
+      </div>
+
+      <div class="section">
+        <div class="section-head"><h2>中距离（800 / 1500 米）</h2><span class="hint" id="hint15">P1500 = ${fmt(p15)}/km</span></div>
+        <div class="pace-out" id="out15">${rows(MID_OFF, p15)}</div>
+      </div>
+      <div class="section">
+        <div class="section-head"><h2>长距离（5000 米 / 10000 米 / 半马）</h2><span class="hint" id="hint5">P5k = ${fmt(p5)}/km</span></div>
+        <div class="pace-out" id="out5">${rows(LONG_OFF, p5)}</div>
+      </div>
+      <div class="section"><button class="btn btn-primary" data-act="copy-pace">${IC.copy} 复制我的配速卡</button></div>
+
+      ${blocksHtml}
+
+      <div class="section"><div class="notes-card"><b>说明</b>　左侧是课表原文的推断方法，右侧数字是按同一套规则实时算出的结果；两者口径一致。400 米单圈 = 每公里配速 × 0.4，跑前把单圈写在手背上。</div></div>
+    `;
+
+    const bind = (id, key, outId, hintId, offs, div) => {
+      const el = $(id);
+      el && el.addEventListener("input", () => {
+        S[key] = el.value; save();
+        const t = parseTime(el.value) || (div === 1.5 ? 270 : 1020);
+        const base = t / div;
+        const out = $(outId); if (out) out.innerHTML = rows(offs, base);
+        const hint = $(hintId); if (hint) hint.textContent = (div === 1.5 ? "P1500 = " : "P5k = ") + fmt(base) + "/km";
+      });
+      el && el.addEventListener("blur", () => { if (el.value !== S[key]) renderPace(); });
+    };
+    bind("#pb15", "pb1500", "#out15", "#hint15", MID_OFF, 1.5);
+    bind("#pb5", "pb5000", "#out5", "#hint5", LONG_OFF, 5);
+  }
+
+  /* ---------------- notes ---------------- */
+  let openAcc = 0;
+  function renderNotes() {
+    let idx = -1;
+    const html = DATA.notes.map((n) => {
+      if (n.kind === "section") {
+        idx++;
+        const opened = idx === openAcc;
+        return `<div class="acc${opened ? " is-open" : ""}" data-acc="${idx}">
+          <div class="acc-head" role="button" tabindex="0">${esc(n.title)}<span class="arw">${IC.arrow}</span></div>
+          <div class="acc-body" data-body="${idx}"></div>
+        </div>`;
+      }
+      return `<div data-for="${idx}" class="nrow"><div class="lbl">${esc(n.label)}</div><div>${esc(n.text)}</div></div>`;
+    }).join("");
+
+    $("#view-notes").innerHTML = `
+      <div class="eyebrow">Manual</div>
+      <h1 class="page-title">训练说明</h1>
+      <p class="page-sub">训练类型、配速推断、周期安排、力量组次、安全提示 —— 与课表里的「训练说明」一致。</p>
+      ${html}
+    `;
+
+    // 把 row 放进所属 section 的 body
+    const wrappers = Array.from($("#view-notes").children).filter((el) => el.hasAttribute("data-for"));
+    wrappers.forEach((w) => {
+      const body = $(`[data-body="${w.dataset.for}"]`);
+      if (body) body.appendChild(w);
+    });
+
+    $$(".acc-head").forEach((h) => {
+      const toggle = () => {
+        const acc = h.parentElement;
+        const wasOpen = acc.classList.contains("is-open");
+        $$(".acc").forEach((a) => a.classList.remove("is-open"));
+        if (!wasOpen) { acc.classList.add("is-open"); openAcc = +acc.dataset.acc; }
+        else openAcc = -1;
+      };
+      h.addEventListener("click", toggle);
+      h.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); } });
+    });
+  }
+
+  /* ---------------- day sheet ---------------- */
+  let sheetCtx = null;
+  function openDay(blockIdx, dayIdx) {
+    const p = currentPlan();
+    const bi = blockIdx == null ? S.block : blockIdx;
+    const d = p.blocks[bi].days[dayIdx];
+    if (!d) return;
+    sheetCtx = { pi: p.key, bi, di: dayIdx };
+    const done = isDone(p.key, bi, dayIdx);
+    $("#sheet").innerHTML = `
+      <div class="sheet-grab"></div>
+      <div class="meta">
+        <span class="chip ${d.quality ? "chip-q" : /休息/.test(d.type) ? "chip-r" : "chip-e"}">${esc(d.type)}</span>
+        <span style="font-size:12px;color:var(--muted)">${esc(d.day)} · ${esc(weekTitleParts(p.blocks[bi].title)[0])}</span>
+      </div>
+      <h3>${esc(d.day)}训练</h3>
+      <div class="body">${esc(d.content)}</div>
+      <div class="acts">
+        <button class="btn ${done ? "btn-ghost" : "btn-primary"}" data-act="sheet-check" style="flex:1">
+          ${done ? "撤销打卡" : IC.check + " 完成打卡"}
+        </button>
+        <button class="btn" data-act="sheet-copy">${IC.copy}</button>
+        <button class="btn" data-act="sheet-close">关闭</button>
+      </div>
+    `;
+    $("#sheet").classList.add("show");
+    $("#backdrop").classList.add("show");
+    document.body.classList.add("no-scroll");
+  }
+  function closeSheet() {
+    $("#sheet").classList.remove("show");
+    $("#backdrop").classList.remove("show");
+    document.body.classList.remove("no-scroll");
+    sheetCtx = null;
+  }
+
+  /* ---------------- actions ---------------- */
+  function toggleCheck(pi, bi, di) {
+    const k = pi + "|" + bi + "|" + di;
+    if (S.checks[k]) delete S.checks[k];
+    else S.checks[k] = Date.now();
+    save();
+  }
+  function todayText() {
+    const p = currentPlan();
+    const d = p.blocks[S.block].days[todayIdx];
+    return `${d.day} · ${d.type}\n${d.content}\n—— Shatter2 · ${p.key}`;
+  }
+  async function copyText(t) {
+    try {
+      await navigator.clipboard.writeText(t);
+      toast("已复制");
+    } catch (e) {
+      const ta = document.createElement("textarea");
+      ta.value = t; document.body.appendChild(ta); ta.select();
+      try { document.execCommand("copy"); toast("已复制"); } catch (e2) { toast("复制失败，请长按选择"); }
+      ta.remove();
+    }
+  }
+
+  document.addEventListener("click", (e) => {
+    const t = e.target.closest("[data-act]");
+    const tabBtn = e.target.closest("[data-tab]");
+    if (tabBtn) { go(tabBtn.dataset.tab); return; }
+    if (!t) return;
+    const act = t.dataset.act;
+    const p = currentPlan();
+
+    if (act === "day") {
+      openDay(t.dataset.block != null ? +t.dataset.block : S.block, +t.dataset.day);
+    } else if (act === "check-today") {
+      toggleCheck(p.key, S.block, todayIdx);
+      renderToday();
+      toast(isDone(p.key, S.block, todayIdx) ? "今日打卡完成" : "已撤销");
+    } else if (act === "copy-today") {
+      copyText(todayText());
+    } else if (act === "open-today") {
+      openDay(S.block, todayIdx);
+    } else if (act === "sheet-check") {
+      if (sheetCtx) {
+        toggleCheck(sheetCtx.pi, sheetCtx.bi, sheetCtx.di);
+        const done = isDone(sheetCtx.pi, sheetCtx.bi, sheetCtx.di);
+        const btn = $('[data-act="sheet-check"]');
+        if (btn) {
+          btn.className = "btn " + (done ? "btn-ghost" : "btn-primary");
+          btn.style.flex = "1";
+          btn.innerHTML = done ? "撤销打卡" : IC.check + " 完成打卡";
+        }
+        toast(done ? "打卡完成" : "已撤销");
+        if (S.tab === "today") renderToday();
+        if (S.tab === "plan") renderPlan();
+      }
+    } else if (act === "sheet-close") {
+      closeSheet();
+    } else if (act === "sheet-copy") {
+      if (sheetCtx) {
+        const d = planByKey(sheetCtx.pi).blocks[sheetCtx.bi].days[sheetCtx.di];
+        copyText(`${d.day} · ${d.type}\n${d.content}`);
+      }
+    } else if (act === "goto-pace") {
+      go("pace");
+    } else if (act === "goto-plan") {
+      go("plan");
+    } else if (act === "print") {
+      window.print();
+    } else if (act === "copy-pace") {
+      const t15 = parseTime(S.pb1500) || 270, t5 = parseTime(S.pb5000) || 1020;
+      const lines = [`我的配速卡 · Shatter2`, `1500 米 ${S.pb1500}｜5000 米 ${S.pb5000}`, ""];
+      MID_OFF.forEach(([k, o]) => lines.push(`中距离 ${k}：${fmt(t15 / 1.5 + o)}/km（400 米 ${fmt((t15 / 1.5 + o) * 0.4)}）`));
+      lines.push("");
+      LONG_OFF.forEach(([k, o]) => lines.push(`长距离 ${k}：${fmt(t5 / 5 + o)}/km（400 米 ${fmt((t5 / 5 + o) * 0.4)}）`));
+      copyText(lines.join("\n"));
+    } else if (act === "theme") {
+      toggleTheme();
+    } else if (act === "font") {
+      cycleFont();
+    } else if (act === "share") {
+      const d = planByKey(S.plan).blocks[S.block].days[todayIdx];
+      const text = `${d.day} · ${d.type}\n${d.content}`;
+      if (navigator.share) navigator.share({ title: "Shatter2", text }).catch(() => {});
+      else copyText(text);
+    }
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeSheet();
+    if (e.target.tagName === "INPUT" || e.target.tagName === "SELECT") return;
+    const map = { "1": "today", "2": "plan", "3": "pace", "4": "notes" };
+    if (map[e.key]) go(map[e.key]);
+    if (e.key === "d" || e.key === "D") toggleTheme();
+  });
+
+  $("#backdrop").addEventListener("click", closeSheet);
+
+  /* ---------------- boot ---------------- */
+  applyTheme(); applyFont();
+  const wk = $("#weekmeta");
+  if (wk) wk.textContent = S.plan + " · 第 " + (S.block + 1) + " 周";
+  const hashTab = (location.hash || "").slice(1);
+  if (["today", "plan", "pace", "notes"].indexOf(hashTab) >= 0) S.tab = hashTab;
+  try {
+    const qs = new URLSearchParams(location.search);
+    const th = qs.get("theme");
+    if (th === "light" || th === "dark") { S.theme = th; applyTheme(); }
+  } catch (e) {}
+  go(S.tab, { keepScroll: true });
+})();
+</script>
+</body>
+</html>
