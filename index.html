@@ -572,6 +572,13 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
 }
 .cloud-banner code { background: rgba(0,0,0,.08); padding: 1px 5px; border-radius: 5px; }
 @media (min-width: 1025px) { .cloud-banner { margin-left: 268px; max-width: 900px; } }
+
+.joins-list { display: flex; flex-direction: column; gap: 2px; max-height: 56vh; overflow: auto; }
+.join-row { display: flex; align-items: flex-start; gap: 10px; padding: 11px 4px; border-bottom: 1px solid var(--line); }
+.join-row:last-child { border-bottom: 0; }
+.join-row .who { font-weight: 700; font-size: 13px; }
+.join-row .msg { font-size: 12.5px; color: var(--muted); margin-top: 2px; line-height: 1.5; }
+.join-row .when { font-size: 11px; color: var(--muted); white-space: nowrap; padding-top: 2px; }
 </style>
 </head>
 <body>
@@ -749,6 +756,16 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
     <div class="field"><label>联系方式（可选）</label><input id="pContact" placeholder="微信号 / 手机号" maxlength="40"></div>
     <div class="auth-msg" id="postMsg"></div>
     <button class="btn btn-primary auth-submit" data-act="do-post">发布到广场</button>
+  </div>
+</div>
+
+<!-- 申请者名单 -->
+<div class="modal" id="joinsModal" aria-hidden="true">
+  <div class="modal-card auth-card" role="dialog" aria-label="申请名单">
+    <button class="modal-x" data-act="close-joins" aria-label="关闭">×</button>
+    <h3 id="joinsTitle">申请加入</h3>
+    <p class="auth-sub" id="joinsSub">这些人申请加入你的组队</p>
+    <div id="joinsList" class="joins-list"></div>
   </div>
 </div>
 
@@ -1507,6 +1524,7 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
               ${p.pace ? `<span class="chip chip-r">${esc(p.pace)}</span>` : ""}
               <span class="chip chip-e">${state.joinCounts[p.id] || 0} 人申请</span></div>
               <div class="plaza-acts">
+                ${mine && (state.joinCounts[p.id] || 0) > 0 ? `<button class="btn btn-sm" data-act="view-joins" data-id="${p.id}">查看申请（${state.joinCounts[p.id]}）</button>` : ""}
                 ${mine || admin() ? `<button class="btn btn-sm" data-act="del-post" data-id="${p.id}">删除</button>` : ""}
                 ${mine ? "" : `<button class="btn btn-sm ${joined ? "" : "primary"}" data-act="join-post" data-id="${p.id}" ${joined ? "disabled" : ""}>${joined ? "已申请" : "申请加入"}</button>`}
               </div></div>
@@ -1524,6 +1542,38 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
   }
 
   /* ================= 我的 ================= */
+  async function openJoins(id) {
+    closeModals("joinsModal");
+    const post = state.posts.find((p) => p.id === id);
+    $("#joinsTitle").textContent = post ? post.title : "申请加入";
+    $("#joinsSub").textContent = post ? (post.run_time + " · " + post.place) : "这些人申请加入你的组队";
+    $("#joinsList").innerHTML = '<div class="sempty">加载中…</div>';
+    $("#joinsModal").classList.add("show");
+    document.body.classList.add("no-scroll");
+    try {
+      const rows = await api("/rest/v1/joins?select=username,message,created_at&post_id=eq." + id + "&order=created_at.asc");
+      if (!rows || !rows.length) {
+        $("#joinsList").innerHTML = '<div class="sempty">还没有人申请</div>';
+        return;
+      }
+      $("#joinsList").innerHTML = rows.map((r) => `<div class="join-row">
+        <span class="avatar" style="width:30px;height:30px;font-size:12px">${esc((r.username || "?").slice(0, 1).toUpperCase())}</span>
+        <div style="flex:1;min-width:0">
+          <div class="who">${esc(r.username || "匿名")}</div>
+          ${r.message ? '<div class="msg">留言：' + esc(r.message) + "</div>" : '<div class="msg">没有留言</div>'}
+        </div>
+        <div class="when">${timeAgo(Date.parse(r.created_at))}</div>
+      </div>`).join("");
+    } catch (e) {
+      $("#joinsList").innerHTML = '<div class="sempty">' + esc(e.message) + "</div>";
+    }
+  }
+
+  function closeJoins() {
+    $("#joinsModal").classList.remove("show");
+    document.body.classList.remove("no-scroll");
+  }
+
   function renderMe() {
     const recs = state.records;
     const pb5 = bestFor(5, recs);
@@ -1714,7 +1764,7 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
   function closeSheet() { $("#sheet").classList.remove("show"); $("#backdrop").classList.remove("show"); document.body.classList.remove("no-scroll"); sheetCtx = null; }
 
   function closeModals(keep) {
-    ["searchModal", "authModal", "accountModal", "postModal"].forEach(function (id) {
+    ["searchModal", "authModal", "accountModal", "postModal", "joinsModal"].forEach(function (id) {
       if (id === keep) return;
       const el = $("#" + id);
       if (el) el.classList.remove("show");
@@ -1835,6 +1885,8 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
     } else if (act === "close-post") { $("#postModal").classList.remove("show"); document.body.classList.remove("no-scroll"); }
     else if (act === "do-post") doPost();
     else if (act === "join-post") doJoin(t.dataset.id);
+    else if (act === "view-joins") openJoins(t.dataset.id);
+    else if (act === "close-joins") closeJoins();
     else if (act === "del-post") {
       const id = t.dataset.id;
       if (!confirm("删除这条邀请？")) return;
