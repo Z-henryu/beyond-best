@@ -1522,9 +1522,9 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
             <div class="plaza-foot"><div class="plaza-tags">
               ${p.distance ? `<span class="chip chip-r">${esc(p.distance)}</span>` : ""}
               ${p.pace ? `<span class="chip chip-r">${esc(p.pace)}</span>` : ""}
-              <span class="chip chip-e">${state.joinCounts[p.id] || 0} 人申请</span></div>
+              <span class="chip chip-e" ${mine ? `data-act="view-joins" data-id="${p.id}" style="cursor:pointer"` : ""}>${state.joinCounts[p.id] || 0} 人申请${mine ? " · 点击查看" : ""}</span></div>
               <div class="plaza-acts">
-                ${mine && (state.joinCounts[p.id] || 0) > 0 ? `<button class="btn btn-sm" data-act="view-joins" data-id="${p.id}">查看申请（${state.joinCounts[p.id]}）</button>` : ""}
+                ${mine ? `<button class="btn btn-sm" data-act="view-joins" data-id="${p.id}">查看申请${state.joinCounts[p.id] ? "（" + state.joinCounts[p.id] + "）" : ""}</button>` : ""}
                 ${mine || admin() ? `<button class="btn btn-sm" data-act="del-post" data-id="${p.id}">删除</button>` : ""}
                 ${mine ? "" : `<button class="btn btn-sm ${joined ? "" : "primary"}" data-act="join-post" data-id="${p.id}" ${joined ? "disabled" : ""}>${joined ? "已申请" : "申请加入"}</button>`}
               </div></div>
