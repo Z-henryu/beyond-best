@@ -703,8 +703,9 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
       <button class="btn btn-primary auth-submit" data-act="do-forgot">找回账号</button>
       <div id="forgotResult" style="display:none">
         <div class="auth-note" id="forgotWho"></div>
-        <div class="field"><label>临时密码（已自动登录，建议马上改密码）</label><input id="forgotNew" readonly></div>
-        <button class="btn btn-primary auth-submit" data-act="change-pass">修改密码</button>
+        <div class="field"><label>设置新密码</label><input id="forgotNew" type="password" placeholder="至少 4 位" autocomplete="new-password"></div>
+        <button class="btn btn-primary auth-submit" data-act="do-reset">重设密码并登录</button>
+        <div class="auth-note">这个面板会一直留着，直到你自己关闭或完成重设。</div>
       </div>
       <button class="auth-link" data-act="goto-login">返回登录</button>
     </div>
@@ -834,7 +835,10 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
     let data = null;
     try { data = text ? JSON.parse(text) : null; } catch (e) { data = text; }
     if (!res.ok) {
-      const msg = (data && (data.msg || data.message || data.error_description || data.hint)) || ("HTTP " + res.status);
+      let msg = (data && (data.msg || data.message || data.error_description || data.hint)) || ("HTTP " + res.status);
+      if (data && (data.code === "PGRST202" || data.code === "PGRST205")) {
+        msg = "云端还没有初始化：请先在 Supabase 执行 schema.sql";
+      }
       const err = new Error(msg);
       err.status = res.status;
       err.code = data && data.code;
@@ -935,8 +939,14 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
     });
   }
 
-  async function recover(phone) {
-    return api("/rest/v1/rpc/recover_by_phone", { method: "POST", body: { p_phone: phone } });
+  async function findAccount(phone) {
+    const r = await api("/rest/v1/rpc/find_account_by_phone", { method: "POST", body: { p_phone: phone } });
+    return r || null;
+  }
+  async function resetPasswordByPhone(phone, newPass) {
+    return api("/rest/v1/rpc/reset_password_by_phone", {
+      method: "POST", body: { p_phone: phone, p_new_password: newPass }
+    });
   }
 
   /* ---------------- 数据 ---------------- */
@@ -1606,7 +1616,7 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
     });
     box.innerHTML = html;
   }
-  function openSearch() { $("#searchModal").classList.add("show"); document.body.classList.add("no-scroll"); const i = $("#gsearch"); i.value = ""; renderSearch(""); setTimeout(() => i.focus(), 40); }
+  function openSearch() { closeModals("searchModal"); $("#searchModal").classList.add("show"); document.body.classList.add("no-scroll"); const i = $("#gsearch"); i.value = ""; renderSearch(""); setTimeout(() => i.focus(), 40); }
   function closeSearch() { $("#searchModal").classList.remove("show"); document.body.classList.remove("no-scroll"); }
   function gotoResult(i) {
     const e = getIndex()[i]; if (!e) return;
@@ -1668,9 +1678,23 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
   }
   function closeSheet() { $("#sheet").classList.remove("show"); $("#backdrop").classList.remove("show"); document.body.classList.remove("no-scroll"); sheetCtx = null; }
 
+  function closeModals(keep) {
+    ["searchModal", "authModal", "accountModal", "postModal"].forEach(function (id) {
+      if (id === keep) return;
+      const el = $("#" + id);
+      if (el) el.classList.remove("show");
+    });
+    if (!keep) document.body.classList.remove("no-scroll");
+  }
+
   function openAuth(tab) {
+    closeModals("authModal");
     if (!state.cloudReady) { toast("云端未初始化：请先在 Supabase 执行 schema.sql"); }
-    $("#authModal").classList.add("show"); document.body.classList.add("no-scroll"); switchAuth(tab || "login");
+    $("#authModal").classList.add("show");
+    document.body.classList.add("no-scroll");
+    switchAuth(tab || "login");
+    const first = tab === "register" ? $("#regName") : $("#loginName");
+    if (first) setTimeout(function () { first.focus(); }, 60);
   }
   function closeAuth() { $("#authModal").classList.remove("show"); document.body.classList.remove("no-scroll"); }
   function switchAuth(w) {
@@ -1682,6 +1706,7 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
     const fr = $("#forgotResult"); if (fr) fr.style.display = "none";
   }
   function openAccount() {
+    closeModals("accountModal");
     refreshAuth();
     const u = state.profile;
     $("#acctName").textContent = u ? u.username + (u.role === "admin" ? " · 管理员" : "") : "未登录";
@@ -1721,6 +1746,7 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
     else if (act === "do-login") doLogin();
     else if (act === "do-register") doRegister();
     else if (act === "do-forgot") doForgot();
+    else if (act === "do-reset") doReset();
     else if (act === "change-pass") openChangePass();
     else if (act === "logout") { await signOut(); toast("已退出"); }
     else if (act === "check-today") {
@@ -1805,22 +1831,41 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
       closeAuth(); closeAccount(); toast("注册成功，已登录"); go(VIEW, { keep: true });
     } catch (e) { msg.textContent = e.message; }
   }
+  let forgotPhoneCache = "";
   async function doForgot() {
     const phone = ($("#forgotPhone").value || "").trim();
     const msg = $("#forgotMsg");
     if (!/^1\d{10}$/.test(phone)) { msg.textContent = "请输入 11 位手机号"; return; }
     msg.textContent = "查询中…";
+    $("#forgotResult").style.display = "none";
     try {
-      const r = await recover(phone);
-      if (!r) { msg.textContent = "该手机号未注册"; $("#forgotResult").style.display = "none"; return; }
+      const name = await findAccount(phone);
+      if (!name) { msg.textContent = "该手机号未注册"; return; }
+      forgotPhoneCache = phone;
       msg.textContent = "";
-      $("#forgotWho").textContent = "账号：" + r.username + "，已生成临时密码并自动登录。";
-      $("#forgotNew").value = r.password;
+      $("#forgotWho").textContent = "找到账号：" + name + "。设置新密码后即可登录（不会自动改密）。";
+      $("#forgotNew").value = "";
       $("#forgotResult").style.display = "";
-      await signIn(r.username, r.password);
-      closeAuth(); closeAccount(); toast("已用临时密码登录，建议修改密码");
+      setTimeout(function () { const el = $("#forgotNew"); if (el) el.focus(); }, 60);
+    } catch (e) { msg.textContent = e.message || "查询失败"; }
+  }
+
+  async function doReset() {
+    const msg = $("#forgotMsg");
+    const pass = $("#forgotNew").value || "";
+    const phone = ($("#forgotPhone").value || "").trim();
+    if (!/^1\d{10}$/.test(phone)) { msg.textContent = "请输入 11 位手机号"; return; }
+    if (!forgotPhoneCache) { msg.textContent = "请先点「找回账号」查询"; return; }
+    if (pass.length < 4) { msg.textContent = "密码至少 4 位"; return; }
+    msg.textContent = "重设中…";
+    try {
+      const name = await resetPasswordByPhone(phone, pass);
+      if (!name) { msg.textContent = "该手机号未注册"; return; }
+      await signIn(name, pass);
+      closeAuth(); closeAccount();
+      toast("密码已重设，已登录");
       go(VIEW, { keep: true });
-    } catch (e) { msg.textContent = e.message || "找回失败"; }
+    } catch (e) { msg.textContent = e.message || "重设失败"; }
   }
   function openChangePass() {
     const p = prompt("设置新密码（至少 4 位）");
@@ -1837,7 +1882,7 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
     i.click();
   }
   function pickShot() {
-    const i = document.createElement("input"); i.type = "file"; i.accept = "image/*"; i.setAttribute("capture", "environment");
+    const i = document.createElement("input"); i.type = "file"; i.accept = "image/*";
     i.onchange = () => {
       const f = i.files[0]; if (!f) return;
       compress(f, (d) => {
