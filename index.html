@@ -962,6 +962,10 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
     refreshAuth(); renderCurrent();
   }
 
+  async function deleteAccount() {
+    await api("/rest/v1/rpc/delete_my_account", { method: "POST", body: {} });
+  }
+
   async function changePassword(newPass) {
     if ((newPass || "").length < 6) throw new Error("密码至少 6 位");
     await api("/auth/v1/user", {
@@ -1539,7 +1543,8 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
       </div>
       ${logged() ? `<div class="section"><div class="section-head"><h2>账号</h2></div>
         <div class="card" style="padding:0"><div class="link-row" data-act="change-pass">修改密码 ›</div>
-        <div class="link-row" data-act="logout">退出登录 ›</div></div></div>` : ""}
+        <div class="link-row" data-act="logout">退出登录 ›</div>
+        <div class="link-row danger-text" data-act="delete-account">注销账号 ›</div></div></div>` : ""}
       ${admin() ? `<div class="section"><div class="section-head"><h2>管理员</h2></div>
         <div class="card"><div style="font-weight:700">管理后台</div>
         <div class="small muted" style="margin:6px 0 12px">查看所有账号与记录，管理广场邀请。</div>
@@ -1779,6 +1784,7 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
     else if (act === "do-reset") doReset();
     else if (act === "change-pass") openChangePass();
     else if (act === "logout") { await signOut(); toast("已退出"); }
+    else if (act === "delete-account") doDeleteAccount();
     else if (act === "check-today") {
       const p = planByKey(S.plan);
       const on = await toggleCheck(p.key, S.block, todayIdx);
@@ -1897,6 +1903,21 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
       go(VIEW, { keep: true });
     } catch (e) { msg.textContent = e.message || "重设失败"; }
   }
+  async function doDeleteAccount() {
+    if (!logged()) return;
+    const ok = prompt("注销后，账号、打卡、跑步记录、广场邀请都会被永久删除，无法恢复。\n\n请输入「注销」两个字确认：");
+    if (ok === null) return;
+    if (String(ok).trim() !== "注销") { toast("输入不匹配，已取消"); return; }
+    try {
+      await deleteAccount();
+      await signOut();
+      toast("账号已注销");
+      go("me");
+    } catch (e) {
+      toast("注销失败：" + e.message);
+    }
+  }
+
   function openChangePass() {
     const p = prompt("设置新密码（至少 6 位）");
     if (!p) return;
