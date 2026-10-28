@@ -1,17 +1,17 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-mode="light">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Beyond Best · 中长跑训练课表</title>
-<meta name="description" content="Beyond Best 训练课表：中长跑周计划、配速换算、打卡记录与训练说明，手机和电脑都能打开。">
+<meta name="description" content="Beyond Best：中长跑训练课表、配速换算、打卡记录、跑步广场。">
 <meta name="theme-color" content="#f4f6f9">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Beyond Best">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-180.png">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%232f5597'/%3E%3Ctext x='32' y='43' font-family='Arial,Helvetica,sans-serif' font-size='28' font-weight='bold' fill='%23fff' text-anchor='middle'%3EBB%3C/text%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%232f5597'/%3E%3Ctext x='32' y='43' font-family='Arial' font-size='28' font-weight='bold' fill='%23fff' text-anchor='middle'%3EBB%3C/text%3E%3C/svg%3E">
 <style>/* ===== Beyond Best · 训练课表 ===== */
 *,*::before,*::after{box-sizing:border-box}
 :root{
@@ -497,11 +497,77 @@ table.num tr.near td:first-child{color:var(--accent)}
   .desk-search svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2}
   .desk-search kbd{font:inherit;font-size:10px;padding:2px 6px;border-radius:6px;border:1px solid var(--line);background:var(--surface-2)}
 }
+
+/* ===== web3：主题变量由 JS 注入 ===== */
+html[data-mode="dark"] {
+  --bg: #0b1220; --surface: #131c2e; --surface-2: #1a2740; --surface-3: #22304d;
+  --ink: #e9effa; --muted: #93a4bd; --line: rgba(255,255,255,.10);
+  --shadow: 0 1px 2px rgba(0,0,0,.5), 0 20px 44px -26px rgba(0,0,0,.9);
+}
+body { background: var(--bg); }
+
+/* 广场 */
+.plaza-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
+.plaza-card { padding: 18px 18px 14px; display: flex; flex-direction: column; gap: 8px; }
+.plaza-head { display: flex; align-items: center; gap: 10px; }
+.plaza-title { font-size: 16.5px; font-weight: 800; letter-spacing: -.3px; line-height: 1.35; }
+.plaza-meta { font-size: 12.5px; color: var(--brand-3); font-weight: 650; display: flex; flex-direction: column; gap: 2px; }
+.plaza-body { font-size: 13px; color: var(--ink); line-height: 1.65; opacity: .9; }
+.plaza-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 4px; flex-wrap: wrap; }
+.plaza-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+.plaza-acts { display: flex; gap: 8px; }
+.plaza-joins { margin-top: 8px; border-top: 1px dashed var(--line); padding-top: 10px; font-size: 12.5px; color: var(--muted); }
+.plaza-joins b { color: var(--ink); }
+
+/* 通用小件 */
+.row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+textarea { width: 100%; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface-2); color: var(--ink); font: inherit; resize: vertical; outline: none; }
+textarea:focus { border-color: var(--brand-3); background: var(--surface); }
+.auth-tabs { display: flex; gap: 6px; margin-bottom: 18px; background: var(--surface-2); padding: 4px; border-radius: 12px; }
+.auth-tab { flex: 1; padding: 9px; border-radius: 9px; font-size: 13.5px; font-weight: 700; color: var(--muted); }
+.auth-tab.on { background: var(--surface); color: var(--ink); box-shadow: 0 2px 8px -4px rgba(0,0,0,.3); }
+.auth-link { display: block; width: 100%; margin-top: 12px; font-size: 12.5px; color: var(--brand-3); font-weight: 650; text-align: center; }
+.empty-state { padding: 54px 20px; text-align: center; color: var(--muted); font-size: 13.5px; border: 1px dashed var(--line); border-radius: 18px; background: var(--surface); }
+
+/* 主题选择 */
+.theme-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 10px; }
+.theme-cell { display: flex; flex-direction: column; align-items: center; gap: 7px; padding: 12px 6px; border-radius: 14px; border: 1px solid var(--line); background: var(--surface); }
+.theme-cell.on { border-color: var(--brand-3); box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand-3) 18%, transparent); }
+.theme-dot { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; color: #fff; font-size: 14px; font-weight: 800; }
+.theme-name { font-size: 11.5px; color: var(--muted); font-weight: 650; }
+.theme-cell.on .theme-name { color: var(--ink); }
+
+/* 记录截图 */
+.shot-pick { display: flex; gap: 14px; align-items: flex-start; }
+.shot-box { width: 96px; height: 96px; border-radius: 14px; border: 1.5px dashed var(--line); background: var(--surface-2); display: grid; place-items: center; overflow: hidden; flex: none; cursor: pointer; }
+.shot-box img { width: 100%; height: 100%; object-fit: cover; }
+.shot-plus { font-size: 26px; color: var(--muted); line-height: 1; }
+.rec-shot { width: 54px; height: 54px; border-radius: 10px; object-fit: cover; background: var(--surface-2); flex: none; }
+
+/* 管理员 */
+.admin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+.admin-num { font-size: 26px; font-weight: 800; letter-spacing: -1px; }
+.admin-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.admin-table th { text-align: left; padding: 10px 12px; font-size: 11.5px; color: var(--muted); font-weight: 750; border-bottom: 1px solid var(--line); white-space: nowrap; }
+.admin-table td { padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.admin-table tr:last-child td { border-bottom: 0; }
+.badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 999px; font-size: 10.5px; font-weight: 800; }
+.badge.admin { background: rgba(255, 107, 61, .15); color: var(--accent); }
+.badge.user { background: var(--surface-2); color: var(--muted); }
+.danger-text { color: #e5484d; }
+.mono { font-variant-numeric: tabular-nums; }
+
+/* 基础布局补充 */
+.row { display: flex; align-items: center; }
+.row.gap { gap: 10px; }
+.link-row { padding: 15px 18px; border-bottom: 1px solid var(--line); font-size: 13.5px; cursor: pointer; }
+.link-row:last-child { border-bottom: 0; }
+.link-row:hover { background: var(--surface-2); }
+.admin-note { padding: 14px 16px; border-radius: 14px; background: rgba(255,107,61,.1); color: var(--accent); font-size: 12.5px; line-height: 1.6; margin-bottom: 16px; }
 </style>
 </head>
 <body>
 <div class="app">
-
   <aside class="side">
     <div class="brand">
       <div class="brand-mark" aria-hidden="true">
@@ -519,31 +585,22 @@ table.num tr.near td:first-child{color:var(--accent)}
     </button>
 
     <nav class="side-nav" aria-label="主导航">
-      <button class="nav-btn" data-tab="today">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.2"/><path d="M12 7.6V12l2.8 2.8"/></svg>今天
-      </button>
-      <button class="nav-btn" data-tab="plan">
-        <svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="3"/><path d="M8 3v3M16 3v3M3 9.5h18"/></svg>训练课表
-      </button>
-      <button class="nav-btn" data-tab="pace">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 13l3.6-3.6M12 5V3M19.2 6.2 20.6 4.8"/></svg>配速换算
-      </button>
-      <button class="nav-btn" data-tab="records">
-        <svg viewBox="0 0 24 24"><path d="M4 19V5M4 19h16"/><path d="M8 15l3-4 3 2 4-6"/></svg>打卡与记录
-      </button>
-      <button class="nav-btn" data-tab="notes">
-        <svg viewBox="0 0 24 24"><path d="M5 4.5h11l3 3V20a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5.5a1 1 0 0 1 1-1z"/><path d="M8 9h7M8 13h7M8 17h4"/></svg>训练说明
-      </button>
+      <button class="nav-btn" data-tab="today"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.2"/><path d="M12 7.6V12l2.8 2.8"/></svg>今天</button>
+      <button class="nav-btn" data-tab="plan"><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="3"/><path d="M8 3v3M16 3v3M3 9.5h18"/></svg>训练课表</button>
+      <button class="nav-btn" data-tab="plaza"><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="3"/><path d="M7 9h10M7 13h6"/><circle cx="17" cy="16.5" r="2.4"/></svg>跑步广场</button>
+      <button class="nav-btn" data-tab="records"><svg viewBox="0 0 24 24"><path d="M4 19V5M4 19h16"/><path d="M8 15l3-4 3 2 4-6"/></svg>打卡与记录</button>
+      <button class="nav-btn" data-tab="me"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/></svg>我的</button>
+      <button class="nav-btn" data-tab="admin" id="navAdmin" style="display:none"><svg viewBox="0 0 24 24"><path d="M12 3l8 4v5c0 5-3.4 8.3-8 9-4.6-.7-8-4-8-9V7l8-4z"/></svg>管理员</button>
     </nav>
 
     <div class="side-foot">
       <div id="weekmeta">中距离-基础期 · 第 1 周</div>
-      <div>内容取自你的 Excel 课表，未改动</div>
+      <div>课表内容取自原始 Excel，未改动</div>
       <div class="side-actions">
-        <button class="icon-btn" data-act="theme" title="切换深浅色" aria-label="切换深浅色">
+        <button class="icon-btn" data-act="toggle-mode" title="深浅色" aria-label="切换深浅色">
           <svg viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>
         </button>
-        <button class="acct-btn" data-act="open-auth" id="acctBtnSide">
+        <button class="acct-btn" data-act="open-account">
           <span class="avatar" id="avatarSide">登</span>
           <span class="acct-label" id="acctLabelSide">登录 / 注册</span>
         </button>
@@ -559,15 +616,9 @@ table.num tr.near td:first-child{color:var(--accent)}
       <div class="brand-name">Beyond <em>Best</em></div>
     </div>
     <div class="tools">
-      <button class="icon-btn" data-act="open-search" aria-label="搜索全站">
-        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg>
-      </button>
-      <button class="icon-btn" data-act="theme" aria-label="切换深浅色">
-        <svg viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>
-      </button>
-      <button class="icon-btn acct-icon" data-act="open-auth" aria-label="账号">
-        <span class="avatar" id="avatarTop">登</span>
-      </button>
+      <button class="icon-btn" data-act="open-search" aria-label="搜索"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg></button>
+      <button class="icon-btn" data-act="toggle-mode" aria-label="深浅色"><svg viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg></button>
+      <button class="icon-btn" data-act="open-account" aria-label="账号"><span class="avatar" id="avatarTop">登</span></button>
     </div>
   </header>
 
@@ -577,19 +628,23 @@ table.num tr.near td:first-child{color:var(--accent)}
   </button>
 
   <main>
-    <section class="view" id="view-today" aria-label="今天"></section>
-    <section class="view" id="view-plan" aria-label="训练课表"></section>
-    <section class="view" id="view-pace" aria-label="配速换算"></section>
-    <section class="view" id="view-records" aria-label="打卡与记录"></section>
-    <section class="view" id="view-notes" aria-label="训练说明"></section>
+    <section class="view" id="view-today"></section>
+    <section class="view" id="view-plan"></section>
+    <section class="view" id="view-plaza"></section>
+    <section class="view" id="view-records"></section>
+    <section class="view" id="view-me"></section>
+    <section class="view" id="view-pace"></section>
+    <section class="view" id="view-notes"></section>
+    <section class="view" id="view-search"></section>
+    <section class="view" id="view-admin"></section>
   </main>
 
   <nav class="tabbar" aria-label="底部导航">
     <button class="tab" data-tab="today"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.2"/><path d="M12 7.6V12l2.8 2.8"/></svg>今天</button>
     <button class="tab" data-tab="plan"><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="3"/><path d="M8 3v3M16 3v3M3 9.5h18"/></svg>课表</button>
-    <button class="tab" data-tab="pace"><svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 13l3.6-3.6M12 5V3"/></svg>配速</button>
+    <button class="tab" data-tab="plaza"><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="3"/><path d="M7 9h10M7 13h6"/><circle cx="17" cy="16.5" r="2.4"/></svg>广场</button>
     <button class="tab" data-tab="records"><svg viewBox="0 0 24 24"><path d="M4 19V5M4 19h16"/><path d="M8 15l3-4 3 2 4-6"/></svg>记录</button>
-    <button class="tab" data-tab="notes"><svg viewBox="0 0 24 24"><path d="M5 4.5h11l3 3V20a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5.5a1 1 0 0 1 1-1z"/><path d="M8 9h7M8 13h7"/></svg>说明</button>
+    <button class="tab" data-tab="me"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/></svg>我的</button>
   </nav>
 </div>
 
@@ -598,7 +653,7 @@ table.num tr.near td:first-child{color:var(--accent)}
   <div class="modal-card search-card" role="dialog" aria-label="全站搜索">
     <div class="search-bar">
       <svg viewBox="0 0 24 24" class="sic"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg>
-      <input id="gsearch" type="search" placeholder="搜索课表、配速、说明、工具…" autocomplete="off" enterkeyhint="search">
+      <input id="gsearch" type="search" placeholder="搜索课表、配速、说明…" autocomplete="off">
       <button class="kbd" data-act="close-search">Esc</button>
     </div>
     <div class="search-results" id="searchResults"></div>
@@ -607,21 +662,47 @@ table.num tr.near td:first-child{color:var(--accent)}
 
 <!-- 登录 / 注册 -->
 <div class="modal" id="authModal" aria-hidden="true">
-  <div class="modal-card auth-card" role="dialog" aria-label="登录注册">
+  <div class="modal-card auth-card" role="dialog" aria-label="账号">
     <button class="modal-x" data-act="close-auth" aria-label="关闭">×</button>
-    <h3 id="authTitle">登录 / 注册</h3>
-    <p class="auth-sub">输入用户名和密码就行：没注册过的会自动创建，注册过的输入正确密码即可回到自己的数据。</p>
-    <div class="field"><label>用户名</label><input id="authName" type="text" autocomplete="username" placeholder="例如：xiaoming" maxlength="20"></div>
-    <div class="field"><label>密码</label><input id="authPass" type="password" autocomplete="current-password" placeholder="自己设一个，别忘了"></div>
-    <div class="auth-msg" id="authMsg"></div>
-    <button class="btn btn-primary auth-submit" data-act="auth-submit">登录 / 注册</button>
-    <p class="auth-note">账号与打卡、记录都保存在这台设备的浏览器里；换设备或清缓存不会自动同步。</p>
+    <div class="auth-tabs">
+      <button class="auth-tab on" data-auth-tab="login">登录</button>
+      <button class="auth-tab" data-auth-tab="register">注册</button>
+    </div>
+
+    <div id="authLogin">
+      <div class="field"><label>用户名</label><input id="loginName" autocomplete="username" placeholder="用户名"></div>
+      <div class="field"><label>密码</label><input id="loginPass" type="password" autocomplete="current-password" placeholder="密码"></div>
+      <div class="auth-msg" id="loginMsg"></div>
+      <button class="btn btn-primary auth-submit" data-act="do-login">登录</button>
+      <button class="auth-link" data-act="goto-forgot">忘记账号或密码？用手机号找回</button>
+    </div>
+
+    <div id="authRegister" style="display:none">
+      <div class="field"><label>用户名</label><input id="regName" autocomplete="username" placeholder="3-20 个字符"></div>
+      <div class="field"><label>密码</label><input id="regPass" type="password" autocomplete="new-password" placeholder="至少 4 位"></div>
+      <div class="field"><label>手机号（可选，用于找回）</label><input id="regPhone" inputmode="numeric" placeholder="11 位手机号"></div>
+      <div class="auth-msg" id="regMsg"></div>
+      <button class="btn btn-primary auth-submit" data-act="do-register">注册并登录</button>
+      <div class="auth-note">不注册也能用：课表、配速、打卡、记录都存在本机。注册后才会出现广场与账号找回。</div>
+    </div>
+
+    <div id="authForgot" style="display:none">
+      <div class="field"><label>注册时预留的手机号</label><input id="forgotPhone" inputmode="numeric" placeholder="11 位手机号"></div>
+      <div class="auth-msg" id="forgotMsg"></div>
+      <button class="btn btn-primary auth-submit" data-act="do-forgot">找回账号</button>
+      <div id="forgotResult" style="display:none">
+        <div class="auth-note" id="forgotWho"></div>
+        <div class="field"><label>设置新密码</label><input id="forgotNew" type="password" placeholder="至少 4 位"></div>
+        <button class="btn btn-primary auth-submit" data-act="do-reset">重设密码并登录</button>
+      </div>
+      <button class="auth-link" data-act="goto-login">返回登录</button>
+    </div>
   </div>
 </div>
 
 <!-- 账号面板 -->
 <div class="modal" id="accountModal" aria-hidden="true">
-  <div class="modal-card auth-card" role="dialog" aria-label="账号">
+  <div class="modal-card auth-card" role="dialog" aria-label="我的账号">
     <button class="modal-x" data-act="close-account" aria-label="关闭">×</button>
     <div class="acct-head">
       <span class="avatar avatar-lg" id="avatarBig">B</span>
@@ -632,91 +713,54 @@ table.num tr.near td:first-child{color:var(--accent)}
     </div>
     <div class="acct-rows" id="acctRows"></div>
     <div class="acct-actions">
-      <button class="btn" data-act="goto-records">查看打卡与记录</button>
+      <button class="btn" data-act="goto-me">我的页面</button>
+      <button class="btn" data-act="open-auth" id="acctSwitch">登录 / 注册</button>
       <button class="btn danger" data-act="logout" id="logoutBtn">退出登录</button>
     </div>
+  </div>
+</div>
+
+<!-- 发布组队邀请 -->
+<div class="modal" id="postModal" aria-hidden="true">
+  <div class="modal-card auth-card" role="dialog" aria-label="发布邀请">
+    <button class="modal-x" data-act="close-post" aria-label="关闭">×</button>
+    <h3>发布组队邀请</h3>
+    <p class="auth-sub">在哪儿跑、跑什么、什么时候，写清楚别人才好判断。</p>
+    <div class="field"><label>标题</label><input id="pTitle" placeholder="例如：周六早 8 点奥体 10 公里" maxlength="40"></div>
+    <div class="field"><label>跑步地点</label><input id="pPlace" placeholder="例如：奥体中心田径场外圈" maxlength="40"></div>
+    <div class="field"><label>时间</label><input id="pTime" type="datetime-local"></div>
+    <div class="field"><label>本次跑步内容</label><textarea id="pContent" rows="3" placeholder="例如：轻松有氧 10 公里，配速 5:30，跑完一起拉伸" maxlength="300"></textarea></div>
+    <div class="row-2">
+      <div class="field"><label>距离（可选）</label><input id="pDistance" placeholder="10 公里" maxlength="20"></div>
+      <div class="field"><label>配速（可选）</label><input id="pPace" placeholder="5:30" maxlength="20"></div>
+    </div>
+    <div class="field"><label>联系方式（可选）</label><input id="pContact" placeholder="微信号 / 手机号" maxlength="40"></div>
+    <div class="auth-msg" id="postMsg"></div>
+    <button class="btn btn-primary auth-submit" data-act="do-post">发布到广场</button>
   </div>
 </div>
 
 <div class="backdrop" id="backdrop"></div>
 <div class="sheet" id="sheet" role="dialog" aria-modal="true"></div>
 <div class="toast" id="toast" role="status"></div>
-<noscript><p style="padding:24px">这个页面需要 JavaScript 才能显示课表。</p></noscript>
+<noscript><p style="padding:24px">这个页面需要 JavaScript。</p></noscript>
 
 <script>window.__PLAN__ = {"title":"中长跑训练课表","plans":[{"key":"中距离-基础期","group":"中距离","phase":"基础期","head":["星期","训练类型","训练内容"],"blocks":[{"title":"中距离周A（基础期）——阈值 + 速度耐力：快的那天只跑 300 米，短而足歇，不追求顶到力竭","days":[{"day":"周一","type":"轻松跑","content":"轻松跑 40-50 分钟（P1500+110 秒/公里），动态拉伸，6 个 80 米加速跑","quality":false,"rest":false},{"day":"周二","type":"阈值跑","content":"热身，4 个 1000 米按阈值配速（P1500+30 秒/公里），组间慢跑 3 分钟","quality":true,"rest":false},{"day":"周三","type":"轻松跑 + 轻力量","content":"轻松跑 30-40 分钟；轻力量（组次见「训练说明·六」）","quality":false,"rest":false},{"day":"周四","type":"轻松跑","content":"轻松跑 30-40 分钟，结束后 4 个 60 米加速跑","quality":false,"rest":false},{"day":"周五","type":"轻松跑","content":"轻松跑 30-40 分钟","quality":false,"rest":false},{"day":"周六","type":"速度耐力","content":"热身，速度耐力：4 个 300 米（P1500−10 秒/公里，约 800 米配速），组间走+慢跑 4-5 分钟；或 6 个 150 米，组间休息 3 分钟。总量 900-1200 米","quality":true,"rest":false},{"day":"周日","type":"休息","content":"休息（散步、拉伸、睡够）","quality":false,"rest":true}]},{"title":"中距离周B（基础期）——VO2max 入门 + 阈值节奏 + 首次长距离（本周期第二轮此周为减载周：量减 25%，质量课减 1 组）","days":[{"day":"周一","type":"轻松跑","content":"轻松跑 40-50 分钟，动态拉伸，6 个 80 米加速跑","quality":false,"rest":false},{"day":"周二","type":"VO2max 间歇","content":"热身，3 个 600 米（1500 米配速），组间慢跑 3 分钟","quality":true,"rest":false},{"day":"周三","type":"轻松跑 + 轻力量","content":"轻松跑 30 分钟；轻力量（组次见「训练说明·六」）","quality":false,"rest":false},{"day":"周四","type":"轻松跑","content":"轻松跑 30 分钟","quality":false,"rest":false},{"day":"周五","type":"阈值跑","content":"热身，3 个 6 分钟按阈值配速，组间慢跑 2 分钟","quality":true,"rest":false},{"day":"周六","type":"长距离有氧","content":"长距离有氧 60-70 分钟（P1500+125 秒/公里，全程能说话）","quality":false,"rest":false},{"day":"周日","type":"休息","content":"休息","quality":false,"rest":true}]},{"title":"中距离周C（基础期）——VO2max 为主，周六回到阈值；力量维持轻量","days":[{"day":"周一","type":"轻松跑","content":"轻松跑 40-50 分钟，动态拉伸，6 个 80 米加速跑","quality":false,"rest":false},{"day":"周二","type":"VO2max 间歇","content":"热身，4 个 400 米或 4 个 500 米（偏 800 米）；4 个 600 米（偏 1500 米），组间休息 2-3 分钟","quality":true,"rest":false},{"day":"周三","type":"轻松跑","content":"轻松跑 30 分钟","quality":false,"rest":false},{"day":"周四","type":"轻松跑 + 轻力量","content":"轻松跑 30 分钟；轻力量","quality":false,"rest":false},{"day":"周五","type":"轻松跑","content":"轻松跑 30-40 分钟","quality":false,"rest":false},{"day":"周六","type":"阈值跑","content":"热身，阈值持续跑 20-25 分钟（P1500+30 秒/公里）","quality":true,"rest":false},{"day":"周日","type":"休息","content":"休息","quality":false,"rest":true}]}]},{"key":"中距离-专项期","group":"中距离","phase":"专项期","head":["星期","训练类型","训练内容"],"blocks":[{"title":"中距离周A（专项期）——阈值 + VO2max + 乳酸耐受：3 节质量课的一周，轻松跑一律取下限","days":[{"day":"周一","type":"轻松跑","content":"轻松跑 30-45 分钟（本周 3 节质量课，轻松跑取短），动态拉伸，6 个 80 米加速跑","quality":false,"rest":false},{"day":"周二","type":"阈值跑","content":"热身，4 个 1000 米按阈值配速，组间慢跑 3 分钟","quality":true,"rest":false},{"day":"周三","type":"轻松跑 + 轻力量","content":"轻松跑 30 分钟；轻力量","quality":false,"rest":false},{"day":"周四","type":"VO2max 间歇","content":"热身，6 个 400 米或 5 个 500 米（偏 800 米）；5 个 600-800 米（偏 1500 米），组间休息 2-3 分钟","quality":true,"rest":false},{"day":"周五","type":"轻松跑","content":"轻松跑 30 分钟","quality":false,"rest":false},{"day":"周六","type":"乳酸耐受间歇","content":"热身，5 个 300 米（800 米配速，P1500−10 秒/公里），组间休息 90 秒；或 4 个 600 米（1500 米配速），组间休息 2 分钟","quality":true,"rest":false},{"day":"周日","type":"休息","content":"休息","quality":false,"rest":true}]},{"title":"中距离周B（专项期）——VO2max + 阈值节奏 + 长距离；周三换高质量力量（第二轮此周为减载周）","days":[{"day":"周一","type":"轻松跑","content":"轻松跑 40-55 分钟，动态拉伸，6 个 80 米加速跑","quality":false,"rest":false},{"day":"周二","type":"VO2max 间歇","content":"热身，4 个 600 米（1500 米配速），组间休息 3 分钟","quality":true,"rest":false},{"day":"周三","type":"轻松跑 + 高质量力量","content":"轻松跑 30 分钟；高质量力量（组次见「训练说明·六」）","quality":false,"rest":false},{"day":"周四","type":"轻松跑","content":"轻松跑 30 分钟","quality":false,"rest":false},{"day":"周五","type":"阈值跑","content":"热身，4 个 5 分钟按阈值配速，组间慢跑 2 分钟","quality":true,"rest":false},{"day":"周六","type":"长距离有氧","content":"长距离有氧 75-85 分钟","quality":false,"rest":false},{"day":"周日","type":"休息","content":"休息","quality":false,"rest":true}]},{"title":"中距离周C（专项期）——VO2max + 高质量力量 + 比赛配速专项课","days":[{"day":"周一","type":"轻松跑","content":"轻松跑 40-55 分钟，动态拉伸，6 个 80 米加速跑","quality":false,"rest":false},{"day":"周二","type":"VO2max 间歇","content":"热身，6 个 400 米或 5 个 500 米（偏 800 米）；5 个 600-800 米（偏 1500 米），组间休息 2-3 分钟","quality":true,"rest":false},{"day":"周三","type":"轻松跑","content":"轻松跑 30 分钟","quality":false,"rest":false},{"day":"周四","type":"轻松跑 + 高质量力量","content":"轻松跑 30 分钟；高质量力量","quality":false,"rest":false},{"day":"周五","type":"轻松跑","content":"轻松跑 30-40 分钟","quality":false,"rest":false},{"day":"周六","type":"专项配速课","content":"热身，800 米专项：2 组（600+200）比赛配速，大间歇 15 分钟、小间歇 2 分钟；1500 米专项：2 组（1000+500）比赛配速，大间歇 15 分钟、小间歇 3 分钟。赛前 10-14 天只做 1 组","quality":true,"rest":false},{"day":"周日","type":"休息","content":"休息","quality":false,"rest":true}]}]},{"key":"中距离-减量期","group":"中距离","phase":"减量期","head":["星期","训练类型","训练内容"],"blocks":[{"title":"中距离周A（减量期）——只留周四 1 节 VO2max：强度略提、组数减半，其余全是轻松跑","days":[{"day":"周一","type":"轻松跑","content":"轻松跑 30-40 分钟，动态拉伸，6 个 80 米加速跑","quality":false,"rest":false},{"day":"周二","type":"轻松跑","content":"轻松跑 30 分钟（减量：不排阈值）","quality":false,"rest":false},{"day":"周三","type":"轻松跑 + 轻力量","content":"轻松跑 20-30 分钟；轻力量","quality":false,"rest":false},{"day":"周四","type":"VO2max 间歇","content":"热身，4 个 400 米或 3 个 500 米，组间休息 2-3 分钟（较专项期减 2 组，配速快 2-3 秒/公里）","quality":true,"rest":false},{"day":"周五","type":"轻松跑","content":"轻松跑 30 分钟","quality":false,"rest":false},{"day":"周六","type":"轻松跑","content":"轻松跑 30-40 分钟（减量：不排乳酸耐受）","quality":false,"rest":false},{"day":"周日","type":"休息","content":"休息","quality":false,"rest":true}]},{"title":"中距离周B（减量期）——只留周二 1 节 VO2max，力量停、长距离缩到 40-50 分钟","days":[{"day":"周一","type":"轻松跑","content":"轻松跑 30-40 分钟","quality":false,"rest":false},{"day":"周二","type":"VO2max 间歇","content":"热身，3 个 600 米（1500 米配速），组间休息 3 分钟（较专项期减 1 组）","quality":true,"rest":false},{"day":"周三","type":"轻松跑","content":"轻松跑 30 分钟（力量停，可做轻核心）","quality":false,"rest":false},{"day":"周四","type":"轻松跑","content":"轻松跑 30 分钟","quality":false,"rest":false},{"day":"周五","type":"轻松跑","content":"轻松跑 30 分钟","quality":false,"rest":false},{"day":"周六","type":"轻松跑","content":"轻松跑 40-50 分钟（长距离缩短）","quality":false,"rest":false},{"day":"周日","type":"休息","content":"休息","quality":false,"rest":true}]},{"title":"中距离周C（减量期）——赛前一周用这套：只留 1 节 VO2max，赛前 48 小时全是轻松跑","days":[{"day":"周一","type":"轻松跑","content":"轻松跑 30-40 分钟","quality":false,"rest":false},{"day":"周二","type":"VO2max 间歇","content":"热身，5 个 400 米或 4 个 500 米（偏 800 米）；4 个 600-800 米（偏 1500 米），组间休息 2-3 分钟（减 1 组）","quality":true,"rest":false},{"day":"周三","type":"轻松跑","content":"轻松跑 30 分钟","quality":false,"rest":false},{"day":"周四","type":"轻松跑","content":"轻松跑 30 分钟（力量停，可做轻核心）","quality":false,"rest":false},{"day":"周五","type":"轻松跑","content":"轻松跑 30-40 分钟","quality":false,"rest":false},{"day":"周六","type":"轻松跑","content":"轻松跑 30-40 分钟（赛前 48 小时不排质量课）","quality":false,"rest":false},{"day":"周日","type":"休息","content":"休息","quality":false,"rest":true}]}]},{"key":"长距离-基础期","group":"长距离","phase":"基础期","head":["星期","训练类型","训练内容"],"blocks":[{"title":"长距离周A（基础期）——阈值 3×2000 + 有氧型专项耐力（比赛配速慢 5-8 秒）","days":[{"day":"周一","type":"轻松跑","content":"轻松跑 50-60 分钟（P5k+70 秒/公里），动态拉伸，6 个 80 米加速跑","quality":false,"rest":false},{"day":"周二","type":"阈值跑","content":"热身，3 个 2000 米按阈值配速（P5k+14 秒/公里），组间休息 3 分钟","quality":true,"rest":false},{"day":"周三","type":"轻松跑 + 轻力量","content":"轻松跑 40 分钟；轻力量（组次见「训练说明·六」）","quality":false,"rest":false},{"day":"周四","type":"轻松跑","content":"轻松跑 40 分钟，结束后 6 个 10 秒坡跑或短冲（走回起点）","quality":false,"rest":false},{"day":"周五","type":"轻松跑","content":"轻松跑 40 分钟","quality":false,"rest":false},{"day":"周六","type":"专项耐力","content":"热身，3 个 2000 米或 5 个 1000 米（比赛配速慢 5-8 秒/公里），组间休息 2-3 分钟","quality":true,"rest":false},{"day":"周日","type":"休息","content":"休息","quality":false,"rest":true}]},{"title":"长距离周B（基础期）——VO2max + 阈值 + 90 分钟长距离（本周期第二轮此周为减载周：量减 25%）","days":[{"day":"周一","type":"轻松跑","content":"轻松跑 50-60 分钟，动态拉伸，6 个 80 米加速跑","quality":false,"rest":false},{"day":"周二","type":"VO2max 间歇","content":"热身，3 个 1200 米或 5 个 800 米（P5k−5 秒/公里），组间休息 2 分 30 秒","quality":true,"rest":false},{"day":"周三","type":"轻松跑 + 高质量力量","content":"轻松跑 40 分钟；高质量力量","quality":false,"rest":false},{"day":"周四","type":"轻松跑","content":"轻松跑 40 分钟","quality":false,"rest":false},{"day":"周五","type":"阈值跑","content":"热身，阈值持续跑 15-20 分钟（P5k+14 秒/公里），或 3 个 6 分钟，组间慢跑 2 分钟","quality":true,"rest":false},{"day":"周六","type":"长距离有氧","content":"长距离有氧 90 分钟（P5k+80 秒/公里）","quality":false,"rest":false},{"day":"周日","type":"休息","content":"休息","quality":false,"rest":true}]}]},{"key":"长距离-专项期","group":"长距离","phase":"专项期","head":["星期","训练类型","训练内容"],"blocks":[{"title":"长距离周A（专项期）——阈值 4×2000 + VO2max + 专项耐力 4×2000（比赛配速）","days":[{"day":"周一","type":"轻松跑","content":"轻松跑 55-70 分钟，动态拉伸，6 个 80 米加速跑","quality":false,"rest":false},{"day":"周二","type":"阈值跑","content":"热身，4 个 2000 米按阈值配速，组间休息 3 分钟","quality":true,"rest":false},{"day":"周三","type":"轻松跑 + 轻力量","content":"轻松跑 45 分钟；轻力量","quality":false,"rest":false},{"day":"周四","type":"VO2max 间歇","content":"热身，5 个 1000 米（5 公里配速），组间休息 3 分钟","quality":true,"rest":false},{"day":"周五","type":"轻松跑","content":"轻松跑 40-50 分钟","quality":false,"rest":false},{"day":"周六","type":"专项耐力","content":"热身，4 个 2000 米或 6 个 1000 米（比赛配速），组间休息 2 分钟","quality":true,"rest":false},{"day":"周日","type":"休息","content":"休息","quality":false,"rest":true}]},{"title":"长距离周B（专项期）——VO2max + 阈值持续跑 + 100-120 分钟长距离","days":[{"day":"周一","type":"轻松跑","content":"轻松跑 55-70 分钟，动态拉伸，6 个 80 米加速跑","quality":false,"rest":false},{"day":"周二","type":"VO2max 间歇","content":"热身，4 个 1200 米或 6 个 800 米（P5k−5 秒/公里），组间休息 2 分 30 秒","quality":true,"rest":false},{"day":"周三","type":"轻松跑 + 高质量力量","content":"轻松跑 45 分钟；高质量力量","quality":false,"rest":false},{"day":"周四","type":"轻松跑","content":"轻松跑 45 分钟，结束后 6 个 10 秒坡跑","quality":false,"rest":false},{"day":"周五","type":"阈值跑","content":"热身，阈值持续跑 20-25 分钟（P5k+14 秒/公里），或 3 个 8 分钟，组间慢跑 2 分钟","quality":true,"rest":false},{"day":"周六","type":"长距离有氧","content":"长距离有氧 100-120 分钟（练到后半程不加速）","quality":false,"rest":false},{"day":"周日","type":"休息","content":"休息","quality":false,"rest":true}]}]},{"key":"长距离-减量期","group":"长距离","phase":"减量期","head":["星期","训练类型","训练内容"],"blocks":[{"title":"长距离周A（减量期）——只留周四 1 节 VO2max（5 公里配速），长距离缩到 60-70 分钟","days":[{"day":"周一","type":"轻松跑","content":"轻松跑 40 分钟","quality":false,"rest":false},{"day":"周二","type":"轻松跑","content":"轻松跑 40 分钟（减量：不排阈值）","quality":false,"rest":false},{"day":"周三","type":"轻松跑 + 轻力量","content":"轻松跑 30-40 分钟；轻力量","quality":false,"rest":false},{"day":"周四","type":"VO2max 间歇","content":"热身，4 个 1000 米（5 公里配速），组间休息 3 分钟（较专项期减 1 组）","quality":true,"rest":false},{"day":"周五","type":"轻松跑","content":"轻松跑 30-40 分钟","quality":false,"rest":false},{"day":"周六","type":"轻松跑","content":"轻松跑 60-70 分钟（减量：只跑轻松，总量缩短）","quality":false,"rest":false},{"day":"周日","type":"休息","content":"休息","quality":false,"rest":true}]},{"title":"长距离周B（减量期）——只留周二 1 节 VO2max，力量停、长距离缩到 60-70 分钟","days":[{"day":"周一","type":"轻松跑","content":"轻松跑 40 分钟","quality":false,"rest":false},{"day":"周二","type":"VO2max 间歇","content":"热身，3 个 1200 米或 4 个 800 米，组间休息 2 分 30 秒（减 1-2 组）","quality":true,"rest":false},{"day":"周三","type":"轻松跑","content":"轻松跑 30-40 分钟（力量停，可做轻核心）","quality":false,"rest":false},{"day":"周四","type":"轻松跑","content":"轻松跑 30-40 分钟","quality":false,"rest":false},{"day":"周五","type":"轻松跑","content":"轻松跑 30-40 分钟","quality":false,"rest":false},{"day":"周六","type":"轻松跑","content":"轻松跑 60-70 分钟","quality":false,"rest":false},{"day":"周日","type":"休息","content":"休息","quality":false,"rest":true}]}]},{"key":"新手入门","group":"新手入门","phase":"","head":["星期","训练类型","训练内容"],"blocks":[{"title":"新手入门——前 4 周只跑轻松，不排节奏跑；每周总时长加 5-10 分钟、第 4 周回落 20%；连续 2-3 周轻松完成且无疼痛再进基础期","days":[{"day":"周一","type":"跑走结合","content":"跑 2 分钟走 1 分钟，共 20-25 分钟","quality":false,"rest":false},{"day":"周二","type":"轻松跑 + 加速跑","content":"轻松跑 25-30 分钟，4 个 60 米加速跑","quality":false,"rest":false},{"day":"周三","type":"休息","content":"休息（可散步 20 分钟、拉伸）","quality":false,"rest":true},{"day":"周四","type":"轻松跑","content":"轻松跑 20-25 分钟；第 5 周起可改为 3 个 3 分钟「较累配速」，组间慢跑 2 分钟","quality":false,"rest":false},{"day":"周五","type":"基础力量","content":"徒手深蹲 3×12、平板支撑 3×30 秒、俯卧撑 3×8-12、臀桥 3×15","quality":false,"rest":false},{"day":"周六","type":"轻松跑","content":"轻松跑 35-45 分钟（比 1500 米配速慢 2 分钟以上，全程能说话）","quality":false,"rest":false},{"day":"周日","type":"休息","content":"休息","quality":false,"rest":true}]}]},{"key":"过渡期","group":"过渡期","phase":"","head":["星期","训练类型","训练内容"],"blocks":[{"title":"过渡期——赛后恢复 1-2 周：几乎无质量课，只做轻松跑与轻量核心","days":[{"day":"周一","type":"轻松跑","content":"轻松跑 30 分钟","quality":false,"rest":false},{"day":"周二","type":"轻松跑","content":"轻松跑 30-40 分钟","quality":false,"rest":false},{"day":"周三","type":"轻量核心","content":"平板支撑 3×30 秒、臀桥 3×15、徒手深蹲 3×12；或休息、游泳 30 分钟","quality":false,"rest":false},{"day":"周四","type":"轻松跑","content":"轻松跑 30-40 分钟","quality":false,"rest":false},{"day":"周五","type":"轻松跑","content":"轻松跑 30 分钟","quality":false,"rest":false},{"day":"周六","type":"轻松跑","content":"轻松跑 40-50 分钟（强度放松）","quality":false,"rest":false},{"day":"周日","type":"休息","content":"休息","quality":false,"rest":true}]}]}],"pace":{"title":"配速表 · 由主项成绩推出全部训练强度（配速 = 分:秒/公里，括号内为 400 米单圈）","note":"P1500 = 1500 米比赛配速（每公里），P5k = 5000 米比赛配速（每公里）。表内取区间中值，实际按心率/体感在 ±5 秒内微调。","blocks":[{"type":"steps","title":"一、怎么推（6 步）","items":[{"kind":"step","label":"第 1 步 取成绩","text":"用近 2 个月内的正式比赛或全力测试：中距离用 1500 米，长距离用 5000 米。不用训练中的估算值。"},{"kind":"step","label":"第 2 步 换配速","text":"P1500 = 1500 米成绩 ÷ 1.5；P5k = 5000 米成绩 ÷ 5。例：1500 米 4:30 → 270 秒 ÷ 1.5 = 180 秒 = 3:00/公里。"},{"kind":"step","label":"第 3 步 推强度","text":"按下面各表的秒数加减。水平越高、1500 与 5 公里的差距越小，就越贴近区间下限（更快那端）。"},{"kind":"step","label":"第 4 步 上跑道","text":"400 米一圈 = 每公里配速 × 0.4。例：3:30/公里 → 84 秒/圈。跑前把单圈写在手背，前 200 米不许抢。"},{"kind":"step","label":"第 5 步 校准","text":"配速、心率、体感三者不一致时，以体感和心率为准；配速在 ±5 秒/公里内浮动不算跑错。"},{"kind":"step","label":"第 6 步 更新","text":"每 4-6 周或比赛后重测；1500 米进步 3-5 秒，整张表重算一次。"}]},{"type":"rules","title":"二、中距离（800 / 1500 米）：以 1500 米成绩为锚（P1500）","head":["强度","配速（每公里）","心率","体感与典型课"],"rows":[["轻松跑","P1500 + 110 秒","65-75%","能完整说话、鼻子呼吸为主。例：4:30 的 1500 选手 ≈ 4:50/公里。宁慢勿快，真正的恢复课"],["长距离有氧","P1500 + 125 秒","65-75%","60-90 分钟，全程能说话，后半程不加速。例：4:30 的选手 ≈ 5:05/公里"],["阈值跑（节奏跑）","P1500 + 25~35 秒","85-90%","只能短句、勉强坚持 20 分钟。4×1000 米或 20-25 分钟持续跑。水平越高取区间下限"],["VO2max 间歇","P1500 + 10~20 秒","90-95%","单组 3-5 分钟到很喘，跑休比 1:1。例：4:30 的选手 ≈ 3:15/公里，600 米 1:57"],["乳酸耐受间歇","P1500 − 10 ~ +10 秒","92-100%","顶酸，结束想躺下。单组 300-600 米，组间 90 秒-2 分钟。专项期周六的主课"],["速度耐力","P1500 − 5~15 秒（接近 800 米配速）","95-100%","快而可控、歇得足，终点还有 20% 余力。单组 150-300 米，组间 3-5 分钟，总量 600-1200 米"],["专项配速","800 米：P1500 − 10~15 秒；1500 米：P1500","比赛强度","比赛感觉、节奏控制。600+200、1000+500 拆分跑，组间用大间歇"],["加速跑 / 短冲","不设配速，全速 8-10 秒","—","放松、轻快、抬膝。6-8 个 80 米，组间走回，练跑姿不练累"]]},{"type":"grid","title":"三、1500 米成绩 → 各强度配速速查（找自己那一行抄走即可）","head":["1500 米成绩","P1500（每公里）","轻松跑","长距离有氧","阈值跑","VO2max 间歇","乳酸耐受","速度耐力"],"rows":[["4:00","2:40","4:30 (1:48)","4:45 (1:54)","3:10 (1:16)","2:55 (1:10)","2:40 (1:04)","2:30 (1:00)"],["4:15","2:50","4:40 (1:52)","4:55 (1:58)","3:20 (1:20)","3:05 (1:14)","2:50 (1:08)","2:40 (1:04)"],["4:30","3:00","4:50 (1:56)","5:05 (2:02)","3:30 (1:24)","3:15 (1:18)","3:00 (1:12)","2:50 (1:08)"],["4:45","3:10","5:00 (2:00)","5:15 (2:06)","3:40 (1:28)","3:25 (1:22)","3:10 (1:16)","3:00 (1:12)"],["5:00","3:20","5:10 (2:04)","5:25 (2:10)","3:50 (1:32)","3:35 (1:26)","3:20 (1:20)","3:10 (1:16)"]]},{"type":"rules","title":"四、长距离（5000 米 / 10000 米 / 半马，兼项马拉松）：以 5000 米成绩为锚（P5k）","head":["强度","配速（每公里）","心率","体感与典型课"],"rows":[["轻松跑","P5k + 65~75 秒","65-75%","能完整说话。例：5 公里 17:00 的选手 ≈ 4:30-4:40/公里"],["长距离有氧（LSD）","P5k + 75~85 秒","65-75%","60-120 分钟，能聊天，宁慢勿快；最后 10 分钟也不加速"],["阈值跑（节奏跑）","P5k + 10~18 秒","85-90%","20-40 分钟持续，或 3-4 个 2000 米。例：17:00 的选手 ≈ 3:35-3:40/公里"],["VO2max 间歇","P5k − 2~8 秒","90-95%","800-1200 米一组，跑休比 1:1。例：17:00 的选手 ≈ 3:19/公里"],["乳酸耐受 / 速度耐力","P5k − 15~25 秒（1500-3000 米配速）","92-100%","400-600 米一组，长距离选手每 2 周 1 次即可，不要每周都练"],["专项耐力（比赛配速）","5000/10000：比赛配速；半马：P5k + 16 秒","比赛强度","2000-3000 米一组，组间 2-3 分钟。基础期比比赛配速慢 5-8 秒，专项期就是比赛配速"],["兼项马拉松配速","P5k + 25~40 秒","75-80%","只在校内正式报马拉松时用：25-30 公里，其中 12-15 公里按此配速"]]},{"type":"grid","title":"五、5000 米成绩 → 各强度配速速查","head":["5000 米成绩","P5k（每公里）","轻松跑","长距离有氧","阈值跑","VO2max 间歇","10000 米配速","半马配速"],"rows":[["16:00","3:12","4:22 (1:45)","4:32 (1:49)","3:26 (1:22)","3:07 (1:15)","3:21 (1:20)","3:28 (1:23)"],["17:00","3:24","4:34 (1:50)","4:44 (1:54)","3:38 (1:27)","3:19 (1:20)","3:33 (1:25)","3:40 (1:28)"],["18:00","3:36","4:46 (1:54)","4:56 (1:58)","3:50 (1:32)","3:31 (1:24)","3:45 (1:30)","3:52 (1:33)"],["19:00","3:48","4:58 (1:59)","5:08 (2:03)","4:02 (1:37)","3:43 (1:29)","3:57 (1:35)","4:04 (1:38)"],["20:00","4:00","5:10 (2:04)","5:20 (2:08)","4:14 (1:42)","3:55 (1:34)","4:09 (1:40)","4:16 (1:42)"]]},{"type":"section","title":"六、用一次看看（1500 米 4:30 的队员，周二阈值课怎么跑）","items":[{"kind":"bullet","text":"· P1500 = 270 秒 ÷ 1.5 = 180 秒 = 3:00/公里；阈值 = 3:00 + 30 秒 = 3:30/公里。"},{"kind":"bullet","text":"· 400 米单圈 = 3:30 × 0.4 = 84 秒。4 个 1000 米，每个 3:30，组间慢跑 3 分钟。"},{"kind":"bullet","text":"· 第 1 个必须压到 84 秒，不要 80 秒冲出去；第 4 个掉到 86-87 秒算完成；掉到 90 秒以上，说明前面起跑太快或前一晚没睡好。"}]}]},"notes":[{"kind":"section","title":"一、训练类型与配速、心率对照"},{"kind":"row","label":"说明","text":"配速写法：P1500 = 1500 米比赛配速（每公里），P5k = 5000 米比赛配速（每公里）。具体换算与速查见「配速表」工作表。"},{"kind":"row","label":"轻松跑（E 跑）","text":"恢复与堆量。P1500+110 秒/公里（长距离选手 P5k+65~75 秒），心率 65-75%，能完整说话。宁慢勿快——轻松跑跑快了，质量课就练不动，这是业余选手最常见的错。"},{"kind":"row","label":"长距离有氧（LSD）","text":"有氧基础，对 5000 米以上尤其重要。P1500+125 秒/公里（P5k+75~85 秒），心率 65-75%，60-120 分钟，全程能聊天，后半程不加速。"},{"kind":"row","label":"阈值跑（节奏跑）","text":"升乳酸阈，提升「维持高速」的能力，是有氧基石。P1500+25~35 秒/公里（P5k+10~18 秒），心率 85-90%，强度是「只能短句、勉强坚持 20 分钟」。20-40 分钟持续跑，或拆成等量的 1000-2000 米间歇。"},{"kind":"row","label":"VO2max 间歇","text":"抬心肺上限与跑步经济性。P1500+10~20 秒/公里（P5k−2~8 秒），心率 90-95%，单组 3-5 分钟（中距离 400-800 米、长距离 800-1200 米），跑休比 1:1。"},{"kind":"row","label":"乳酸耐受间歇","text":"让身体顶住比赛后程的酸，800/1500 的头号专项课。P1500−10~+10 秒/公里，心率 92-100%，单组 300-600 米，组间 90 秒-2 分钟。每周最多 1 次，赛后 48 小时内不练。"},{"kind":"row","label":"速度耐力","text":"提高速度储备与跑步经济性：绝对速度变快，同样的比赛配速就变「轻松」。P1500−5~15 秒/公里（接近 800 米配速），单组 150-300 米，组间 3-5 分钟（心率降到 120 以下再开始），总量 600-1200 米。与乳酸耐受的区别是：跑得更快、歇得更足、总乳酸更低。放在基础期，专项期让位给乳酸耐受。"},{"kind":"row","label":"专项耐力 / 专项配速","text":"把身体素质换成比赛成绩。800/1500 用比赛配速；5000/10000 用比赛配速；半马用 P5k+16 秒；兼项马拉松用 P5k+25~40 秒。基础期比比赛配速慢 5-8 秒，专项期就是比赛配速。"},{"kind":"row","label":"速度 / 冲刺 / 坡跑","text":"终点冲刺、跑姿、跑步经济性。加速跑 6-8 个 80 米（组间走回）；坡跑 6-10 个 10 秒。放在轻松跑之后，不单独占一天。"},{"kind":"row","label":"力量与核心","text":"防伤、爆发、后程维持。轻力量与高质量力量的组数次数见第六节；课表里只标「轻力量 / 高质量力量」，照第六节做即可。"},{"kind":"section","title":"二、配速怎么推断"},{"kind":"row","label":"第 1 步 取成绩","text":"用近 2 个月内的正式比赛或全力测试成绩：中距离用 1500 米，长距离用 5000 米。不要用训练中的「感觉」估算——估出来的配速通常偏快，之后每一节课都会跑崩。"},{"kind":"row","label":"第 2 步 换配速","text":"P1500 = 1500 米成绩 ÷ 1.5；P5k = 5000 米成绩 ÷ 5，单位是秒/公里。例：1500 米 4:30 = 270 秒，270 ÷ 1.5 = 180 秒 = 3:00/公里。"},{"kind":"row","label":"第 3 步 加减推强度","text":"按第一节的秒数推出各强度，见「配速表」第二、四节。经验规律：阈值比 1500 米比赛配速慢 25-35 秒/公里（4:30 的队员 → 3:30；5:00 → 3:50），VO2max 间歇慢 10-20 秒，乳酸耐受慢 5 秒到快 10 秒，速度耐力快 5-15 秒，800 米配速快 10-15 秒。"},{"kind":"row","label":"倍数写法（跨水平通用）","text":"队员之间水平差得多时用倍数更稳：阈值 ≈ P1500 × 1.16-1.20，VO2max ≈ 1.06-1.10，乳酸耐受 ≈ 0.95-1.05，速度耐力 ≈ 0.90-0.97，轻松跑 ≈ 1.55-1.70，长距离有氧 ≈ 1.65-1.75。秒数用于临场心算，倍数用于排课表。"},{"kind":"row","label":"第 4 步 换算单圈","text":"400 米一圈 = 每公里配速 × 0.4。例：3:30/公里 → 84 秒/圈；4:50/公里 → 116 秒/圈。跑前把目标单圈写在手背上，前 200 米宁慢 1-2 秒，最后一组能维持才算配速对了。"},{"kind":"row","label":"第 5 步 三校","text":"配速、心率、体感三者对不上时，以体感和心率为准。夏天、疲劳、睡眠不足时，同样的配速心率会高 5-10 次/分，这种情况下降 5-10 秒/公里，而不是硬顶原配速。"},{"kind":"row","label":"第 6 步 更新","text":"每 4-6 周或一次比赛后重测主项，整张表重算。1500 米进步 3-5 秒、5000 米进步 10-15 秒，各强度配速整体要往前挪。"},{"kind":"row","label":"没有测试成绩怎么办","text":"用一次全力 1500 米（或 3000 米）计时替代，赛前 3-4 天做，之后按结果推表；不要用最大心率公式反推配速，误差太大。"},{"kind":"section","title":"三、各项目训练侧重点"},{"kind":"row","label":"800 米","text":"乳酸耐受间歇 > VO2max 间歇 > 速度耐力 > 阈值跑 > 力量 > 专项耐力"},{"kind":"row","label":"1500 米","text":"VO2max 间歇 > 阈值跑 > 乳酸耐受间歇 > 速度耐力 > 专项耐力 > 力量"},{"kind":"row","label":"3000 / 5000 米","text":"阈值跑 > 长距离有氧 > VO2max 间歇 > 专项耐力 > 力量 > 少量速度"},{"kind":"row","label":"10000 米","text":"阈值跑 > 长距离有氧 > 专项耐力 > VO2max 间歇 > 力量"},{"kind":"row","label":"半马","text":"阈值跑 > 专项配速（半马配速）> 长距离有氧 > VO2max 间歇 > 力量"},{"kind":"row","label":"兼项马拉松","text":"长距离有氧 > 阈值跑 > 马拉松配速长跑 > VO2max 间歇 > 力量。学校没有马拉松比赛，平时不需要专门练；正式报名时按「训练说明·十」的兼项做法加课即可。"},{"kind":"row","label":"排布规则","text":"轻松跑是恢复课，排在质量课次日；两节质量课不排连续两天、间隔至少 48 小时；重力量课不排在质量跑前一天，且质量跑后 24 小时内不做重力量；周一多为轻松跑，用来消化周末的量。"},{"kind":"section","title":"四、热身与放松"},{"kind":"row","label":"热身·慢跑","text":"按气温和体感慢跑 10-15 分钟，不看配速，身体热起来、微微出汗即可。"},{"kind":"row","label":"热身·动态拉伸","text":"滚雪球、正踢腿、抱膝提踝、拉伸大腿前侧、高抬腿走、最伟大拉伸、交叉下压、胳膊绕环、马克操，每个 10 米或 8-10 次。"},{"kind":"row","label":"热身·加速跑","text":"3-4 组 60-80 米加速跑，逐渐加到接近比赛配速；质量课前再加 2-3 个 60 米专项加速。"},{"kind":"row","label":"放松","text":"慢跑 5-10 分钟降心率 → 静态拉伸主要肌群每处 20-30 秒 → 泡沫轴 5 分钟。质量课后 30 分钟内补糖+蛋白（如牛奶+面包），比任何补剂都管用。"},{"kind":"section","title":"五、周期划分与模板轮换"},{"kind":"row","label":"各周期周数","text":"基础期约 6 周、专项期约 6 周、减量期 1-2 周、过渡期 1-2 周，一个完整周期约 14-16 周。按比赛日倒推，赛前 7-14 天进入减量期。"},{"kind":"row","label":"减载周（每 4 周 1 次）","text":"基础期第 4 周、专项期第 4 周为减载周（即本周期第二轮的周A/周B）：模板不变，轻松跑减 20-25%，质量课总量减 1/3（减 1-2 组），质量课不取消。12 周连续上量不减载，是学生队员最常出现的伤病来源。"},{"kind":"row","label":"中距离轮换","text":"周A → 周B → 周C 三周循环，循环两轮（6 周）为一个周期；周C 结束后回到周A。"},{"kind":"row","label":"长距离轮换","text":"周A → 周B 两周循环，三轮（6 周）为一个周期；需要三周循环时，第二个 A 周的阈值课减 1 组作过渡。"},{"kind":"row","label":"减量期怎么用","text":"减量期两周内不要轮换三套模板：第 1 周用「减量期·周A」（保留 1 节 VO2max），第 2 周（赛前周）用「减量期·周C」；周B 作为备用。"},{"kind":"row","label":"赛前一周","text":"套用减量期模板；最后 2-3 天只做 20-30 分钟轻松跑或休息，不排力量、不做新动作、不补课。"},{"kind":"row","label":"比赛在周六","text":"整周课表前移一天，确保赛前 48 小时没有质量课。"},{"kind":"row","label":"状态不好时","text":"把当天质量课降级为轻松跑，比硬顶更划算；降级后不要在同周加量补课。"},{"kind":"section","title":"六、力量课：具体组数次数"},{"kind":"row","label":"轻力量（25-30 分钟）","text":"组间 60-90 秒，不追求极限，练完不影响第二天跑步。背起 3×15；深蹲或弓步走 3×12/侧；负重抬腿 3×12/侧；高抬腿跑 30 米×3；髋外展（弹力带）3×15/侧；悬垂举腿 3×8-10。"},{"kind":"row","label":"高质量力量（40-45 分钟）","text":"组间 90-120 秒，重量以「最后一组仍能做标准」为准。背起 4×12（可负重）；深蹲 4×6-8（可负重）；弓步走 4×10/侧；负重抬腿 4×10/侧；高抬腿跑 30 米×4；髋外展 4×15/侧；悬垂举腿 4×10-12；单腿硬拉 3×10/侧；提踵 3×15。"},{"kind":"row","label":"安排原则","text":"先动作标准再加重量；高质量力量与质量跑间隔至少 48 小时；基础期前 2 周用轻力量，第 3 周起再上高质量力量；赛前 7 天停重力量，只留核心。"},{"kind":"row","label":"新手力量","text":"徒手深蹲 3×12、平板支撑 3×30 秒、俯卧撑 3×8-12、臀桥 3×15，每周 2 次，动作做满再增加次数。"},{"kind":"section","title":"七、跑鞋选择"},{"kind":"row","label":"普通厚底鞋","text":"轻松跑、恢复跑、长距离有氧。"},{"kind":"row","label":"薄底鞋","text":"力量训练、技术练习。"},{"kind":"row","label":"钉鞋","text":"短间歇、专项课、场地比赛；需要适应期，一周不要超过 1-2 次。"},{"kind":"row","label":"碳板厚底鞋","text":"阈值跑、节奏跑、路跑比赛；日常轻松跑不必穿。"},{"kind":"section","title":"八、补剂（仅供参考）"},{"kind":"row","label":"早餐后","text":"复合维生素 B 族 + 维生素 C + 鱼油 + 蓝莓叶黄素，随餐一把吞，脂溶性与水溶性互不干扰。"},{"kind":"row","label":"训练后","text":"肌酸，随餐或饮料。"},{"kind":"row","label":"睡前","text":"锌镁片（若产品以镁为主、用于助眠）。"},{"kind":"row","label":"比赛日","text":"按计划提前服用咖啡因、硝酸盐或碳酸氢钠，必须提前测试身体适应性。"},{"kind":"row","label":"提示","text":"任何补剂的重要性都不如休息与睡眠；先看成分是否适合自己，比赛日补剂不可临时加新东西。"},{"kind":"section","title":"九、安全提示"},{"kind":"row","label":"疼痛","text":"出现持续或加重的疼痛（胫骨内侧、跟腱、足底、膝前），立即停跑并就医；不要用「坚持」对抗疼痛。"},{"kind":"row","label":"高温","text":"气温高于 28℃ 或湿度大时，配速放慢 10-20 秒/公里、总量减 20-30%，及时补水和电解质。"},{"kind":"row","label":"睡眠","text":"睡眠不足 6 小时，或静息心率比平时高 5 次/分以上，当天质量课改为轻松跑。"},{"kind":"row","label":"间隔","text":"两节质量课之间至少间隔 48 小时；高质量力量课后 24 小时内不排质量跑。"},{"kind":"row","label":"女生队员","text":"经期不必停练，但把质量课降到轻松跑、去掉跳跃与重力量，按体感决定强度。"},{"kind":"row","label":"免责","text":"本表为校队通用训练模板，不替代教练、队医或医生的个体化建议；有基础伤病或长期未运动者，先做体检。"},{"kind":"section","title":"十、本版修订说明（配速版）"},{"kind":"row","label":"新增·配速表","text":"新增「配速表」工作表：6 步推断流程 + 中距离/长距离两套强度公式 + 1500 米、5000 米各 5 档成绩速查 + 400 米单圈换算 + 一个完整算例。"},{"kind":"row","label":"新增·速度耐力","text":"把速度耐力单独列为一类训练，放进基础期周六（150-300 米、组间 3-5 分钟、总量 900-1200 米），专项期周六改为乳酸耐受，形成「速度 → 耐乳酸 → 比赛配速」的递进。"},{"kind":"row","label":"调整·基础期强度","text":"原基础期周A 周六的 5×300 米（800 米配速）是全表最狠的一节课，已改为速度耐力；乳酸耐受整体后移到专项期，基础期不再出现。"},{"kind":"row","label":"调整·专项课递进","text":"长距离专项耐力由 3×2000（基础期、比赛配速慢 5-8 秒）递进到 4×2000（专项期、比赛配速）；阈值由 3×2000 到 4×2000。中距离专项配速课增加「赛前 10-14 天只做 1 组」。"},{"kind":"row","label":"新增·减载周","text":"每 4 周插 1 个减载周（基础期第 4 周、专项期第 4 周），量减 25-30%、质量课减 1-2 组，不再 12 周连续上量。"},{"kind":"row","label":"调整·有氧量","text":"基础期轻松跑 40-50 分钟 → 专项期 40-55（长距离 55-70），长距离有氧 90 → 100-120 分钟，让有氧底盘随周期抬升，而不是只在强度上加码。"},{"kind":"row","label":"调整·新手入门","text":"改为 4 个跑步日（周三全天休息）、前 4 周不排节奏跑、加入每周 5-10 分钟递进与每 4 周回落 20%。"},{"kind":"row","label":"调整·力量课","text":"具体组数次数写进第六节，课表内只保留「轻力量 / 高质量力量」标注，避免把训练内容撑得过长。"},{"kind":"row","label":"统一·术语","text":"乳酸耐受间歇（原「专项耐乳酸」）、阈值跑（节奏跑）、专项配速课（原「专项训练」）、组间休息（原「组休」）、800 米/1500 米配速（原「八百米/一千五配速」）、P1500/P5k。"},{"kind":"row","label":"调整·兼项马拉松","text":"学校没有马拉松比赛，长距离选手平时不排马拉松课；只在正式报名时按第十一节做法加课。"},{"kind":"section","title":"十一、兼项马拉松怎么做（可选）"},{"kind":"row","label":"前提","text":"只在正式报名全马/半马、且距比赛 8-12 周时启用；平时按 5000 米/10000 米课表练，成绩反而更好。"},{"kind":"row","label":"替换 1·周六","text":"把周六专项耐力换成「长距离 + 马拉松配速段」：25-30 公里，其中最后 12-15 公里按马拉松配速（P5k+25~40 秒）。"},{"kind":"row","label":"替换 2·周日或周三","text":"加 1 次 90-150 分钟纯有氧长距离；每 3 周把最长一次加到 150-180 分钟。"},{"kind":"row","label":"保留","text":"阈值课保留（对马拉松同样关键），VO2max 间歇减到每 2 周 1 次；力量减到每周 1 次轻力量。"},{"kind":"row","label":"赛前","text":"减量 2-3 周，最后 10 天不跑超过 90 分钟，赛前 3 天碳水加量。"}]};</script>
-<script>/* ===== Beyond Best · 训练课表 app ===== */
+<script>/* ===== Beyond Best · 网页版 ===== */
 (function () {
   "use strict";
   const DATA = window.__PLAN__;
   const DAYS = ["周一", "周二", "周三", "周四", "周五", "周六", "周日"];
-  const KEY = "beyondbest.v1";
-  const OLD_KEYS = ["shatter2.v1", "ilr.v1"];
+  const KEY = "bb3.v1";
   const $ = (s, r) => (r || document).querySelector(s);
   const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
 
-  /* ================= 存储 ================= */
-  function blank() { return { checks: {}, records: [], notes: {} }; }
-
-  function normalize(db) {
-    db = db && typeof db === "object" ? db : {};
-    db.v = 2;
-    db.users = db.users && typeof db.users === "object" ? db.users : {};
-    Object.keys(db.users).forEach(function (k) {
-      db.users[k] = Object.assign(blank(), db.users[k]);
-    });
-    db.guest = Object.assign(blank(), db.guest || {});
-    db.prefs = db.prefs || {};
-    db.currentUser = db.currentUser || null;
-    return db;
-  }
-
-  function loadDB() {
-    try {
-      const raw = localStorage.getItem(KEY);
-      if (raw) return normalize(JSON.parse(raw));
-      for (let i = 0; i < OLD_KEYS.length; i++) {
-        const old = localStorage.getItem(OLD_KEYS[i]);
-        if (old) {
-          const o = JSON.parse(old);
-          const db = normalize({
-            prefs: { theme: o.theme, plan: o.plan, block: o.block, tab: o.tab, pb1500: o.pb1500, pb5000: o.pb5000 }
-          });
-          if (o.checks) db.guest.checks = o.checks;
-          return db;
-        }
-      }
-    } catch (e) {}
-    return normalize({});
-  }
-
-  const DB = loadDB();
-  const S = Object.assign({
-    tab: "today", plan: "中距离-基础期", block: 0,
-    theme: "auto", pb1500: "4:30", pb5000: "17:00"
-  }, DB.prefs, { user: DB.currentUser || null });
-
-  function bucket() {
-    return (S.user && DB.users[S.user]) ? DB.users[S.user] : DB.guest;
-  }
-  S.checks = bucket().checks;
-  S.records = bucket().records;
-  S.checkNotes = bucket().notes;
-
-  function save() {
-    DB.prefs = { tab: S.tab, plan: S.plan, block: S.block, theme: S.theme,
-                 pb1500: S.pb1500, pb5000: S.pb5000 };
-    DB.currentUser = S.user || null;
-    try { localStorage.setItem(KEY, JSON.stringify(DB)); } catch (e) {}
-  }
-
+  /* ---------------- 工具 ---------------- */
   const esc = (s) => String(s == null ? "" : s)
-    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
   const pad = (n) => (n < 10 ? "0" + n : "" + n);
-  function fmt(sec) {
-    sec = Math.round(sec);
-    return Math.floor(sec / 60) + ":" + pad(sec % 60);
-  }
+  const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  function fmt(sec) { sec = Math.round(sec); return Math.floor(sec / 60) + ":" + pad(sec % 60); }
   function fmtHMS(sec) {
     sec = Math.round(sec);
     const h = Math.floor(sec / 3600);
@@ -730,67 +774,11 @@ table.num tr.near td:first-child{color:var(--accent)}
     if (m) return (+m[1]) * 60 + (+m[2]);
     m = t.match(/^(\d+):(\d{1,2}):(\d{1,2})$/);
     if (m) return (+m[1]) * 3600 + (+m[2]) * 60 + (+m[3]);
-    m = t.match(/^(\d{1,2})\.(\d{1,2})$/);
-    if (m) return (+m[1]) * 60 + (+m[2]);
     if (/^\d{1,5}$/.test(t)) return +t;
     return null;
   }
-  function dstr(d) {
-    return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
-  }
-  function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
-
-  /* ================= 主题 ================= */
-  const mq = window.matchMedia("(prefers-color-scheme: dark)");
-  function applyTheme() {
-    const dark = S.theme === "dark" || (S.theme === "auto" && mq.matches);
-    document.documentElement.dataset.theme = dark ? "dark" : "light";
-    const meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.setAttribute("content", dark ? "#070c15" : "#f4f6f9");
-  }
-  mq.addEventListener && mq.addEventListener("change", function () { if (S.theme === "auto") applyTheme(); });
-  function toggleTheme() {
-    S.theme = (S.theme === "auto") ? (mq.matches ? "light" : "dark")
-      : (S.theme === "dark" ? "light" : "dark");
-    applyTheme(); save();
-  }
-
-  /* ================= 数据助手 ================= */
-  const planByKey = (k) => DATA.plans.find((p) => p.key === k) || DATA.plans[0];
-  const groups = ["中距离", "长距离", "新手入门", "过渡期"];
-  function phaseList(group) { return DATA.plans.filter((p) => p.group === group); }
-  function weekTitleParts(t) {
-    const i = t.indexOf("——");
-    return i > 0 ? [t.slice(0, i), t.slice(i + 2)] : [t, ""];
-  }
-  const todayIdx = (new Date().getDay() + 6) % 7;
-  const todayDate = new Date();
-  function dateOf(idxInWeek) {
-    const d = new Date(todayDate);
-    d.setDate(d.getDate() + (idxInWeek - todayIdx));
-    return d;
-  }
-  function ckey(pi, bi, di) { return pi + "|" + bi + "|" + di; }
-  function isDone(pi, bi, di) { return !!S.checks[ckey(pi, bi, di)]; }
-  function doneCount(planKey, block) {
-    let n = 0;
-    for (let d = 0; d < 7; d++) if (S.checks[planKey + "|" + block + "|" + d]) n++;
-    return n;
-  }
-  function streak() {
-    const days = {};
-    Object.keys(S.checks).forEach(function (k) {
-      days[dstr(new Date(S.checks[k]))] = 1;
-    });
-    let n = 0;
-    const d = new Date();
-    if (!days[dstr(d)]) d.setDate(d.getDate() - 1);
-    while (days[dstr(d)]) { n++; d.setDate(d.getDate() - 1); }
-    return n;
-  }
-
-  /* ================= 账号 ================= */
-  function hstr(s) {
+  function dstr(d) { return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()); }
+  function hash(s) {
     let h1 = 0x811c9dc5, h2 = 0x01000193;
     for (let i = 0; i < s.length; i++) {
       const c = s.charCodeAt(i);
@@ -799,1006 +787,953 @@ table.num tr.near td:first-child{color:var(--accent)}
     }
     return h1.toString(36) + "-" + h2.toString(36);
   }
-  function makeUser(pass) {
-    const salt = Math.random().toString(36).slice(2, 10);
-    return Object.assign(blank(), { salt: salt, h: hstr(salt + "|" + pass), created: Date.now() });
-  }
-  function loginAs(name, adoptGuest) {
-    S.user = name;
-    const u = DB.users[name];
-    if (adoptGuest) {
-      Object.assign(u.checks, DB.guest.checks);
-      Object.assign(u.notes, DB.guest.notes);
-      u.records = DB.guest.records.concat(u.records);
-      DB.guest = blank();
+
+  /* ---------------- 数据 ---------------- */
+  function blank() { return { checks: {}, records: [], notes: {} }; }
+  function loadDB() {
+    let db = null;
+    try { db = JSON.parse(localStorage.getItem(KEY) || "null"); } catch (e) {}
+    if (!db) {
+      db = { users: {}, posts: [], session: null, guest: blank(),
+             prefs: { theme: "navy", mode: "light", bg: "", plan: "中距离-基础期", block: 0 } };
+      try {
+        const old = JSON.parse(localStorage.getItem("beyondbest.v1") || "null");
+        if (old && old.guest) db.guest.checks = old.guest.checks || {};
+        if (old && old.prefs) Object.assign(db.prefs, old.prefs);
+      } catch (e) {}
     }
-    S.checks = u.checks;
-    S.records = u.records;
-    S.checkNotes = u.notes;
-    save(); updateAuthUI();
+    db.users = db.users || {};
+    db.posts = db.posts || [];
+    db.guest = Object.assign(blank(), db.guest || {});
+    db.prefs = Object.assign({ theme: "navy", mode: "light", bg: "", plan: "中距离-基础期", block: 0 }, db.prefs || {});
+    // 预置管理员
+    if (!db.users.admin) {
+      db.users.admin = Object.assign(blank(), {
+        name: "admin", salt: "shatter-admin", h: hash("shatter-admin|bb8001500"),
+        phone: "", role: "admin", created: Date.now()
+      });
+    }
+    Object.keys(db.users).forEach(function (k) {
+      db.users[k] = Object.assign(blank(), db.users[k]);
+      db.users[k].name = db.users[k].name || k;
+    });
+    return db;
+  }
+  const DB = loadDB();
+  const S = DB.prefs;
+
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(DB)); } catch (e) { toast("本地存储已满，截图可能过多"); } }
+  function user() { return DB.session ? DB.users[DB.session] : null; }
+  function isAdmin() { const u = user(); return !!(u && u.role === "admin"); }
+  function bucket() { return user() || DB.guest; }
+  function migratesGuest(u) {
+    Object.assign(u.checks, DB.guest.checks);
+    Object.assign(u.notes, DB.guest.notes);
+    u.records = DB.guest.records.concat(u.records);
+    DB.guest = blank();
+  }
+
+  /* ---------------- 主题 ---------------- */
+  const THEMES = [
+    { id: "navy", name: "藏蓝", brand: "#1f3864", brand2: "#2f5597", accent: "#ff6b3d", bg: "#f4f6f9" },
+    { id: "blue", name: "电光蓝", brand: "#1e40af", brand2: "#3b82f6", accent: "#38bdf8", bg: "#eff6ff" },
+    { id: "ocean", name: "海青", brand: "#0369a1", brand2: "#0ea5e9", accent: "#22d3ee", bg: "#f0f9ff" },
+    { id: "mint", name: "薄荷", brand: "#0f766e", brand2: "#14b8a6", accent: "#5eead4", bg: "#f0fdfa" },
+    { id: "forest", name: "森绿", brand: "#14532d", brand2: "#16a34a", accent: "#84cc16", bg: "#f2f9f3" },
+    { id: "sunset", name: "落日橙", brand: "#b45309", brand2: "#f59e0b", accent: "#fb923c", bg: "#fff8ed" },
+    { id: "red", name: "烈焰红", brand: "#991b1b", brand2: "#ef4444", accent: "#f97316", bg: "#fef3f2" },
+    { id: "pink", name: "樱花粉", brand: "#9d174d", brand2: "#ec4899", accent: "#fb7185", bg: "#fff1f7" },
+    { id: "violet", name: "紫罗兰", brand: "#5b21b6", brand2: "#8b5cf6", accent: "#c084fc", bg: "#f7f3ff" },
+    { id: "graphite", name: "石墨", brand: "#111827", brand2: "#374151", accent: "#f59e0b", bg: "#f3f4f6" }
+  ];
+  function theme() { return THEMES.find((t) => t.id === S.theme) || THEMES[0]; }
+  function applyTheme() {
+    const t = theme();
+    const root = document.documentElement.style;
+    root.setProperty("--brand", t.brand);
+    root.setProperty("--brand-2", t.brand2);
+    root.setProperty("--brand-3", t.brand2);
+    root.setProperty("--accent", t.accent);
+    document.documentElement.dataset.mode = S.mode;
+    if (S.mode === "light") root.setProperty("--bg", t.bg);
+    else root.removeProperty("--bg");
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute("content", S.mode === "dark" ? "#0b1220" : t.bg);
+    document.body.style.backgroundImage = "";
+    if (S.bg && S.mode === "light") {
+      const veil = S.bgVeil == null ? 0.86 : S.bgVeil;
+      document.body.style.backgroundImage =
+        "linear-gradient(rgba(255,255,255," + veil + "),rgba(255,255,255," + veil + ")),url(" + S.bg + ")";
+      document.body.style.backgroundSize = "cover";
+      document.body.style.backgroundPosition = "center";
+      document.body.style.backgroundAttachment = "fixed";
+    }
+  }
+
+  /* ---------------- 账号 ---------------- */
+  function reg(name, pass, phone) {
+    name = (name || "").trim();
+    if (name.length < 3 || name.length > 20) return { ok: false, msg: "用户名需 3-20 个字符" };
+    if ((pass || "").length < 4) return { ok: false, msg: "密码至少 4 位" };
+    if (phone && !/^1\d{10}$/.test(phone)) return { ok: false, msg: "手机号格式不对" };
+    if (DB.users[name]) return { ok: false, msg: "用户名已存在" };
+    if (phone && Object.values(DB.users).some((u) => u.phone === phone)) {
+      return { ok: false, msg: "这个手机号已经绑定过账号" };
+    }
+    const salt = Math.random().toString(36).slice(2, 10);
+    const u = Object.assign(blank(), {
+      name: name, salt: salt, h: hash(salt + "|" + pass), phone: phone || "",
+      role: "user", created: Date.now()
+    });
+    DB.users[name] = u;
+    if (!DB.session) migratesGuest(u);
+    DB.session = name;
+    save(); refreshAuth();
+    return { ok: true };
+  }
+  function login(name, pass) {
+    name = (name || "").trim();
+    const u = DB.users[name];
+    if (!u || hash(u.salt + "|" + pass) !== u.h) return { ok: false, msg: "用户名或密码错误" };
+    DB.session = name;
+    save(); refreshAuth();
+    return { ok: true };
+  }
+  function forgot(phone) {
+    const u = Object.values(DB.users).find((x) => x.phone && x.phone === phone);
+    return u || null;
+  }
+  function resetPass(name, pass) {
+    const u = DB.users[name];
+    if (!u) return false;
+    if ((pass || "").length < 4) return false;
+    u.salt = Math.random().toString(36).slice(2, 10);
+    u.h = hash(u.salt + "|" + pass);
+    DB.session = name;
+    save(); refreshAuth();
+    return true;
   }
   function logout() {
-    S.user = null;
-    S.checks = DB.guest.checks;
-    S.records = DB.guest.records;
-    S.checkNotes = DB.guest.notes;
-    save(); updateAuthUI();
+    DB.session = null;
+    save(); refreshAuth();
   }
-  function updateAuthUI() {
-    const initial = S.user ? S.user.slice(0, 1).toUpperCase() : "登";
-    ["avatarSide", "avatarTop", "avatarBig"].forEach(function (id) {
+  function refreshAuth() {
+    const u = user();
+    const initial = u ? u.name.slice(0, 1).toUpperCase() : "登";
+    ["avatarSide", "avatarTop", "avatarBig"].forEach((id) => {
       const el = $("#" + id); if (el) el.textContent = initial;
     });
-    const lbl = $("#acctLabelSide"); if (lbl) lbl.textContent = S.user || "登录 / 注册";
-    const nm = $("#acctName"); if (nm) nm.textContent = S.user || "未登录";
+    const lbl = $("#acctLabelSide"); if (lbl) lbl.textContent = u ? u.name : "登录 / 注册";
+    const na = $("#navAdmin"); if (na) na.style.display = isAdmin() ? "" : "none";
   }
 
-  /* ================= 配速 ================= */
-  const MID_OFF = [["轻松跑", 110], ["长距离有氧", 125], ["阈值跑", 30], ["VO2max 间歇", 15], ["乳酸耐受", 0], ["速度耐力", -10]];
-  const LONG_OFF = [["轻松跑", 70], ["长距离有氧", 80], ["阈值跑", 14], ["VO2max 间歇", -5], ["10000 米配速", 9], ["半马配速", 16]];
+  /* ---------------- 路由 ---------------- */
+  let VIEW = "today";
+  function go(view, opts) {
+    VIEW = view;
+    if (["today", "plan", "plaza", "records", "me"].indexOf(view) < 0 && view !== "admin") {
+      /* 二级页不改变底部 tab 高亮 */
+    }
+    $$(".view").forEach((v) => v.classList.toggle("is-active", v.id === "view-" + view));
+    $$("[data-tab]").forEach((b) => b.classList.toggle("is-active", b.dataset.tab === view));
+    if (view === "today") renderToday();
+    if (view === "plan") renderPlan();
+    if (view === "plaza") renderPlaza();
+    if (view === "records") renderRecords();
+    if (view === "me") renderMe();
+    if (view === "pace") renderPace();
+    if (view === "notes") renderNotes();
+    if (view === "admin") renderAdmin();
+    if (!(opts && opts.keep)) window.scrollTo({ top: 0, behavior: "smooth" });
+    if (location.hash.slice(1) !== view) {
+      try { history.replaceState(null, "", "#" + view); } catch (e) {}
+    }
+  }
 
-  /* ================= 记录 / PB ================= */
+  /* ---------------- 提示 ---------------- */
+  let tt;
+  function toast(msg) {
+    const el = $("#toast");
+    el.textContent = msg;
+    el.classList.add("show");
+    clearTimeout(tt);
+    tt = setTimeout(() => el.classList.remove("show"), 2200);
+  }
+  function copy(t) {
+    (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(
+      () => toast("已复制"),
+      () => {
+        const ta = document.createElement("textarea");
+        ta.value = t; document.body.appendChild(ta); ta.select();
+        try { document.execCommand("copy"); toast("已复制"); } catch (e) { toast("复制失败"); }
+        ta.remove();
+      }
+    );
+  }
+
+  /* ---------------- 课表助手 ---------------- */
+  const planByKey = (k) => DATA.plans.find((p) => p.key === k) || DATA.plans[0];
+  const groups = ["中距离", "长距离", "新手入门", "过渡期"];
+  const phaseList = (g) => DATA.plans.filter((p) => p.group === g);
+  function weekParts(t) { const i = t.indexOf("——"); return i > 0 ? [t.slice(0, i), t.slice(i + 2)] : [t, ""]; }
+  const todayIdx = (new Date().getDay() + 6) % 7;
+  const todayDate = new Date();
+  function dateOf(i) { const d = new Date(todayDate); d.setDate(d.getDate() + (i - todayIdx)); return d; }
+  const ck = (pi, bi, di) => pi + "|" + bi + "|" + di;
+  function isDone(pi, bi, di) { return !!bucket().checks[ck(pi, bi, di)]; }
+  function doneCount(pi, bi) { let n = 0; for (let i = 0; i < 7; i++) if (bucket().checks[ck(pi, bi, i)]) n++; return n; }
+  function streak() {
+    const days = {};
+    Object.keys(bucket().checks).forEach((k) => { days[dstr(new Date(bucket().checks[k]))] = 1; });
+    let n = 0; const d = new Date();
+    if (!days[dstr(d)]) d.setDate(d.getDate() - 1);
+    while (days[dstr(d)]) { n++; d.setDate(d.getDate() - 1); }
+    return n;
+  }
+  function toggleCheck(pi, bi, di) {
+    const k = ck(pi, bi, di);
+    if (bucket().checks[k]) delete bucket().checks[k]; else bucket().checks[k] = Date.now();
+    save();
+    return !!bucket().checks[k];
+  }
+
+  /* ---------------- PB ---------------- */
   const STD = [
-    { km: 1, name: "1 公里" },
-    { km: 3, name: "3 公里" },
-    { km: 5, name: "5 公里" },
-    { km: 10, name: "10 公里" },
-    { km: 21.0975, name: "半马" },
-    { km: 42.195, name: "全马" }
+    { km: 1, name: "1 公里" }, { km: 3, name: "3 公里" }, { km: 5, name: "5 公里" },
+    { km: 10, name: "10 公里" }, { km: 21.0975, name: "半马" }, { km: 42.195, name: "全马" }
   ];
-  function bestFor(km, records) {
+  function bestFor(km, recs) {
     let best = null;
-    (records || []).forEach(function (r) {
-      if (!r || !r.km || !r.sec) return;
+    (recs || []).forEach((r) => {
+      if (!r.km || !r.sec) return;
       if (Math.abs(r.km - km) / km > 0.03) return;
       if (!best || r.sec < best.sec) best = r;
     });
     return best;
   }
-  function pbSnapshot() {
-    return STD.map(function (s) { return { km: s.km, sec: bestFor(s.km, S.records) ? bestFor(s.km, S.records).sec : null }; });
-  }
 
-  /* ================= 文件解析 ================= */
-  function haversine(a, b, c, d) {
-    const R = 6371000, rad = Math.PI / 180;
-    const dLat = (c - a) * rad, dLon = (d - b) * rad;
-    const x = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(a * rad) * Math.cos(c * rad) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
-    return 2 * R * Math.asin(Math.sqrt(x));
-  }
-  function parseGPX(txt) {
-    const doc = new DOMParser().parseFromString(txt, "text/xml");
-    if (doc.getElementsByTagName("parsererror").length) throw new Error("GPX 文件解析失败");
-    let pts = Array.from(doc.getElementsByTagNameNS("*", "trkpt"));
-    if (!pts.length) pts = Array.from(doc.getElementsByTagNameNS("*", "rtept"));
-    if (pts.length < 2) throw new Error("这个 GPX 里没有轨迹点");
-    let dist = 0, t0 = null, t1 = null, last = null;
-    pts.forEach(function (pt) {
-      const lat = parseFloat(pt.getAttribute("lat")), lon = parseFloat(pt.getAttribute("lon"));
-      const ts = pt.getElementsByTagNameNS("*", "time");
-      const t = ts.length ? Date.parse(ts[0].textContent) : null;
-      if (last && isFinite(lat) && isFinite(lon) && isFinite(last.lat) && isFinite(last.lon)) {
-        dist += haversine(last.lat, last.lon, lat, lon);
-      }
-      if (t && isFinite(t)) { if (t0 === null) t0 = t; t1 = t; }
-      last = { lat: lat, lon: lon };
-    });
-    const sec = (t0 && t1) ? (t1 - t0) / 1000 : 0;
-    if (!dist || !sec) throw new Error("GPX 里缺少时间或坐标，无法算配速");
-    return [{ date: dstr(new Date(t0)), km: dist / 1000, sec: sec, src: "GPX" }];
-  }
-  function parseTCX(txt) {
-    const doc = new DOMParser().parseFromString(txt, "text/xml");
-    if (doc.getElementsByTagName("parsererror").length) throw new Error("TCX 文件解析失败");
-    const tps = Array.from(doc.getElementsByTagNameNS("*", "Trackpoint"));
-    if (tps.length < 2) throw new Error("这个 TCX 里没有轨迹点");
-    let t0 = null, t1 = null, dist = 0;
-    tps.forEach(function (tp) {
-      const ts = tp.getElementsByTagNameNS("*", "Time");
-      const ds = tp.getElementsByTagNameNS("*", "DistanceMeters");
-      const t = ts.length ? Date.parse(ts[0].textContent) : null;
-      const d = ds.length ? parseFloat(ds[0].textContent) : NaN;
-      if (t && isFinite(t)) { if (t0 === null) t0 = t; t1 = t; }
-      if (isFinite(d)) dist = d;
-    });
-    const sec = (t0 && t1) ? (t1 - t0) / 1000 : 0;
-    if (!dist || !sec) throw new Error("TCX 里缺少距离或时间");
-    return [{ date: dstr(new Date(t0)), km: dist / 1000, sec: sec, src: "TCX" }];
-  }
-  function splitLine(line, delim) { return line.split(delim).map(function (s) { return s.trim().replace(/^"|"$/g, ""); }); }
-  function parseCSV(txt) {
-    const lines = txt.split(/\r?\n/).filter(function (l) { return l.trim(); });
-    if (lines.length < 2) throw new Error("CSV 至少要有表头和一行数据");
-    const delim = (lines[0].split(";").length > lines[0].split(",").length) ? ";" : ",";
-    const head = splitLine(lines[0], delim).map(function (h) { return h.toLowerCase(); });
-    const find = function () {
-      const keys = Array.prototype.slice.call(arguments);
-      for (let i = 0; i < head.length; i++) {
-        for (let k = 0; k < keys.length; k++) if (head[i].indexOf(keys[k]) >= 0) return i;
-      }
-      return -1;
+  /* ---------------- 截图压缩 ---------------- */
+  function compress(file, cb) {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = function () {
+      const max = 720;
+      const scale = Math.min(1, max / Math.max(img.width, img.height));
+      const c = document.createElement("canvas");
+      c.width = Math.round(img.width * scale);
+      c.height = Math.round(img.height * scale);
+      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+      let out;
+      try { out = c.toDataURL("image/jpeg", 0.62); } catch (e) { out = ""; }
+      URL.revokeObjectURL(url);
+      cb(out);
     };
-    const di = find("日期", "date");
-    const ki = find("距离", "dist", "km", "公里");
-    const ti = find("用时", "时长", "duration", "总时间", "seconds", "秒", "moving");
-    if (ki < 0 || ti < 0) throw new Error("CSV 需要包含「距离」和「用时」两列");
-    const out = [];
-    for (let i = 1; i < lines.length; i++) {
-      const c = splitLine(lines[i], delim);
-      const km = parseFloat(String(c[ki]).replace(/[^\d.]/g, ""));
-      const sec = parseTime(c[ti]) || (parseFloat(c[ti]) * 60);
-      if (!km || !sec) continue;
-      out.push({
-        date: di >= 0 && c[di] ? String(c[di]).slice(0, 10) : dstr(new Date()),
-        km: km, sec: sec, src: "CSV", name: c[0] || ""
-      });
-    }
-    if (!out.length) throw new Error("CSV 里没有可用记录");
-    return out;
-  }
-  function parseJSON(txt) {
-    let j = JSON.parse(txt);
-    if (!Array.isArray(j)) j = j.records || j.data || [];
-    if (!Array.isArray(j) || !j.length) throw new Error("JSON 里没有记录数组");
-    return j.map(function (r) {
-      const km = parseFloat(r.km != null ? r.km : (r.distance || r.distance_km));
-      const sec = parseTime(r.sec != null ? r.sec : (r.duration || r.time));
-      return { date: (r.date || "").slice(0, 10) || dstr(new Date()), km: km, sec: sec, src: "JSON", name: r.name || "" };
-    }).filter(function (r) { return r.km > 0 && r.sec > 0; });
-  }
-  function readRecordFile(file) {
-    const ext = (file.name.split(".").pop() || "").toLowerCase();
-    const reader = new FileReader();
-    reader.onload = function () {
-      try {
-        let recs = [];
-        const txt = String(reader.result || "");
-        if (ext === "gpx") recs = parseGPX(txt);
-        else if (ext === "tcx") recs = parseTCX(txt);
-        else if (ext === "csv") recs = parseCSV(txt);
-        else if (ext === "json") recs = parseJSON(txt);
-        else if (ext === "fit") throw new Error("暂不支持 .fit，请从手表导出 GPX / TCX");
-        else throw new Error("支持 GPX / TCX / CSV / JSON");
-        importRecords(recs);
-      } catch (e) { toast(e.message || "解析失败"); }
-    };
-    reader.onerror = function () { toast("读取文件失败"); };
-    reader.readAsText(file);
-  }
-  function importRecords(recs) {
-    if (!recs || !recs.length) { toast("没有读到记录"); return; }
-    const before = pbSnapshot();
-    let added = 0, dup = 0;
-    recs.forEach(function (r) {
-      if (!r.km || !r.sec) return;
-      const key = (r.date || "") + "|" + r.km.toFixed(2) + "|" + Math.round(r.sec);
-      const exists = S.records.some(function (x) {
-        return (x.date || "") + "|" + (+x.km).toFixed(2) + "|" + Math.round(x.sec) === key;
-      });
-      if (exists) { dup++; return; }
-      S.records.push({
-        id: uid(), date: r.date || dstr(new Date()),
-        km: +(+r.km).toFixed(3), sec: Math.round(r.sec),
-        src: r.src || "手动", name: r.name || ""
-      });
-      added++;
-    });
-    S.records.sort(function (a, b) { return (b.date || "").localeCompare(a.date || ""); });
-    save();
-
-    const after = pbSnapshot();
-    const news = after.filter(function (a, i) {
-      return a.sec && (!before[i].sec || a.sec < before[i].sec);
-    });
-    if (news.length) {
-      const label = news.map(function (n) {
-        const s = STD.find(function (x) { return x.km === n.km; });
-        return s.name + " " + fmtHMS(n.sec);
-      }).join("、");
-      toast("新 PB：" + label);
-    } else if (added) {
-      toast("已加入 " + added + " 条记录" + (dup ? "（" + dup + " 条重复已跳过）" : ""));
-    } else {
-      toast("没有新记录" + (dup ? "（" + dup + " 条重复）" : ""));
-    }
-    // 5 公里 PB 自动用于配速换算
-    const pb5 = bestFor(5, S.records);
-    if (pb5) S.pb5000 = fmtHMS(pb5.sec);
-    renderRecords();
-  }
-
-  /* ================= 搜索 ================= */
-  let INDEX = null;
-  function getIndex() {
-    if (INDEX) return INDEX;
-    const idx = [];
-    DATA.plans.forEach(function (p) {
-      p.blocks.forEach(function (b, bi) {
-        b.days.forEach(function (d, di) {
-          idx.push({
-            kind: "课表", cls: "",
-            title: p.key + " · " + weekTitleParts(b.title)[0] + " · " + d.day,
-            text: d.type + "：" + d.content,
-            go: { tab: "plan", plan: p.key, block: bi, day: di }
-          });
-        });
-      });
-    });
-    DATA.pace.blocks.forEach(function (b, bi) {
-      if (b.rows) {
-        b.rows.forEach(function (r) {
-          idx.push({
-            kind: "配速", cls: "pace", title: b.title + " · " + r[0],
-            text: r.slice(1).join("　"), go: { tab: "pace", sec: bi }
-          });
-        });
-      }
-      if (b.items) {
-        b.items.forEach(function (it) {
-          idx.push({
-            kind: "配速", cls: "pace", title: it.label || b.title, text: it.text || "",
-            go: { tab: "pace", sec: bi }
-          });
-        });
-      }
-    });
-    let sec = -1;
-    DATA.notes.forEach(function (n) {
-      if (n.kind === "section") {
-        sec++;
-        idx.push({ kind: "说明", cls: "note", title: n.title, text: "", go: { tab: "notes", sec: sec } });
-      } else {
-        idx.push({ kind: "说明", cls: "note", title: n.label, text: n.text, go: { tab: "notes", sec: sec } });
-      }
-    });
-    [
-      ["配速换算 / 我的配速卡", "输入 1500、5000 米成绩，换算全部强度配速", { tab: "pace" }],
-      ["打卡与记录 / 上传跑步记录", "打卡日历、跑步记录、自动识别 PB", { tab: "records" }],
-      ["打印当前页面 / 存 PDF", "把当前标签页打印或存成 PDF", { print: true }],
-      ["登录 / 注册", "用户名 + 密码，未注册会自动创建", { auth: true }]
-    ].forEach(function (t) {
-      idx.push({ kind: "工具", cls: "tool", title: t[0], text: t[1], go: t[2] });
-    });
-    INDEX = idx;
-    return idx;
-  }
-  function highlight(text, q) {
-    const s = String(text || "");
-    if (!q) return esc(s);
-    const i = s.toLowerCase().indexOf(q.toLowerCase());
-    if (i < 0) return esc(s);
-    return esc(s.slice(0, i)) + "<mark>" + esc(s.slice(i, i + q.length)) + "</mark>" + esc(s.slice(i + q.length));
-  }
-  function searchResults(q) {
-    q = (q || "").trim();
-    if (!q) return [];
-    const k = q.toLowerCase();
-    const all = getIndex();
-    const hit = [];
-    all.forEach(function (e, i) {
-      const t = (e.title || "").toLowerCase(), x = (e.text || "").toLowerCase();
-      let score = -1;
-      if (t.indexOf(k) >= 0) score = 2;
-      else if (x.indexOf(k) >= 0) score = 1;
-      if (score > 0) hit.push({ e: e, i: i, s: score });
-    });
-    hit.sort(function (a, b) { return b.s - a.s; });
-    return hit.slice(0, 80).map(function (h) { return h.e; });
-  }
-  function openSearch() {
-    $("#searchModal").classList.add("show");
-    $("#searchModal").setAttribute("aria-hidden", "false");
-    document.body.classList.add("no-scroll");
-    const inp = $("#gsearch");
-    inp.value = "";
-    setTimeout(function () { inp.focus(); }, 40);
-    renderSearch("");
-  }
-  function closeSearch() {
-    $("#searchModal").classList.remove("show");
-    $("#searchModal").setAttribute("aria-hidden", "true");
-    document.body.classList.remove("no-scroll");
-  }
-  function renderSearch(q) {
-    const box = $("#searchResults");
-    const list = searchResults(q);
-    if (!q.trim()) {
-      box.innerHTML =
-        '<div class="sgroup">快速入口</div>' +
-        ["配速换算", "打卡与记录", "训练说明"].map(function (t) {
-          const item = getIndex().find(function (e) { return e.kind === "工具" && e.title.indexOf(t) === 0; });
-          return item ? '<div class="sitem" data-act="sr" data-i="' + getIndex().indexOf(item) + '">' +
-            '<span class="tag tool">工具</span><div><div class="tt">' + esc(item.title) + '</div>' +
-            '<div class="tx">' + esc(item.text) + '</div></div></div>' : "";
-        }).join("") +
-        '<div class="sempty">输入关键词，搜课表、配速、说明、工具</div>';
-      return;
-    }
-    if (!list.length) {
-      box.innerHTML = '<div class="sempty">没有找到「' + esc(q) + '」，试试「阈值」「力量」「配速」「打卡」</div>';
-      return;
-    }
-    const order = ["课表", "配速", "说明", "工具"];
-    let html = "";
-    order.forEach(function (kind) {
-      const sub = list.filter(function (e) { return e.kind === kind; });
-      if (!sub.length) return;
-      html += '<div class="sgroup">' + kind + " · " + sub.length + "</div>";
-      sub.slice(0, 24).forEach(function (e) {
-        const i = getIndex().indexOf(e);
-        html += '<div class="sitem" data-act="sr" data-i="' + i + '">' +
-          '<span class="tag ' + e.cls + '">' + kind + "</span>" +
-          "<div><div class=\"tt\">" + highlight(e.title, q) + "</div>" +
-          (e.text ? '<div class="tx">' + highlight(e.text, q) + "</div>" : "") +
-          "</div></div>";
-      });
-    });
-    box.innerHTML = html;
-  }
-  function flashEl(sel) {
-    const el = $(sel);
-    if (!el) return;
-    el.scrollIntoView({ behavior: "smooth", block: "center" });
-    el.classList.add("flash");
-    setTimeout(function () { el.classList.remove("flash"); }, 1600);
-  }
-  function gotoResult(i) {
-    const e = getIndex()[+i];
-    if (!e) return;
-    closeSearch();
-    const g = e.go;
-    if (g.print) { doPrint(); return; }
-    if (g.auth) { openAuth(); return; }
-    if (g.tab === "plan") {
-      S.plan = g.plan; S.block = g.block;
-      go("plan");
-      setTimeout(function () { flashEl('.day[data-block="' + g.block + '"][data-day="' + g.day + '"]'); }, 120);
-      return;
-    }
-    if (g.tab === "pace") {
-      go("pace");
-      setTimeout(function () { flashEl('#view-pace .section[data-sec="' + g.sec + '"]'); }, 120);
-      return;
-    }
-    if (g.tab === "notes") {
-      openAcc = g.sec;
-      go("notes");
-      setTimeout(function () { flashEl('[data-acc="' + g.sec + '"]'); }, 120);
-      return;
-    }
-    go(g.tab);
-  }
-
-  /* ================= 打印 ================= */
-  function doPrint() {
-    document.body.classList.add("printing");
-    setTimeout(function () { window.print(); }, 30);
-  }
-  window.addEventListener("afterprint", function () { document.body.classList.remove("printing"); });
-
-  /* ================= 图标 ================= */
-  const IC = {
-    check: '<svg viewBox="0 0 24 24" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg>',
-    copy: '<svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M15 6.5A2.5 2.5 0 0 0 12.5 4H6a2 2 0 0 0-2 2v6.5A2.5 2.5 0 0 0 6.5 15"/></svg>',
-    plan: '<svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="3"/><path d="M8 3v3M16 3v3M3 9.5h18"/></svg>',
-    pace: '<svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 13l3.6-3.6M12 5V3"/></svg>',
-    print: '<svg viewBox="0 0 24 24"><path d="M7 9V4h10v5M7 18H5a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2"/><rect x="7" y="14" width="10" height="7" rx="1.5"/></svg>',
-    search: '<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg>',
-    arrow: '<svg viewBox="0 0 24 24" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>',
-    upload: '<svg viewBox="0 0 24 24"><path d="M12 16V4M7.5 8.5 12 4l4.5 4.5"/><path d="M4 15v3.5A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5V15"/></svg>',
-    trash: '<svg viewBox="0 0 24 24"><path d="M4 7h16M9 7V4.5h6V7M6.5 7l1 13h9l1-13"/></svg>',
-    plus: '<svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>'
-  };
-
-  /* ================= 导航 ================= */
-  function go(tab, opts) {
-    S.tab = tab; save();
-    $$(".view").forEach(function (v) { v.classList.toggle("is-active", v.id === "view-" + tab); });
-    $$("[data-tab]").forEach(function (b) { b.classList.toggle("is-active", b.dataset.tab === tab); });
-    if (tab === "today") renderToday();
-    if (tab === "plan") renderPlan();
-    if (tab === "pace") renderPace();
-    if (tab === "records") renderRecords();
-    if (tab === "notes") renderNotes();
-    if (!(opts && opts.keepScroll)) window.scrollTo({ top: 0, behavior: "smooth" });
-    if (location.hash.slice(1) !== tab) {
-      try { history.replaceState(null, "", "#" + tab); } catch (e) { location.hash = tab; }
-    }
-  }
-
-  /* ================= toast ================= */
-  let toastTimer;
-  function toast(msg) {
-    const el = $("#toast");
-    el.textContent = msg;
-    el.classList.add("show");
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(function () { el.classList.remove("show"); }, 2200);
+    img.onerror = function () { URL.revokeObjectURL(url); cb(""); };
+    img.src = url;
   }
 
   /* ================= 今天 ================= */
-  function currentPlan() { return planByKey(S.plan); }
-  function ensureBlock() {
-    const p = currentPlan();
-    if (S.block >= p.blocks.length) S.block = 0;
-  }
-  function nextQuality(pi, block) {
-    const p = planByKey(pi);
-    const todayDay = p.blocks[block] && p.blocks[block].days[todayIdx];
-    if (todayDay && todayDay.quality && !isDone(p.key, block, todayIdx)) {
-      return { block: block, day: todayIdx, data: todayDay, today: true };
-    }
-    for (let step = 1; step <= 10; step++) {
-      const d = todayIdx + step;
-      const bi = block + Math.floor(d / 7);
-      const di = d % 7;
-      if (bi >= p.blocks.length) return null;
-      const day = p.blocks[bi].days[di];
-      if (day && day.quality) return { block: bi, day: di, data: day };
-    }
-    return null;
-  }
-
   function renderToday() {
-    ensureBlock();
-    const p = currentPlan();
+    const p = planByKey(S.plan);
+    if (S.block >= p.blocks.length) S.block = 0;
     const block = p.blocks[S.block];
     const day = block.days[todayIdx];
     const done = isDone(p.key, S.block, todayIdx);
     const total = doneCount(p.key, S.block);
-    const nq = nextQuality(p.key, S.block);
-    const hasQ = p.blocks.some(function (b) { return b.days.some(function (d) { return d.quality; }); });
     const d = dateOf(todayIdx);
-    const isRest = /休息/.test(day.type);
+    const rest = /休息/.test(day.type);
+    let nextQ = "本周期已练完";
+    const hasQ = p.blocks.some((b) => b.days.some((x) => x.quality));
+    if (day.quality && !done) nextQ = "今天 · " + day.type;
+    else if (hasQ) {
+      let found = "";
+      for (let step = 1; step <= 10 && !found; step++) {
+        const dd = todayIdx + step;
+        const bi = S.block + Math.floor(dd / 7);
+        const di = dd % 7;
+        if (bi >= p.blocks.length) break;
+        const x = p.blocks[bi].days[di];
+        if (x && x.quality) found = DAYS[di] + " · " + x.type;
+      }
+      nextQ = found || "本周期已练完";
+    } else nextQ = "本周没有质量课";
 
-    const planOpts = DATA.plans.map(function (x) {
-      return '<option value="' + esc(x.key) + '"' + (x.key === p.key ? " selected" : "") + ">" + esc(x.key) + "</option>";
-    }).join("");
-    const blockOpts = p.blocks.map(function (b, i) {
-      const n = weekTitleParts(b.title)[0];
-      return '<option value="' + i + '"' + (i === S.block ? " selected" : "") + ">第 " + (i + 1) + " 周模板 · " + esc(n) + "</option>";
-    }).join("");
+    const planOpts = DATA.plans.map((x) =>
+      `<option value="${esc(x.key)}"${x.key === p.key ? " selected" : ""}>${esc(x.key)}</option>`).join("");
+    const blockOpts = p.blocks.map((b, i) =>
+      `<option value="${i}"${i === S.block ? " selected" : ""}>第 ${i + 1} 周 · ${esc(weekParts(b.title)[0])}</option>`).join("");
 
-    $("#view-today").innerHTML =
-      '<div class="today-top">' +
-        "<div>" +
-          '<div class="eyebrow">Beyond Best · 今日</div>' +
-          '<div class="date-big">' + (d.getMonth() + 1) + " 月 " + d.getDate() + " 日<small>" + DAYS[todayIdx] + "</small></div>" +
-        "</div>" +
-        '<div class="pickers">' +
-          '<select class="sel" id="sel-plan" aria-label="选择课表">' + planOpts + "</select>" +
-          '<select class="sel" id="sel-block" aria-label="选择周模板">' + blockOpts + "</select>" +
-        "</div>" +
-      "</div>" +
+    $("#view-today").innerHTML = `
+      <div class="today-top">
+        <div>
+          <div class="eyebrow">Beyond Best · 今日</div>
+          <div class="date-big">${d.getMonth() + 1} 月 ${d.getDate()} 日<small>${DAYS[todayIdx]}</small></div>
+        </div>
+        <div class="pickers">
+          <select class="sel" id="sel-plan">${planOpts}</select>
+          <select class="sel" id="sel-block">${blockOpts}</select>
+        </div>
+      </div>
 
-      '<div class="hero' + (isRest ? " hero-rest" : "") + '">' +
-        '<div class="hero-label">今日训练 · ' + esc(weekTitleParts(block.title)[0]) + "</div>" +
-        '<div class="hero-type"><h2>' + esc(day.type) + "</h2>" +
-          (day.quality ? '<span class="chip" style="background:rgba(255,255,255,.92);color:#16233c">质量课</span>' : "") +
-          (done ? '<span class="chip" style="background:rgba(255,255,255,.9);color:#123">已打卡</span>' : "") +
-        "</div>" +
-        '<div class="hero-body">' + esc(day.content) + "</div>" +
-        '<div class="hero-actions">' +
-          '<button class="btn ' + (done ? "is-done" : "btn-accent") + '" data-act="check-today">' +
-            (done ? IC.check + " 已完成，点击撤销" : IC.check + " 打卡") + "</button>" +
-          '<button class="btn" data-act="copy-today">' + IC.copy + " 复制</button>" +
-          '<button class="btn" data-act="open-today">' + IC.plan + " 看详情</button>" +
-        "</div>" +
-      "</div>" +
+      <div class="hero${rest ? " hero-rest" : ""}">
+        <div class="hero-label">今日训练 · ${esc(weekParts(block.title)[0])}</div>
+        <div class="hero-type"><h2>${esc(day.type)}</h2>
+          ${day.quality ? '<span class="chip" style="background:rgba(255,255,255,.92);color:#16233c">质量课</span>' : ""}
+          ${done ? '<span class="chip" style="background:rgba(255,255,255,.9);color:#123">已打卡</span>' : ""}
+        </div>
+        <div class="hero-body">${esc(day.content)}</div>
+        <div class="hero-actions">
+          <button class="btn ${done ? "is-done" : "btn-accent"}" data-act="check-today">${done ? "已完成，点击撤销" : "打卡"}</button>
+          <button class="btn" data-act="copy-today">复制</button>
+          <button class="btn" data-act="open-today">看详情</button>
+        </div>
+      </div>
 
-      '<div class="stats">' +
-        '<div class="stat"><div class="k">本周完成</div><div class="v">' + total + '<span>/ 7 天</span></div></div>' +
-        '<div class="stat"><div class="k">连续打卡</div><div class="v">' + streak() + '<span>天</span></div></div>' +
-        '<div class="stat"><div class="k">下一节质量课</div><div class="v" style="font-size:15px;line-height:1.4">' +
-          (nq ? (nq.today ? "今天 · " : esc(DAYS[nq.day]) + " · ") + esc(nq.data.type) : (hasQ ? "本周期已练完" : "本周没有质量课")) +
-        "</div></div>" +
-      "</div>" +
+      <div class="stats">
+        <div class="stat"><div class="k">本周完成</div><div class="v">${total}<span>/ 7 天</span></div></div>
+        <div class="stat"><div class="k">连续打卡</div><div class="v">${streak()}<span>天</span></div></div>
+        <div class="stat"><div class="k">下一节质量课</div><div class="v" style="font-size:15px;line-height:1.4">${esc(nextQ)}</div></div>
+      </div>
 
-      '<div class="section">' +
-        '<div class="section-head"><h2>本周进度</h2><span class="hint">点一下就能打卡</span></div>' +
-        '<div class="card" style="padding:18px"><div class="ring-wrap">' +
-          '<div style="position:relative;flex:none">' +
-            '<svg class="ring" width="76" height="76" viewBox="0 0 76 76">' +
-              '<defs><linearGradient id="rg" x1="0" y1="0" x2="1" y2="1">' +
-              '<stop offset="0" stop-color="#4b7bec"/><stop offset="1" stop-color="#ff6b3d"/></linearGradient></defs>' +
-              '<circle class="bg" cx="38" cy="38" r="32"/>' +
-              '<circle class="fg" cx="38" cy="38" r="32" stroke="url(#rg)" stroke-dasharray="' + (total / 7 * 201).toFixed(1) + ' 201"/>' +
-            "</svg>" +
-            '<div style="position:absolute;inset:0;display:grid;place-items:center"><div class="ring-num">' +
-              Math.round(total / 7 * 100) + "<span>%</span></div></div>" +
-          "</div>" +
-          '<div style="flex:1;min-width:0"><div class="week-strip" id="strip">' +
-            DAYS.map(function (w, i) {
-              const dd = dateOf(i);
-              const dday = block.days[i] || {};
-              const dn = isDone(p.key, S.block, i);
-              return '<div class="daycell' + (i === todayIdx ? " is-today" : "") + (dn ? " is-done" : "") +
-                '" data-act="day" data-day="' + i + '" role="button" tabindex="0">' +
-                '<div class="w">' + w.slice(1) + "</div>" +
-                '<div class="d">' + dd.getDate() + "</div>" +
-                '<div class="dot' + (dday.quality ? " q" : "") + '"></div>' +
-                (dn ? '<div class="check">' + IC.check + "</div>" : "") +
-                "</div>";
-            }).join("") +
-          "</div></div>" +
-        "</div></div>" +
-      "</div>" +
+      <div class="section">
+        <div class="section-head"><h2>本周进度</h2><span class="hint">点日期看详情</span></div>
+        <div class="card" style="padding:18px">
+          <div class="ring-wrap">
+            <div style="position:relative;flex:none">
+              <svg class="ring" width="76" height="76" viewBox="0 0 76 76">
+                <defs><linearGradient id="rg" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stop-color="${theme().brand2}"/><stop offset="1" stop-color="${theme().accent}"/>
+                </linearGradient></defs>
+                <circle class="bg" cx="38" cy="38" r="32"/>
+                <circle class="fg" cx="38" cy="38" r="32" stroke="url(#rg)" stroke-dasharray="${(total / 7 * 201).toFixed(1)} 201"/>
+              </svg>
+              <div style="position:absolute;inset:0;display:grid;place-items:center"><div class="ring-num">${Math.round(total / 7 * 100)}<span>%</span></div></div>
+            </div>
+            <div style="flex:1;min-width:0"><div class="week-strip">
+              ${DAYS.map((w, i) => {
+                const dd = dateOf(i);
+                const x = block.days[i] || {};
+                const dn = isDone(p.key, S.block, i);
+                return `<div class="daycell${i === todayIdx ? " is-today" : ""}${dn ? " is-done" : ""}" data-act="day" data-day="${i}">
+                  <div class="w">${w.slice(1)}</div><div class="d">${dd.getDate()}</div>
+                  <div class="dot${x.quality ? " q" : ""}"></div></div>`;
+              }).join("")}
+            </div></div>
+          </div>
+        </div>
+      </div>
 
-      '<div class="section">' +
-        '<div class="section-head"><h2>周模板一览</h2><span class="hint">' + p.blocks.length + " 个模板 · " + esc(p.group) + (p.phase ? " · " + esc(p.phase) : "") + "</span></div>" +
-        p.blocks.map(function (b, i) {
-          const parts = weekTitleParts(b.title);
-          return '<div class="card week-card" style="margin-bottom:10px">' +
-            '<div class="week-head" style="border-bottom:0">' +
-              '<div class="week-top"><div class="week-title"><span class="wname">' + esc(parts[0]) + "</span></div>" +
-                '<div class="week-badge">' + doneCount(p.key, i) + "/7 已完成</div></div>" +
-              '<div class="week-sub">' + esc(parts[1]) + "</div>" +
-            "</div></div>";
-        }).join("") +
-      "</div>" +
+      <div class="section">
+        <div class="section-head"><h2>周模板一览</h2><span class="hint">${p.blocks.length} 个 · ${esc(p.group)}${p.phase ? " · " + esc(p.phase) : ""}</span></div>
+        ${p.blocks.map((b, i) => {
+          const parts = weekParts(b.title);
+          return `<div class="card week-card" style="margin-bottom:10px">
+            <div class="week-head" style="border-bottom:0">
+              <div class="week-top"><div class="week-title"><span class="wname">${esc(parts[0])}</span></div>
+              <div class="week-badge">${doneCount(p.key, i)}/7 已完成</div></div>
+              <div class="week-sub">${esc(parts[1])}</div>
+            </div></div>`;
+        }).join("")}
+      </div>
 
-      '<div class="section"><div class="section-head"><h2>工具</h2></div>' +
-        '<div style="display:flex;gap:10px;flex-wrap:wrap">' +
-          '<button class="btn" data-act="goto-pace">' + IC.pace + " 配速换算</button>" +
-          '<button class="btn" data-act="goto-records">' + IC.upload + " 打卡与记录</button>" +
-          '<button class="btn" data-act="open-search">' + IC.search + " 搜索全站</button>" +
-          '<button class="btn" data-act="print">' + IC.print + " 打印 / 存 PDF</button>" +
-        "</div>" +
-      "</div>";
+      <div class="section"><div class="section-head"><h2>工具</h2></div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn" data-act="goto" data-view="pace">配速换算</button>
+          <button class="btn" data-act="goto" data-view="records">打卡与记录</button>
+          <button class="btn" data-act="open-search">搜索全站</button>
+          <button class="btn" data-act="print">打印 / 存 PDF</button>
+        </div>
+      </div>`;
 
     const sp = $("#sel-plan"), sb = $("#sel-block");
-    const wn = $("#weekmeta"); if (wn) wn.textContent = p.key + " · 第 " + (S.block + 1) + " 周";
-    if (sp) sp.addEventListener("change", function () { S.plan = sp.value; S.block = 0; save(); renderToday(); });
-    if (sb) sb.addEventListener("change", function () { S.block = +sb.value; save(); renderToday(); });
+    const wm = $("#weekmeta"); if (wm) wm.textContent = p.key + " · 第 " + (S.block + 1) + " 周";
+    if (sp) sp.addEventListener("change", () => { S.plan = sp.value; S.block = 0; save(); renderToday(); });
+    if (sb) sb.addEventListener("change", () => { S.block = +sb.value; save(); renderToday(); });
   }
 
   /* ================= 课表 ================= */
   function planCard(cur, b, bi, q) {
-    const parts = weekTitleParts(b.title);
-    const n = parts[0], sub = parts[1];
-    const days = b.days.map(function (d, di) { return Object.assign({}, d, { di: di }); }).filter(function (d) {
+    const parts = weekParts(b.title);
+    const days = b.days.map((d, di) => Object.assign({}, d, { di })).filter((d) => {
       if (!q) return true;
       return (d.type + d.content + d.day).toLowerCase().indexOf(q.toLowerCase()) >= 0;
     });
     if (!days.length) return "";
-    const isCurBlock = bi === S.block;
-    return '<div class="card week-card" ' + (isCurBlock ? 'style="border-color:rgba(75,123,236,.45)"' : "") + ">" +
-      '<div class="week-head">' +
-        '<div class="week-top">' +
-          '<div class="week-title"><span class="wname">' + esc(n) + "</span>" +
-            (isCurBlock ? ' <span class="chip chip-brand" style="margin-left:6px">今日所在</span>' : "") + "</div>" +
-          '<div class="week-badge">' + doneCount(cur.key, bi) + "/7 已完成</div>" +
-        "</div>" +
-        '<div class="week-sub">' + esc(sub) + "</div>" +
-      "</div>" +
-      '<div class="days">' +
-        days.map(function (d) {
+    const isCur = bi === S.block;
+    return `<div class="card week-card" ${isCur ? 'style="border-color:rgba(75,123,236,.45)"' : ""}>
+      <div class="week-head">
+        <div class="week-top">
+          <div class="week-title"><span class="wname">${esc(parts[0])}</span>${isCur ? ' <span class="chip chip-brand" style="margin-left:6px">今日所在</span>' : ""}</div>
+          <div class="week-badge">${doneCount(cur.key, bi)}/7 已完成</div>
+        </div>
+        <div class="week-sub">${esc(parts[1])}</div>
+      </div>
+      <div class="days">
+        ${days.map((d) => {
           const rest = /休息/.test(d.type);
           const done = isDone(cur.key, bi, d.di);
-          const isToday = isCurBlock && d.di === todayIdx;
-          return '<div class="day' + (isToday ? " is-today" : "") + (rest ? " is-rest" : "") +
-            '" data-act="day" data-day="' + d.di + '" data-block="' + bi + '">' +
-            '<div class="day-w">' + esc(d.day) + "</div>" +
-            '<div class="day-main"><div class="day-line">' +
-              '<span class="chip ' + (d.quality ? "chip-q" : rest ? "chip-r" : "chip-e") + '">' + esc(d.type) + "</span>" +
-              (done ? '<span class="chip chip-r" style="background:var(--teal-soft);color:var(--teal)">已打卡</span>' : "") +
-            "</div>" +
-            '<div class="day-content">' + esc(d.content) + "</div></div>" +
-            (done ? '<div class="day-done">' + IC.check + "</div>" : "") +
-            "</div>";
-        }).join("") +
-      "</div></div>";
+          return `<div class="day${isCur && d.di === todayIdx ? " is-today" : ""}${rest ? " is-rest" : ""}" data-act="day" data-day="${d.di}" data-block="${bi}">
+            <div class="day-w">${esc(d.day)}</div>
+            <div class="day-main"><div class="day-line">
+              <span class="chip ${d.quality ? "chip-q" : rest ? "chip-r" : "chip-e"}">${esc(d.type)}</span>
+              ${done ? '<span class="chip" style="background:var(--teal-soft);color:var(--teal)">已打卡</span>' : ""}
+            </div><div class="day-content">${esc(d.content)}</div></div>
+          </div>`;
+        }).join("")}
+      </div></div>`;
   }
 
   function renderPlan() {
-    const cur = currentPlan();
+    const cur = planByKey(S.plan);
     const q0 = (window.__q || "").trim();
+    $("#view-plan").innerHTML = `
+      <div class="eyebrow">Training plan</div>
+      <h1 class="page-title">${esc(cur.key)}</h1>
+      <p class="page-sub">共 ${cur.blocks.length} 个周模板 · 内容与 Excel 课表一致</p>
+      <div class="filter-row">
+        <div class="seg" id="seg-group">${groups.map((g) => `<button data-group="${g}" class="${g === cur.group ? "is-active" : ""}">${g}</button>`).join("")}</div>
+        <div class="search"><input id="q" type="search" placeholder="搜索：阈值 / 力量 / 休息" value="${esc(q0)}" autocomplete="off"></div>
+      </div>
+      ${(cur.group === "中距离" || cur.group === "长距离") ? `<div class="filter-row" style="margin-top:-8px"><div class="seg" id="seg-phase">
+        ${phaseList(cur.group).map((p) => `<button data-plan="${esc(p.key)}" class="${p.key === cur.key ? "is-active" : ""}">${esc(p.phase)}</button>`).join("")}
+      </div></div>` : ""}
+      <div id="plan-list"></div>
+      <div class="section-head" style="margin-top:26px"><h2>提示</h2></div>
+      <div class="notes-card">质量课的日期不要随意挪动；两节质量课之间至少隔 48 小时。状态不好时把当天质量课降级为轻松跑，不要在同一周补课。</div>`;
 
-    $("#view-plan").innerHTML =
-      '<div class="eyebrow">Training plan</div>' +
-      '<h1 class="page-title">' + esc(cur.key) + "</h1>" +
-      '<p class="page-sub">共 ' + cur.blocks.length + " 个周模板 · 内容与 Excel 课表一致，未作改动</p>" +
-      '<div class="filter-row">' +
-        '<div class="seg" id="seg-group">' +
-          groups.map(function (g) {
-            return '<button data-group="' + g + '" class="' + (g === cur.group ? "is-active" : "") + '">' + g + "</button>";
-          }).join("") +
-        "</div>" +
-        '<div class="search">' + IC.search + '<input id="q" type="search" enterkeyhint="search" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="搜索：阈值 / 力量 / 休息 …" value="' + esc(q0) + '"></div>' +
-      "</div>" +
-      ((cur.group === "中距离" || cur.group === "长距离")
-        ? '<div class="filter-row" style="margin-top:-8px"><div class="seg" id="seg-phase">' +
-          phaseList(cur.group).map(function (p) {
-            return '<button data-plan="' + esc(p.key) + '" class="' + (p.key === cur.key ? "is-active" : "") + '">' + esc(p.phase) + "</button>";
-          }).join("") + "</div></div>"
-        : "") +
-      '<div id="plan-list"></div>' +
-      '<div class="section-head" style="margin-top:26px"><h2>提示</h2></div>' +
-      '<div class="notes-card">质量课（<span class="chip chip-q">橙色标签</span>）的日期不要随意挪动；两节质量课之间至少隔 48 小时。状态不好时把当天质量课降级为轻松跑，不要在同一周补课。点任意一天可以查看详情、打卡。</div>';
-
-    const paint = function () {
+    const paint = () => {
       const list = $("#plan-list");
       if (!list) return;
       const q = (window.__q || "").trim();
-      const body = cur.blocks.map(function (b, bi) { return planCard(cur, b, bi, q); }).join("");
+      const body = cur.blocks.map((b, bi) => planCard(cur, b, bi, q)).join("");
       let n = 0;
-      if (q) {
-        cur.blocks.forEach(function (b) {
-          b.days.forEach(function (d) {
-            if ((d.type + d.content + d.day).toLowerCase().indexOf(q.toLowerCase()) >= 0) n++;
-          });
-        });
-      }
-      const meta = q ? '<div class="search-meta">「' + esc(q) + "」匹配到 " + n + " 个训练日</div>" : "";
-      list.innerHTML = meta + (body || '<div class="empty">没有匹配的训练日。搜索支持中文，试试：阈值 / 力量 / 休息 / 间歇。</div>');
+      if (q) cur.blocks.forEach((b) => b.days.forEach((d) => {
+        if ((d.type + d.content + d.day).toLowerCase().indexOf(q.toLowerCase()) >= 0) n++;
+      }));
+      list.innerHTML = (q ? `<div class="search-meta">「${esc(q)}」匹配到 ${n} 个训练日</div>` : "") +
+        (body || '<div class="empty-state">没有匹配的训练日</div>');
     };
 
-    const wm = $("#weekmeta");
-    if (wm) wm.textContent = cur.key + " · 第 " + (S.block + 1) + " 周";
-
-    $$("#seg-group button").forEach(function (b) {
-      b.addEventListener("click", function () {
-        const g = b.dataset.group;
-        const first = planByKey(phaseList(g)[0].key);
-        S.plan = (g === "中距离" || g === "长距离")
-          ? (phaseList(g).find(function (x) { return x.phase === "基础期"; }) || phaseList(g)[0]).key
-          : first.key;
-        S.block = 0; save(); renderPlan();
-      });
-    });
-    $$("#seg-phase button").forEach(function (b) {
-      b.addEventListener("click", function () { S.plan = b.dataset.plan; S.block = 0; save(); renderPlan(); });
-    });
-
+    const wm = $("#weekmeta"); if (wm) wm.textContent = cur.key + " · 第 " + (S.block + 1) + " 周";
+    $$("#seg-group button").forEach((b) => b.addEventListener("click", () => {
+      const g = b.dataset.group;
+      S.plan = (g === "中距离" || g === "长距离")
+        ? (phaseList(g).find((x) => x.phase === "基础期") || phaseList(g)[0]).key
+        : phaseList(g)[0].key;
+      S.block = 0; save(); renderPlan();
+    }));
+    $$("#seg-phase button").forEach((b) => b.addEventListener("click", () => {
+      S.plan = b.dataset.plan; S.block = 0; save(); renderPlan();
+    }));
     const qi = $("#q");
     if (qi) {
       let composing = false;
-      qi.addEventListener("compositionstart", function () { composing = true; });
-      qi.addEventListener("compositionend", function () { composing = false; window.__q = qi.value; paint(); });
-      qi.addEventListener("input", function (e) {
+      qi.addEventListener("compositionstart", () => { composing = true; });
+      qi.addEventListener("compositionend", () => { composing = false; window.__q = qi.value; paint(); });
+      qi.addEventListener("input", (e) => {
         if (composing || e.isComposing) return;
-        window.__q = qi.value;
-        paint();
-      });
-      qi.addEventListener("keydown", function (e) {
-        if (e.key === "Enter") { window.__q = qi.value; paint(); e.preventDefault(); }
+        window.__q = qi.value; paint();
       });
     }
     paint();
   }
 
   /* ================= 配速 ================= */
+  const MID_OFF = [["轻松跑", 110], ["长距离有氧", 125], ["阈值跑", 30], ["VO2max 间歇", 15], ["乳酸耐受", 0], ["速度耐力", -10]];
+  const LONG_OFF = [["轻松跑", 70], ["长距离有氧", 80], ["阈值跑", 14], ["VO2max 间歇", -5], ["10000 米配速", 9], ["半马配速", 16]];
+
   function renderPace() {
-    const t15 = parseTime(S.pb1500) || 270;
-    const t5 = parseTime(S.pb5000) || 1020;
+    const pb = S.pb || (S.pb = { pb1500: "4:30", pb5000: "17:00" });
+    const t15 = parseTime(pb.pb1500) || 270;
+    const t5 = parseTime(pb.pb5000) || 1020;
     const p15 = t15 / 1.5, p5 = t5 / 5;
+    const rows = (arr, base) => arr.map(([k, off]) => {
+      const v = base + off;
+      return `<div class="pace-item"><div class="k">${esc(k)}</div>
+        <div class="v">${fmt(v)}<span style="font-size:11px;font-weight:600;color:var(--muted)">/km</span></div>
+        <div class="s">400 米 ${fmt(v * 0.4)}</div></div>`;
+    }).join("");
 
-    const rows = function (arr, base) {
-      return arr.map(function (pair) {
-        const k = pair[0], off = pair[1];
-        const v = base + off;
-        return '<div class="pace-item"><div class="k">' + esc(k) + "</div>" +
-          '<div class="v">' + fmt(v) + '<span style="font-size:11px;font-weight:600;color:var(--muted)">/km</span></div>' +
-          '<div class="s">400 米 ' + fmt(v * 0.4) + "</div></div>";
-      }).join("");
-    };
-
-    const blocksHtml = DATA.pace.blocks.map(function (b) {
+    const blocks = DATA.pace.blocks.map((b) => {
       if (b.type === "steps") {
-        return '<div class="section"><div class="section-head"><h2>' + esc(b.title) + "</h2></div>" +
-          '<div class="steps">' + b.items.map(function (it) {
-            return '<div class="step"><div class="lbl">' + esc(it.label) + "</div><div>" + esc(it.text) + "</div></div>";
-          }).join("") + "</div></div>";
+        return `<div class="section"><div class="section-head"><h2>${esc(b.title)}</h2></div>
+          <div class="steps">${b.items.map((it) => `<div class="step"><div class="lbl">${esc(it.label)}</div><div>${esc(it.text)}</div></div>`).join("")}</div></div>`;
       }
       if (b.type === "rules") {
-        return '<div class="section"><div class="section-head"><h2>' + esc(b.title) + "</h2></div>" +
-          '<div class="tbl-wrap"><table class="tbl"><thead><tr>' +
-          b.head.map(function (h) { return "<th>" + esc(h) + "</th>"; }).join("") + "</tr></thead><tbody>" +
-          b.rows.map(function (r) {
-            return "<tr>" + r.map(function (c, i) {
-              return '<td' + (i === 3 ? ' style="min-width:280px"' : "") + ">" + esc(c) + "</td>";
-            }).join("") + "</tr>";
-          }).join("") + "</tbody></table></div></div>";
+        return `<div class="section"><div class="section-head"><h2>${esc(b.title)}</h2></div>
+          <div class="tbl-wrap"><table class="tbl"><thead><tr>${b.head.map((h) => `<th>${esc(h)}</th>`).join("")}</tr></thead>
+          <tbody>${b.rows.map((r) => `<tr>${r.map((c, i) => `<td${i === 3 ? ' style="min-width:280px"' : ""}>${esc(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div></div>`;
       }
       if (b.type === "grid") {
         const is15 = /1500/.test(b.head[0]);
         const anchor = is15 ? t15 : t5;
         let best = -1, bd = 1e9;
-        b.rows.forEach(function (r, i) {
+        b.rows.forEach((r, i) => {
           const v = parseTime(r[0]);
           if (v == null) return;
-          const diff = Math.abs(v - anchor);
-          if (diff < bd) { bd = diff; best = i; }
+          if (Math.abs(v - anchor) < bd) { bd = Math.abs(v - anchor); best = i; }
         });
-        return '<div class="section"><div class="section-head"><h2>' + esc(b.title) + '</h2><span class="hint">高亮行 = 最接近你的成绩</span></div>' +
-          '<div class="tbl-wrap"><table class="tbl num"><thead><tr>' +
-          b.head.map(function (h) { return '<th style="text-align:center">' + esc(h) + "</th>"; }).join("") +
-          "</tr></thead><tbody>" +
-          b.rows.map(function (r, i) {
-            return '<tr class="' + (i === best ? "near" : "") + '">' +
-              r.map(function (c) { return "<td>" + esc(c) + "</td>"; }).join("") + "</tr>";
-          }).join("") + "</tbody></table></div></div>";
+        return `<div class="section"><div class="section-head"><h2>${esc(b.title)}</h2><span class="hint">高亮 = 最接近你的成绩</span></div>
+          <div class="tbl-wrap"><table class="tbl num"><thead><tr>${b.head.map((h) => `<th style="text-align:center">${esc(h)}</th>`).join("")}</tr></thead>
+          <tbody>${b.rows.map((r, i) => `<tr class="${i === best ? "near" : ""}">${r.map((c) => `<td>${esc(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div></div>`;
       }
       if (b.type === "section") {
-        return '<div class="section"><div class="section-head"><h2>' + esc(b.title) + "</h2></div>" +
-          '<div class="bullets">' + b.items.map(function (it) { return "<div>" + esc(it.text) + "</div>"; }).join("") + "</div></div>";
+        return `<div class="section"><div class="section-head"><h2>${esc(b.title)}</h2></div>
+          <div class="bullets">${b.items.map((it) => `<div>${esc(it.text)}</div>`).join("")}</div></div>`;
       }
       return "";
     }).join("");
 
-    $("#view-pace").innerHTML =
-      '<div class="eyebrow">Pace</div>' +
-      '<h1 class="page-title">配速换算</h1>' +
-      '<p class="page-sub">' + esc(DATA.pace.title) + "</p>" +
-      '<div class="card pb-card">' +
-        '<div class="pb-row">' +
-          '<div class="field"><label>1500 米成绩（中距离）</label><input id="pb15" value="' + esc(S.pb1500) + '" inputmode="numeric" placeholder="4:30" aria-label="1500 米成绩"></div>' +
-          '<div class="field"><label>5000 米成绩（长距离）</label><input id="pb5" value="' + esc(S.pb5000) + '" inputmode="numeric" placeholder="17:00" aria-label="5000 米成绩"></div>' +
-        "</div>" +
-        '<div class="calc-note">格式 mm:ss，例如 4:30、17:00；也可以直接填秒数。改完立即重算并自动记住。' +
-          (DATA.pace.note ? "　" + esc(DATA.pace.note) : "") + "</div>" +
-      "</div>" +
-      '<div class="section"><div class="section-head"><h2>中距离（800 / 1500 米）</h2><span class="hint" id="hint15">P1500 = ' + fmt(p15) + "/km</span></div>" +
-        '<div class="pace-out" id="out15">' + rows(MID_OFF, p15) + "</div></div>" +
-      '<div class="section"><div class="section-head"><h2>长距离（5000 米 / 10000 米 / 半马）</h2><span class="hint" id="hint5">P5k = ' + fmt(p5) + "/km</span></div>" +
-        '<div class="pace-out" id="out5">' + rows(LONG_OFF, p5) + "</div></div>" +
-      '<div class="section"><button class="btn btn-primary" data-act="copy-pace">' + IC.copy + " 复制我的配速卡</button></div>" +
-      blocksHtml +
-      '<div class="section"><div class="notes-card"><b>说明</b>　左侧是课表原文的推断方法，右侧数字是按同一套规则实时算出的结果；两者口径一致。400 米单圈 = 每公里配速 × 0.4，跑前把单圈写在手背上。</div></div>';
+    $("#view-pace").innerHTML = `
+      <div class="eyebrow">Pace</div>
+      <h1 class="page-title">配速换算</h1>
+      <p class="page-sub">${esc(DATA.pace.title)}</p>
+      <div class="card pb-card">
+        <div class="pb-row">
+          <div class="field"><label>1500 米成绩</label><input id="pb15" value="${esc(pb.pb1500)}" placeholder="4:30"></div>
+          <div class="field"><label>5000 米成绩</label><input id="pb5" value="${esc(pb.pb5000)}" placeholder="17:00"></div>
+        </div>
+        <div class="calc-note">格式 mm:ss，改完立即重算。</div>
+      </div>
+      <div class="section"><div class="section-head"><h2>中距离 800 / 1500</h2><span class="hint" id="h15">P1500 = ${fmt(p15)}/km</span></div>
+        <div class="pace-out" id="out15">${rows(MID_OFF, p15)}</div></div>
+      <div class="section"><div class="section-head"><h2>长距离 5000 / 10000 / 半马</h2><span class="hint" id="h5">P5k = ${fmt(p5)}/km</span></div>
+        <div class="pace-out" id="out5">${rows(LONG_OFF, p5)}</div></div>
+      <div class="section"><button class="btn btn-primary" data-act="copy-pace">复制配速卡</button></div>
+      ${blocks}`;
 
-    $$("#view-pace .section").forEach(function (el, i) { el.dataset.sec = i; });
-
-    const bind = function (id, key, outId, hintId, offs, div) {
-      const el = $(id);
-      if (!el) return;
-      el.addEventListener("input", function () {
-        S[key] = el.value; save();
+    $$("#view-pace .section").forEach((el, i) => { el.dataset.sec = i; });
+    const bind = (id, key, out, hint, offs, div) => {
+      const el = $(id); if (!el) return;
+      el.addEventListener("input", () => {
+        pb[key] = el.value; save();
         const t = parseTime(el.value) || (div === 1.5 ? 270 : 1020);
         const base = t / div;
-        const out = $(outId); if (out) out.innerHTML = rows(offs, base);
-        const hint = $(hintId); if (hint) hint.textContent = (div === 1.5 ? "P1500 = " : "P5k = ") + fmt(base) + "/km";
+        const o = $(out); if (o) o.innerHTML = rows(offs, base);
+        const h = $(hint); if (h) h.textContent = (div === 1.5 ? "P1500 = " : "P5k = ") + fmt(base) + "/km";
       });
-      el.addEventListener("blur", function () { if (el.value !== S[key]) renderPace(); });
     };
-    bind("#pb15", "pb1500", "#out15", "#hint15", MID_OFF, 1.5);
-    bind("#pb5", "pb5000", "#out5", "#hint5", LONG_OFF, 5);
+    bind("#pb15", "pb1500", "#out15", "#h15", MID_OFF, 1.5);
+    bind("#pb5", "pb5000", "#out5", "#h5", LONG_OFF, 5);
   }
 
-  /* ================= 训练说明 ================= */
+  /* ================= 说明 ================= */
   let openAcc = 0;
   function renderNotes() {
-    let idx = -1;
-    const html = DATA.notes.map(function (n) {
+    let i = -1;
+    const html = DATA.notes.map((n) => {
       if (n.kind === "section") {
-        idx++;
-        const opened = idx === openAcc;
-        return '<div class="acc' + (opened ? " is-open" : "") + '" data-acc="' + idx + '">' +
-          '<div class="acc-head" role="button" tabindex="0">' + esc(n.title) + '<span class="arw">' + IC.arrow + "</span></div>" +
-          '<div class="acc-body" data-body="' + idx + '"></div></div>';
+        i++;
+        return `<div class="acc${i === openAcc ? " is-open" : ""}" data-acc="${i}">
+          <div class="acc-head">${esc(n.title)}<span class="arw">▾</span></div>
+          <div class="acc-body" data-body="${i}"></div></div>`;
       }
-      return '<div data-for="' + idx + '" class="nrow"><div class="lbl">' + esc(n.label) + "</div><div>" + esc(n.text) + "</div></div>";
+      return `<div class="nrow" data-for="${i}"><div class="lbl">${esc(n.label)}</div><div>${esc(n.text)}</div></div>`;
     }).join("");
-
-    $("#view-notes").innerHTML =
-      '<div class="eyebrow">Manual</div>' +
-      '<h1 class="page-title">训练说明</h1>' +
-      '<p class="page-sub">训练类型、配速推断、周期安排、力量组次、安全提示 —— 与课表里的「训练说明」一致。</p>' + html;
-
-    const wrappers = Array.from($("#view-notes").children).filter(function (el) { return el.hasAttribute("data-for"); });
-    wrappers.forEach(function (w) {
-      const body = $('[data-body="' + w.dataset.for + '"]');
+    $("#view-notes").innerHTML = `
+      <div class="eyebrow">Manual</div>
+      <h1 class="page-title">训练说明</h1>
+      <p class="page-sub">训练类型、配速推断、周期安排、力量组次、安全提示</p>${html}`;
+    $$("#view-notes .nrow").forEach((w) => {
+      const body = $(`[data-body="${w.dataset.for}"]`);
       if (body) body.appendChild(w);
     });
-
-    $$(".acc-head").forEach(function (h) {
-      const toggle = function () {
-        const acc = h.parentElement;
-        const wasOpen = acc.classList.contains("is-open");
-        $$(".acc").forEach(function (a) { a.classList.remove("is-open"); });
-        if (!wasOpen) { acc.classList.add("is-open"); openAcc = +acc.dataset.acc; }
-        else openAcc = -1;
-      };
-      h.addEventListener("click", toggle);
-      h.addEventListener("keydown", function (e) {
-        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); }
-      });
-    });
+    $$(".acc-head").forEach((h) => h.addEventListener("click", () => {
+      const acc = h.parentElement;
+      const was = acc.classList.contains("is-open");
+      $$(".acc").forEach((a) => a.classList.remove("is-open"));
+      if (!was) acc.classList.add("is-open");
+    }));
   }
 
   /* ================= 记录 ================= */
-  function checkDates() {
-    const m = {};
-    Object.keys(S.checks).forEach(function (k) {
-      const d = new Date(S.checks[k]);
-      const s = dstr(d);
-      m[s] = (m[s] || 0) + 1;
-    });
-    return m;
-  }
-  function heatmapHtml() {
-    const counts = checkDates();
-    const t = new Date();
-    const start = new Date(t);
-    start.setDate(start.getDate() - ((t.getDay() + 6) % 7) - 11 * 7);
-    let cells = "";
-    for (let w = 0; w < 12; w++) {
-      for (let d = 0; d < 7; d++) {
-        const day = new Date(start);
-        day.setDate(start.getDate() + w * 7 + d);
-        const key = dstr(day);
-        const n = counts[key] || 0;
-        const lv = n === 0 ? "" : n === 1 ? "l1" : n === 2 ? "l2" : n === 3 ? "l3" : "l4";
-        const future = day > t;
-        cells += '<i class="' + lv + '" title="' + key + (n ? " · 打卡 " + n + " 次" : "") + '"' +
-          (future ? ' style="opacity:.35"' : "") + "></i>";
-      }
-    }
-    return '<div class="hm">' + cells + "</div>" +
-      '<div class="hm-legend">少<i></i><i class="l1"></i><i class="l2"></i><i class="l3"></i><i class="l4"></i>多</div>';
-  }
   function renderRecords() {
-    const pbs = STD.map(function (s) {
-      const b = bestFor(s.km, S.records);
-      return { name: s.name, km: s.km, rec: b };
-    });
-    const totalChecks = Object.keys(S.checks).length;
-    const recs = S.records.slice().sort(function (a, b) { return (b.date || "").localeCompare(a.date || ""); });
+    const recs = bucket().records || [];
+    const checks = bucket().checks;
+    const total = Object.keys(checks).length;
+    const pbs = STD.map((s) => ({ name: s.name, rec: bestFor(s.km, recs) }));
+    const today = new Date();
+    const start = new Date(today);
+    start.setDate(start.getDate() - ((today.getDay() + 6) % 7) - 11 * 7);
+    const counts = {};
+    Object.keys(checks).forEach((k) => { const d = dstr(new Date(checks[k])); counts[d] = (counts[d] || 0) + 1; });
+    let cells = "";
+    for (let w = 0; w < 12; w++) for (let d = 0; d < 7; d++) {
+      const day = new Date(start); day.setDate(start.getDate() + w * 7 + d);
+      const n = counts[dstr(day)] || 0;
+      const lv = n === 0 ? "" : n === 1 ? "l1" : n === 2 ? "l2" : n === 3 ? "l3" : "l4";
+      cells += `<i class="hm-cell ${lv}" title="${dstr(day)}${n ? " · 打卡 " + n + " 次" : ""}"></i>`;
+    }
 
-    $("#view-records").innerHTML =
-      '<div class="eyebrow">Records</div>' +
-      '<div class="rec-head"><div><h1 class="page-title">打卡与记录</h1>' +
-        '<p class="page-sub">' + (S.user ? "当前账号：" + esc(S.user) : "未登录 · 数据保存在本机") +
-        " · 打卡 " + totalChecks + " 次 · 连续 " + streak() + " 天</p></div>" +
-        '<div style="display:flex;gap:8px;flex-wrap:wrap">' +
-          '<button class="btn btn-primary" data-act="pick-file">' + IC.upload + " 上传跑步记录</button>" +
-          '<button class="btn" data-act="open-auth">' + (S.user ? "账号" : "登录 / 注册") + "</button>" +
-        "</div></div>" +
+    $("#view-records").innerHTML = `
+      <div class="eyebrow">Records</div>
+      <div class="rec-head">
+        <div><h1 class="page-title">打卡与记录</h1>
+          <p class="page-sub">${user() ? "账号：" + esc(user().name) : "未登录 · 数据存在本机"} · 打卡 ${total} 次 · 连续 ${streak()} 天</p></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-primary" data-act="pick-shot">上传跑步截图</button>
+        </div>
+      </div>
 
-      '<div class="section"><div class="section-head"><h2>个人最好成绩</h2><span class="hint">从记录里自动识别（±3% 距离）</span></div>' +
-        '<div class="pb-grid">' + pbs.map(function (p) {
-          if (!p.rec) return '<div class="pb-item empty"><div class="k">' + p.name + '</div><div class="v">暂无</div><div class="s">—</div></div>';
-          return '<div class="pb-item has"><div class="k">' + p.name + '</div><div class="v">' + fmtHMS(p.rec.sec) +
-            '</div><div class="s">' + esc(p.rec.date || "") + " · " + (+p.rec.km).toFixed(2) + " km</div></div>";
-        }).join("") + "</div>" +
-        (bestFor(5, S.records) ? '<div style="margin-top:12px"><button class="btn btn-sm" data-act="use-pb">用 5 公里 PB（' + fmtHMS(bestFor(5, S.records).sec) + '）更新配速换算</button></div>' : "") +
-      "</div>" +
+      <div class="section"><div class="section-head"><h2>个人最好成绩</h2><span class="hint">自动识别 ±3%</span></div>
+        <div class="pb-grid">${pbs.map((p) => p.rec
+          ? `<div class="pb-item has"><div class="k">${p.name}</div><div class="v">${fmtHMS(p.rec.sec)}</div><div class="s">${esc(p.rec.date)} · ${(+p.rec.km).toFixed(2)} km</div></div>`
+          : `<div class="pb-item empty"><div class="k">${p.name}</div><div class="v">暂无</div><div class="s">—</div></div>`).join("")}
+        </div>
+        ${bestFor(5, recs) ? `<div style="margin-top:12px"><button class="btn btn-sm" data-act="use-pb">用 5 公里 PB（${fmtHMS(bestFor(5, recs).sec)}）更新配速</button></div>` : ""}
+      </div>
 
-      '<div class="section"><div class="section-head"><h2>打卡日历</h2><span class="hint">最近 12 周</span></div>' +
-        '<div class="card" style="padding:16px 18px"><div class="heat">' + heatmapHtml() + "</div></div></div>" +
+      <div class="section"><div class="section-head"><h2>打卡日历</h2><span class="hint">最近 12 周</span></div>
+        <div class="card" style="padding:16px 18px"><div class="hm">${cells}</div></div></div>
 
-      '<div class="section"><div class="section-head"><h2>添加记录</h2><span class="hint">GPX / TCX / CSV / JSON 或手动填</span></div>' +
-        '<div class="card" style="padding:16px">' +
-          '<div class="upload" id="dropZone" data-act="pick-file">' +
-            "<div><b>点击上传</b> 或把文件拖到这里</div>" +
-            '<div class="hint">支持 手表导出的 .gpx / .tcx，以及 .csv / .json（含距离与用时）</div>' +
-          "</div>" +
-          '<input type="file" id="fileInput" accept=".gpx,.tcx,.csv,.json,.txt" style="display:none">' +
-          '<div class="rec-form">' +
-            '<input id="rDate" type="date" value="' + dstr(new Date()) + '" aria-label="日期">' +
-            '<input id="rKm" type="number" step="0.01" min="0" placeholder="距离 km" aria-label="距离">' +
-            '<input id="rTime" type="text" placeholder="用时 例如 17:32" aria-label="用时">' +
-            '<button class="btn" data-act="add-record">' + IC.plus + " 添加</button>" +
-          "</div>" +
-        "</div></div>" +
+      <div class="section"><div class="section-head"><h2>添加记录</h2><span class="hint">截图 + 手填数字</span></div>
+        <div class="card">
+          <div class="shot-pick">
+            <div class="shot-box" data-act="pick-shot">
+              <img id="shotPreview" style="display:none" alt="">
+              <span class="shot-plus" id="shotPlus">+</span>
+            </div>
+            <div style="flex:1;min-width:0">
+              <div style="font-weight:700;font-size:13px">选一张跑步截图</div>
+              <div class="small muted" style="margin-top:4px">Keep、悦跑圈、手表 App 的成绩页都行。截图会作为这条记录的凭证。</div>
+              <div class="row-2" style="margin-top:10px">
+                <input class="input" id="rKm" type="number" step="0.01" placeholder="距离 km">
+                <input class="input" id="rTime" placeholder="用时 17:32">
+              </div>
+              <div class="row-2" style="margin-top:10px">
+                <input class="input" id="rDate" type="date" value="${dstr(new Date())}">
+                <button class="btn" data-act="add-record">保存记录</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-      '<div class="section"><div class="section-head"><h2>跑步记录</h2><span class="hint">' + recs.length + " 条</span></div>" +
-        '<div class="card"><div class="rec-list">' +
-          (recs.length ? recs.map(function (r) {
-            const pace = r.km ? fmt(r.sec / r.km) : "--";
-            const isPB = STD.some(function (s) {
-              if (Math.abs(r.km - s.km) / s.km > 0.03) return false;
-              const b = bestFor(s.km, S.records);
-              return b && b.id === r.id;
-            });
-            return '<div class="rec">' +
-              '<div class="when">' + esc(r.date || "") + "</div>" +
-              '<div class="main"><div class="t">' + (+r.km).toFixed(2) + " km · " + fmtHMS(r.sec) +
-                ' <span class="sub">' + pace + "/km</span>" + (isPB ? ' <span class="pb">PB</span>' : "") + "</div>" +
-                '<div class="sub">' + esc(r.src || "") + (r.name ? " · " + esc(r.name) : "") + "</div></div>" +
-              '<button class="del" data-act="del-record" data-id="' + esc(r.id) + '" aria-label="删除">' + IC.trash + "</button>" +
-            "</div>";
-          }).join("") : '<div class="rec-empty">还没有记录，上传一次跑步文件试试。</div>') +
-        "</div></div></div>";
+      <div class="section"><div class="section-head"><h2>跑步记录</h2><span class="hint">${recs.length} 条</span></div>
+        <div class="card" style="padding:0">
+          ${recs.length ? recs.map((r) => {
+            const isPB = STD.some((s) => Math.abs(r.km - s.km) / s.km <= 0.03 && bestFor(s.km, recs) === r);
+            return `<div class="rec">
+              ${r.shot ? `<img class="rec-shot" src="${r.shot}" data-shot="${r.id}" alt="">` : ""}
+              <div class="when">${esc(r.date)}</div>
+              <div class="main"><div class="t">${(+r.km).toFixed(2)} km · ${fmtHMS(r.sec)}
+                <span class="sub">${fmt(r.sec / r.km)}/km</span>
+                ${isPB ? '<span class="pb-badge">PB</span>' : ""}</div>
+                <div class="sub">${esc(r.src || "手动")}</div></div>
+              <button class="icon-btn" data-act="del-record" data-id="${r.id}" aria-label="删除">✕</button>
+            </div>`;
+          }).join("") : '<div class="rec-empty">还没有记录，先上传一张截图</div>'}
+        </div>
+      </div>`;
+
+    const fi = $("#shotFile");
+    if (fi) fi.remove();
+
+    $$("#view-records [data-shot]").forEach((img) => img.addEventListener("click", () => {
+      const r = recs.find((x) => x.id === img.dataset.shot);
+      if (r && r.shot) window.open(r.shot, "_blank");
+    }));
+  }
+  let pendingShot = "";
+
+  /* ================= 广场 ================= */
+  function renderPlaza() {
+    const posts = DB.posts.slice().sort((a, b) => b.createdAt - a.createdAt);
+    const u = user();
+    $("#view-plaza").innerHTML = `
+      <div class="rec-head">
+        <div><div class="eyebrow">Plaza</div><h1 class="page-title">跑步广场</h1>
+          <p class="page-sub">约跑、拉练、比赛同行，都可以发在这里</p></div>
+        <button class="btn btn-primary" data-act="open-post">发布组队邀请</button>
+      </div>
+
+      ${u ? "" : '<div class="card" style="padding:16px 18px;background:var(--surface-2)"><div class="small">登录后才能发布邀请或申请加入；未登录可以浏览。</div><button class="btn btn-sm" style="margin-top:10px" data-act="open-auth">登录 / 注册</button></div>'}
+
+      <div class="section">
+        ${posts.length === 0 ? '<div class="empty-state">还没有人发邀请，等你发第一条</div>' : `<div class="plaza-grid">${posts.map((p) => {
+          const joined = u && p.joins.some((j) => j.user === u.name);
+          const mine = u && p.author === u.name;
+          return `<div class="card plaza-card">
+            <div class="plaza-head">
+              <span class="avatar" style="width:30px;height:30px;font-size:12px">${esc((p.author || "?").slice(0, 1).toUpperCase())}</span>
+              <div style="flex:1"><div style="font-weight:700;font-size:12.5px">${esc(p.author)}</div>
+                <div class="small muted">${timeAgo(p.createdAt)}</div></div>
+              ${mine ? '<span class="badge user">我发的</span>' : ""}
+            </div>
+            <div class="plaza-title">${esc(p.title)}</div>
+            <div class="plaza-meta"><span>📍 ${esc(p.place)}</span><span>🕒 ${esc(p.timeText)}</span></div>
+            <div class="plaza-body">${esc(p.content)}</div>
+            <div class="plaza-foot">
+              <div class="plaza-tags">
+                ${p.distance ? `<span class="chip chip-r">${esc(p.distance)}</span>` : ""}
+                ${p.pace ? `<span class="chip chip-r">${esc(p.pace)}</span>` : ""}
+                <span class="chip chip-e">${p.joins.length} 人申请</span>
+              </div>
+              <div class="plaza-acts">
+                ${mine || isAdmin() ? `<button class="btn btn-sm" data-act="del-post" data-id="${p.id}">删除</button>` : ""}
+                ${mine ? "" : `<button class="btn btn-sm ${joined ? "" : "primary"}" data-act="join-post" data-id="${p.id}" ${joined ? "disabled" : ""}>${joined ? "已申请" : "申请加入"}</button>`}
+              </div>
+            </div>
+            ${p.contact && (joined || mine || isAdmin()) ? `<div class="small muted">联系方式：${esc(p.contact)}</div>` : ""}
+            ${p.joins.length ? `<div class="plaza-joins">${p.joins.map((j) => `<div><b>${esc(j.user)}</b> ${j.msg ? "· " + esc(j.msg) : ""}</div>`).join("")}</div>` : ""}
+          </div>`;
+        }).join("")}</div>`}
+      </div>`;
+  }
+  function timeAgo(ts) {
+    const d = Date.now() - ts;
+    if (d < 3600000) return Math.max(1, Math.round(d / 60000)) + " 分钟前";
+    if (d < 86400000) return Math.round(d / 3600000) + " 小时前";
+    if (d < 86400000 * 7) return Math.round(d / 86400000) + " 天前";
+    const x = new Date(ts);
+    return (x.getMonth() + 1) + "/" + x.getDate();
   }
 
-  /* ================= 账号弹层 ================= */
-  function openAuth() {
-    $("#authModal").classList.add("show");
-    $("#authModal").setAttribute("aria-hidden", "false");
-    document.body.classList.add("no-scroll");
-    const m = $("#authMsg"); if (m) { m.textContent = ""; m.className = "auth-msg"; }
-    const n = $("#authName"); if (n) { n.value = ""; setTimeout(function () { n.focus(); }, 60); }
-    const p = $("#authPass"); if (p) p.value = "";
+  /* ================= 我的 ================= */
+  function renderMe() {
+    const u = user();
+    const recs = bucket().records;
+    const pb5 = bestFor(5, recs);
+    $("#view-me").innerHTML = `
+      <div class="eyebrow">Me</div>
+      <h1 class="page-title">我的</h1>
+      <p class="page-sub">${u ? "已登录：" + esc(u.name) + (u.role === "admin" ? " · 管理员" : "") : "未登录也能用，数据存本机"}</p>
+
+      <div class="card">
+        <div class="row" style="gap:14px;align-items:center">
+          <span class="avatar avatar-lg">${u ? esc(u.name.slice(0, 1).toUpperCase()) : "登"}</span>
+          <div style="flex:1"><div style="font-weight:800;font-size:16px">${u ? esc(u.name) : "游客"}</div>
+            <div class="small muted">${u ? (u.phone ? "手机号 " + u.phone.replace(/(\d{3})\d{4}(\d{4})/, "$1****$2") : "未绑定手机号") : "游客模式：打卡和记录存在这台设备"}</div></div>
+          ${u ? `<button class="btn btn-sm" data-act="logout">退出</button>` : `<button class="btn btn-sm btn-primary" data-act="open-auth">登录 / 注册</button>`}
+        </div>
+      </div>
+
+      <div class="stats" style="margin-top:16px">
+        <div class="stat"><div class="k">打卡</div><div class="v">${Object.keys(bucket().checks).length}<span>次</span></div></div>
+        <div class="stat"><div class="k">记录</div><div class="v">${recs.length}<span>条</span></div></div>
+        <div class="stat"><div class="k">5 公里 PB</div><div class="v" style="font-size:18px">${pb5 ? fmtHMS(pb5.sec) : "—"}</div></div>
+      </div>
+
+      ${isAdmin() ? `<div class="section"><div class="section-head"><h2>管理员</h2><span class="hint">admin</span></div>
+        <div class="card"><div style="font-weight:700">管理后台</div>
+        <div class="small muted" style="margin:6px 0 12px">查看所有账号的跑步记录，管理广场邀请。</div>
+        <button class="btn btn-primary" data-act="goto" data-view="admin">进入管理后台</button></div></div>` : ""}
+
+      <div class="section"><div class="section-head"><h2>背景主题</h2><span class="hint">${theme().name} · ${S.mode === "dark" ? "深色" : "浅色"}</span></div>
+        <div class="card">
+          <div class="theme-grid">
+            ${THEMES.map((t) => `<div class="theme-cell${t.id === S.theme ? " on" : ""}" data-act="set-theme" data-id="${t.id}">
+              <div class="theme-dot" style="background:linear-gradient(135deg,${t.brand},${t.brand2})">${t.id === S.theme ? "✓" : ""}</div>
+              <div class="theme-name">${t.name}</div></div>`).join("")}
+          </div>
+          <div class="row" style="gap:10px;margin-top:14px;flex-wrap:wrap">
+            <button class="btn btn-sm" data-act="toggle-mode">切换到${S.mode === "dark" ? "浅色" : "深色"}</button>
+            <button class="btn btn-sm" data-act="pick-bg">${S.bg ? "换背景图" : "自定义背景图"}</button>
+            ${S.bg ? '<button class="btn btn-sm" data-act="clear-bg">恢复纯色</button>' : ""}
+          </div>
+          <div class="small muted" style="margin-top:10px">背景图会压一层半透明白，保证文字可读。</div>
+        </div>
+      </div>
+
+      <div class="section"><div class="section-head"><h2>更多</h2></div>
+        <div class="card" style="padding:0">
+          <div class="link-row" data-act="goto" data-view="records">打卡与记录 ›</div>
+          <div class="link-row" data-act="goto" data-view="pace">配速换算 ›</div>
+          <div class="link-row" data-act="goto" data-view="notes">训练说明 ›</div>
+          <div class="link-row" data-act="open-search">全站搜索 ›</div>
+        </div>
+      </div>`;
   }
-  function closeAuth() {
-    $("#authModal").classList.remove("show");
-    $("#authModal").setAttribute("aria-hidden", "true");
-    document.body.classList.remove("no-scroll");
-  }
-  function submitAuth() {
-    const name = ($("#authName").value || "").trim();
-    const pass = $("#authPass").value || "";
-    const msg = $("#authMsg");
-    if (!name) { msg.textContent = "请输入用户名"; msg.className = "auth-msg"; return; }
-    if (name.length > 20) { msg.textContent = "用户名最多 20 个字符"; msg.className = "auth-msg"; return; }
-    if (!pass) { msg.textContent = "请输入密码"; msg.className = "auth-msg"; return; }
-    const u = DB.users[name];
-    if (u) {
-      if (hstr(u.salt + "|" + pass) !== u.h) {
-        msg.textContent = "用户名已存在或密码错误";
-        msg.className = "auth-msg";
-        return;
-      }
-      loginAs(name, false);
-      msg.textContent = "欢迎回来，" + name;
-      msg.className = "auth-msg ok";
-      setTimeout(function () { closeAuth(); toast("已登录：" + name); go(S.tab); }, 500);
+
+  /* ================= 管理后台 ================= */
+  function renderAdmin() {
+    if (!isAdmin()) {
+      $("#view-admin").innerHTML = '<div class="empty-state">需要管理员账号</div>';
       return;
     }
-    DB.users[name] = makeUser(pass);
-    loginAs(name, true);
-    msg.textContent = "账号已创建，" + name;
-    msg.className = "auth-msg ok";
-    setTimeout(function () { closeAuth(); toast("已创建账号：" + name); go(S.tab); }, 500);
-  }
-  function openAccount() {
-    if (!S.user) { openAuth(); return; }
-    updateAuthUI();
-    $("#acctStats").textContent = "打卡 " + Object.keys(S.checks).length + " 次 · 记录 " + S.records.length + " 条";
-    $("#acctRows").innerHTML =
-      '<div class="acct-row"><span>连续打卡</span><b>' + streak() + " 天</b></div>" +
-      '<div class="acct-row"><span>5 公里 PB</span><b>' + (bestFor(5, S.records) ? fmtHMS(bestFor(5, S.records).sec) : "—") + "</b></div>" +
-      '<div class="acct-row"><span>数据位置</span><b>本机浏览器</b></div>';
-    $("#accountModal").classList.add("show");
-    $("#accountModal").setAttribute("aria-hidden", "false");
-    document.body.classList.add("no-scroll");
-  }
-  function closeAccount() {
-    $("#accountModal").classList.remove("show");
-    $("#accountModal").setAttribute("aria-hidden", "true");
-    document.body.classList.remove("no-scroll");
+    const users = Object.values(DB.users);
+    const allRecords = [];
+    users.forEach((u) => (u.records || []).forEach((r) => allRecords.push({ user: u.name, r })));
+    allRecords.sort((a, b) => (b.r.date || "").localeCompare(a.r.date || ""));
+    const posts = DB.posts.slice().sort((a, b) => b.createdAt - a.createdAt);
+
+    $("#view-admin").innerHTML = `
+      <div class="eyebrow">Admin</div>
+      <h1 class="page-title">管理后台</h1>
+      <p class="page-sub">账号 ${users.length} 个 · 跑步记录 ${allRecords.length} 条 · 广场邀请 ${posts.length} 条</p>
+
+      <div class="admin-note">当前数据保存在这台设备的浏览器里（纯静态站点，没有服务器）。下面看到的是本机注册的账号与本机产生的记录；要跨设备共享，需要接入一个后端。</div>
+
+      <div class="admin-grid">
+        <div class="card"><div class="k small muted">注册用户</div><div class="admin-num">${users.length}</div></div>
+        <div class="card"><div class="k small muted">跑步记录</div><div class="admin-num">${allRecords.length}</div></div>
+        <div class="card"><div class="k small muted">广场邀请</div><div class="admin-num">${posts.length}</div></div>
+        <div class="card"><div class="k small muted">申请总数</div><div class="admin-num">${posts.reduce((n, p) => n + p.joins.length, 0)}</div></div>
+      </div>
+
+      <div class="section"><div class="section-head"><h2>账号</h2><span class="hint">用户名 / 手机号 / 数据量</span></div>
+        <div class="card" style="padding:0;overflow:hidden">
+          <table class="admin-table">
+            <thead><tr><th>用户名</th><th>角色</th><th>手机号</th><th>打卡</th><th>记录</th><th>注册时间</th></tr></thead>
+            <tbody>${users.map((u) => `<tr>
+              <td><b>${esc(u.name)}</b></td>
+              <td><span class="badge ${u.role === "admin" ? "admin" : "user"}">${u.role === "admin" ? "管理员" : "用户"}</span></td>
+              <td class="mono">${u.phone ? esc(u.phone.replace(/(\d{3})\d{4}(\d{4})/, "$1****$2")) : "—"}</td>
+              <td class="mono">${Object.keys(u.checks || {}).length}</td>
+              <td class="mono">${(u.records || []).length}</td>
+              <td class="small muted">${dstr(new Date(u.created || Date.now()))}</td>
+            </tr>`).join("")}</tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="section"><div class="section-head"><h2>所有人的跑步记录</h2><span class="hint">最近 ${Math.min(allRecords.length, 50)} 条</span></div>
+        <div class="card" style="padding:0;overflow:hidden">
+          <table class="admin-table">
+            <thead><tr><th>用户</th><th>日期</th><th>距离</th><th>用时</th><th>配速</th><th>来源</th></tr></thead>
+            <tbody>${allRecords.slice(0, 50).map((x) => `<tr>
+              <td>${esc(x.user)}</td><td class="mono">${esc(x.r.date)}</td>
+              <td class="mono">${(+x.r.km).toFixed(2)} km</td>
+              <td class="mono">${fmtHMS(x.r.sec)}</td>
+              <td class="mono">${fmt(x.r.sec / x.r.km)}/km</td>
+              <td class="small muted">${esc(x.r.src || "手动")}</td>
+            </tr>`).join("") || '<tr><td colspan="6" class="muted">还没有记录</td></tr>'}</tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="section"><div class="section-head"><h2>广场管理</h2><span class="hint">删除违规邀请</span></div>
+        <div class="card" style="padding:0;overflow:hidden">
+          <table class="admin-table">
+            <thead><tr><th>标题</th><th>发起人</th><th>时间</th><th>申请</th><th></th></tr></thead>
+            <tbody>${posts.map((p) => `<tr>
+              <td>${esc(p.title)}</td><td>${esc(p.author)}</td>
+              <td class="small muted">${esc(p.timeText)}</td>
+              <td class="mono">${p.joins.length}</td>
+              <td><button class="btn btn-sm danger-text" data-act="del-post" data-id="${p.id}">删除</button></td>
+            </tr>`).join("") || '<tr><td colspan="5" class="muted">广场是空的</td></tr>'}</tbody>
+          </table>
+        </div>
+      </div>`;
   }
 
-  /* ================= 日详情 ================= */
+  /* ================= 搜索 ================= */
+  let INDEX = null;
+  function getIndex() {
+    if (INDEX) return INDEX;
+    const list = [];
+    DATA.plans.forEach((p) => p.blocks.forEach((b, bi) => b.days.forEach((d, di) => {
+      list.push({
+        kind: "课表", cls: "",
+        title: p.key + " · " + weekParts(b.title)[0] + " · " + d.day,
+        text: d.type + "：" + d.content,
+        go: { view: "plan", plan: p.key, block: bi, day: di }
+      });
+    })));
+    DATA.pace.blocks.forEach((b, bi) => {
+      (b.rows || []).forEach((r) => list.push({ kind: "配速", cls: "pace", title: b.title + " · " + r[0], text: r.slice(1).join("　"), go: { view: "pace", sec: bi } }));
+      (b.items || []).forEach((it) => list.push({ kind: "配速", cls: "pace", title: it.label || b.title, text: it.text || "", go: { view: "pace", sec: bi } }));
+    });
+    let sec = -1;
+    DATA.notes.forEach((n) => {
+      if (n.kind === "section") { sec++; list.push({ kind: "说明", cls: "note", title: n.title, text: "", go: { view: "notes", sec } }); }
+      else list.push({ kind: "说明", cls: "note", title: n.label, text: n.text, go: { view: "notes", sec } });
+    });
+    [["配速换算", "输入 1500 / 5000 成绩换算全部强度", "pace"],
+     ["打卡与记录", "打卡日历、跑步截图、PB", "records"],
+     ["跑步广场", "发布组队邀请、申请加入", "plaza"],
+     ["训练说明", "力量组次、周期、安全提示", "notes"]].forEach((x) => {
+      list.push({ kind: "工具", cls: "tool", title: x[0], text: x[1], go: { view: x[2] } });
+    });
+    INDEX = list;
+    return list;
+  }
+  function renderSearch(q) {
+    const box = $("#searchResults");
+    if (!box) return;
+    q = (q || "").trim();
+    if (!q) { box.innerHTML = '<div class="sempty">输入关键词：阈值 / 力量 / 配速 / 打卡</div>'; return; }
+    const k = q.toLowerCase();
+    const hits = getIndex().filter((e) => (e.title + " " + e.text).toLowerCase().indexOf(k) >= 0).slice(0, 60);
+    if (!hits.length) { box.innerHTML = '<div class="sempty">没有找到「' + esc(q) + '」</div>'; return; }
+    const mark = (t) => {
+      const s = String(t || "");
+      const i = s.toLowerCase().indexOf(k);
+      return i < 0 ? esc(s) : esc(s.slice(0, i)) + "<mark>" + esc(s.slice(i, i + q.length)) + "</mark>" + esc(s.slice(i + q.length));
+    };
+    const order = ["课表", "配速", "说明", "工具"];
+    let html = "";
+    order.forEach((kind) => {
+      const sub = hits.filter((e) => e.kind === kind);
+      if (!sub.length) return;
+      html += '<div class="sgroup">' + kind + " · " + sub.length + "</div>";
+      sub.slice(0, 20).forEach((e) => {
+        html += `<div class="sitem" data-act="sr" data-i="${getIndex().indexOf(e)}">
+          <span class="tag ${e.cls}">${kind}</span>
+          <div><div class="tt">${mark(e.title)}</div>${e.text ? '<div class="tx">' + mark(e.text) + "</div>" : ""}</div></div>`;
+      });
+    });
+    box.innerHTML = html;
+  }
+  function openSearch() {
+    $("#searchModal").classList.add("show");
+    document.body.classList.add("no-scroll");
+    const i = $("#gsearch"); i.value = ""; renderSearch("");
+    setTimeout(() => i.focus(), 40);
+  }
+  function closeSearch() {
+    $("#searchModal").classList.remove("show");
+    document.body.classList.remove("no-scroll");
+  }
+  function gotoResult(i) {
+    const e = getIndex()[i];
+    if (!e) return;
+    closeSearch();
+    const g = e.go;
+    if (g.view === "plan") {
+      S.plan = g.plan; S.block = g.block; save();
+      go("plan");
+      setTimeout(() => {
+        const el = $('.day[data-block="' + g.block + '"][data-day="' + g.day + '"]');
+        if (el) { el.scrollIntoView({ behavior: "smooth", block: "center" }); el.classList.add("flash"); setTimeout(() => el.classList.remove("flash"), 1600); }
+      }, 120);
+      return;
+    }
+    go(g.view);
+  }
+
+  /* ================= 弹层：日详情 ================= */
   let sheetCtx = null;
-  function openDay(blockIdx, dayIdx) {
-    const p = currentPlan();
-    const bi = blockIdx == null ? S.block : blockIdx;
-    const d = p.blocks[bi].days[dayIdx];
+  function openDay(bi, di) {
+    const p = planByKey(S.plan);
+    if (bi == null) bi = S.block;
+    const d = p.blocks[bi].days[di];
     if (!d) return;
-    sheetCtx = { pi: p.key, bi: bi, di: dayIdx };
-    const done = isDone(p.key, bi, dayIdx);
-    const key = ckey(p.key, bi, dayIdx);
-    const note = S.checkNotes[key] || "";
-    $("#sheet").innerHTML =
-      '<div class="sheet-grab"></div>' +
-      '<div class="meta">' +
-        '<span class="chip ' + (d.quality ? "chip-q" : /休息/.test(d.type) ? "chip-r" : "chip-e") + '">' + esc(d.type) + "</span>" +
-        '<span style="font-size:12px;color:var(--muted)">' + esc(d.day) + " · " + esc(weekTitleParts(p.blocks[bi].title)[0]) + "</span>" +
-      "</div>" +
-      "<h3>" + esc(d.day) + "训练</h3>" +
-      '<div class="body">' + esc(d.content) + "</div>" +
-      '<div style="margin-top:14px"><label style="font-size:11.5px;font-weight:700;color:var(--muted)">备注（可选：体感、配速、跑量）</label>' +
-        '<input id="checkNote" value="' + esc(note) + '" placeholder="例如：4:35 配速，腿有点沉" ' +
-        'style="width:100%;margin-top:6px;padding:10px 12px;border-radius:11px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);font-size:13.5px;outline:none">' +
-      "</div>" +
-      '<div class="acts">' +
-        '<button class="btn ' + (done ? "btn-ghost" : "btn-primary") + '" data-act="sheet-check" style="flex:1">' +
-          (done ? "撤销打卡" : IC.check + " 完成打卡") + "</button>" +
-        '<button class="btn" data-act="sheet-copy">' + IC.copy + "</button>" +
-        '<button class="btn" data-act="sheet-close">关闭</button>' +
-      "</div>";
+    sheetCtx = { pi: p.key, bi, di };
+    const done = isDone(p.key, bi, di);
+    const note = bucket().notes[ck(p.key, bi, di)] || "";
+    $("#sheet").innerHTML = `
+      <div class="sheet-grab"></div>
+      <div class="meta"><span class="chip ${d.quality ? "chip-q" : "chip-e"}">${esc(d.type)}</span>
+        <span class="small muted">${esc(d.day)} · ${esc(weekParts(p.blocks[bi].title)[0])}</span></div>
+      <h3>${esc(d.day)}训练</h3>
+      <div class="body">${esc(d.content)}</div>
+      <div style="margin-top:14px"><label class="small muted" style="font-weight:700">备注（可选）</label>
+        <input id="checkNote" class="input" style="width:100%;margin-top:6px" value="${esc(note)}" placeholder="体感、配速、跑量"></div>
+      <div class="acts">
+        <button class="btn ${done ? "" : "btn-primary"}" data-act="sheet-check">${done ? "撤销打卡" : "完成打卡"}</button>
+        <button class="btn" data-act="sheet-copy">复制</button>
+        <button class="btn" data-act="sheet-close">关闭</button>
+      </div>`;
     $("#sheet").classList.add("show");
     $("#backdrop").classList.add("show");
     document.body.classList.add("no-scroll");
     const ni = $("#checkNote");
-    if (ni) {
-      ni.addEventListener("input", function () {
-        if (ni.value) S.checkNotes[key] = ni.value; else delete S.checkNotes[key];
-        save();
-      });
-    }
+    ni.addEventListener("input", () => {
+      const k = ck(p.key, bi, di);
+      if (ni.value) bucket().notes[k] = ni.value; else delete bucket().notes[k];
+      save();
+    });
   }
   function closeSheet() {
     $("#sheet").classList.remove("show");
@@ -1807,199 +1742,290 @@ table.num tr.near td:first-child{color:var(--accent)}
     sheetCtx = null;
   }
 
-  /* ================= 动作 ================= */
-  function toggleCheck(pi, bi, di) {
-    const k = ckey(pi, bi, di);
-    if (S.checks[k]) delete S.checks[k];
-    else S.checks[k] = Date.now();
-    save();
+  /* ================= 弹层：登录 / 注册 / 找回 ================= */
+  function openAuth(tab) {
+    $("#authModal").classList.add("show");
+    document.body.classList.add("no-scroll");
+    switchAuth(tab || "login");
   }
-  function todayText() {
-    const p = currentPlan();
-    const d = p.blocks[S.block].days[todayIdx];
-    return d.day + " · " + d.type + "\n" + d.content + "\n—— Beyond Best · " + p.key;
+  function closeAuth() {
+    $("#authModal").classList.remove("show");
+    document.body.classList.remove("no-scroll");
   }
-  async function copyText(t) {
-    try {
-      await navigator.clipboard.writeText(t);
-      toast("已复制");
-    } catch (e) {
-      const ta = document.createElement("textarea");
-      ta.value = t; document.body.appendChild(ta); ta.select();
-      try { document.execCommand("copy"); toast("已复制"); } catch (e2) { toast("复制失败，请长按选择"); }
-      ta.remove();
-    }
+  function switchAuth(which) {
+    $("#authLogin").style.display = which === "login" ? "" : "none";
+    $("#authRegister").style.display = which === "register" ? "" : "none";
+    $("#authForgot").style.display = which === "forgot" ? "" : "none";
+    $$(".auth-tab").forEach((b) => b.classList.toggle("on", b.dataset.authTab === which));
+    $("#loginMsg").textContent = "";
+    $("#regMsg").textContent = "";
+    $("#forgotMsg").textContent = "";
+    $("#forgotResult").style.display = "none";
+  }
+  function openAccount() {
+    const u = user();
+    refreshAuth();
+    $("#acctName").textContent = u ? u.name + (u.role === "admin" ? " · 管理员" : "") : "未登录";
+    $("#acctStats").textContent = u
+      ? "打卡 " + Object.keys(u.checks).length + " 次 · 记录 " + u.records.length + " 条"
+      : "未登录时数据存在本机，注册后可保留";
+    $("#acctRows").innerHTML = u
+      ? `<div class="acct-row"><span>手机号</span><b>${u.phone ? esc(u.phone.replace(/(\d{3})\d{4}(\d{4})/, "$1****$2")) : "未绑定"}</b></div>
+         <div class="acct-row"><span>连续打卡</span><b>${streak()} 天</b></div>
+         <div class="acct-row"><span>我的邀请</span><b>${DB.posts.filter((p) => p.author === u.name).length} 条</b></div>`
+      : "";
+    $("#logoutBtn").style.display = u ? "" : "none";
+    $("#acctSwitch").style.display = u ? "none" : "";
+    $("#accountModal").classList.add("show");
+    document.body.classList.add("no-scroll");
+  }
+  function closeAccount() {
+    $("#accountModal").classList.remove("show");
+    document.body.classList.remove("no-scroll");
   }
 
-  document.addEventListener("click", function (e) {
+  /* ================= 动作 ================= */
+  document.addEventListener("click", (e) => {
+    const tab = e.target.closest("[data-tab]");
+    if (tab) { go(tab.dataset.tab); return; }
     const t = e.target.closest("[data-act]");
-    const tabBtn = e.target.closest("[data-tab]");
-    if (tabBtn) { go(tabBtn.dataset.tab); return; }
     if (!t) return;
     const act = t.dataset.act;
-    const p = currentPlan();
 
-    if (act === "day") {
-      openDay(t.dataset.block != null ? +t.dataset.block : S.block, +t.dataset.day);
-    } else if (act === "check-today") {
-      toggleCheck(p.key, S.block, todayIdx);
-      renderToday();
-      toast(isDone(p.key, S.block, todayIdx) ? "今日打卡完成" : "已撤销");
+    if (act === "goto") { go(t.dataset.view); }
+    else if (act === "open-search") openSearch();
+    else if (act === "close-search") closeSearch();
+    else if (act === "sr") gotoResult(+t.dataset.i);
+    else if (act === "toggle-mode") { S.mode = S.mode === "dark" ? "light" : "dark"; save(); applyTheme(); go(VIEW, { keep: true }); }
+    else if (act === "set-theme") { S.theme = t.dataset.id; save(); applyTheme(); renderMe(); }
+    else if (act === "pick-bg") pickBg();
+    else if (act === "clear-bg") { S.bg = ""; save(); applyTheme(); renderMe(); }
+    else if (act === "open-auth") openAuth("login");
+    else if (act === "close-auth") closeAuth();
+    else if (act === "open-account") openAccount();
+    else if (act === "close-account") closeAccount();
+    else if (act === "goto-me") { closeAccount(); go("me"); }
+    else if (act === "goto-forgot") switchAuth("forgot");
+    else if (act === "goto-login") switchAuth("login");
+    else if (act === "do-login") doLogin();
+    else if (act === "do-register") doRegister();
+    else if (act === "do-forgot") doForgot();
+    else if (act === "do-reset") doReset();
+    else if (act === "logout") { logout(); closeAccount(); toast("已退出"); go(VIEW, { keep: true }); }
+    else if (act === "check-today") {
+      const p = planByKey(S.plan);
+      const on = toggleCheck(p.key, S.block, todayIdx);
+      renderToday(); toast(on ? "已打卡" : "已撤销");
     } else if (act === "copy-today") {
-      copyText(todayText());
-    } else if (act === "open-today") {
-      openDay(S.block, todayIdx);
-    } else if (act === "sheet-check") {
+      const p = planByKey(S.plan);
+      const d = p.blocks[S.block].days[todayIdx];
+      copy(d.day + " · " + d.type + "\n" + d.content + "\n—— Beyond Best · " + p.key);
+    } else if (act === "open-today") openDay(S.block, todayIdx);
+    else if (act === "day") openDay(t.dataset.block != null ? +t.dataset.block : S.block, +t.dataset.day);
+    else if (act === "sheet-close") closeSheet();
+    else if (act === "sheet-check") {
       if (sheetCtx) {
-        toggleCheck(sheetCtx.pi, sheetCtx.bi, sheetCtx.di);
-        const done = isDone(sheetCtx.pi, sheetCtx.bi, sheetCtx.di);
+        const on = toggleCheck(sheetCtx.pi, sheetCtx.bi, sheetCtx.di);
         const btn = $('[data-act="sheet-check"]');
-        if (btn) {
-          btn.className = "btn " + (done ? "btn-ghost" : "btn-primary");
-          btn.style.flex = "1";
-          btn.innerHTML = done ? "撤销打卡" : IC.check + " 完成打卡";
-        }
-        toast(done ? "打卡完成" : "已撤销");
-        if (S.tab === "today") renderToday();
-        if (S.tab === "plan") renderPlan();
-        if (S.tab === "records") renderRecords();
+        if (btn) { btn.className = "btn " + (on ? "" : "btn-primary"); btn.textContent = on ? "撤销打卡" : "完成打卡"; }
+        toast(on ? "打卡完成" : "已撤销");
+        if (VIEW === "today") renderToday();
+        if (VIEW === "plan") renderPlan();
       }
-    } else if (act === "sheet-close") {
-      closeSheet();
     } else if (act === "sheet-copy") {
       if (sheetCtx) {
         const d = planByKey(sheetCtx.pi).blocks[sheetCtx.bi].days[sheetCtx.di];
-        copyText(d.day + " · " + d.type + "\n" + d.content);
+        copy(d.day + " · " + d.type + "\n" + d.content);
       }
-    } else if (act === "goto-pace") {
-      go("pace");
-    } else if (act === "goto-plan") {
-      go("plan");
-    } else if (act === "goto-records") {
-      closeAccount(); go("records");
-    } else if (act === "print") {
-      doPrint();
     } else if (act === "copy-pace") {
-      const t15 = parseTime(S.pb1500) || 270, t5 = parseTime(S.pb5000) || 1020;
-      const lines = ["我的配速卡 · Beyond Best", "1500 米 " + S.pb1500 + "｜5000 米 " + S.pb5000, ""];
-      MID_OFF.forEach(function (x) {
-        lines.push("中距离 " + x[0] + "：" + fmt(t15 / 1.5 + x[1]) + "/km（400 米 " + fmt((t15 / 1.5 + x[1]) * 0.4) + "）");
-      });
+      const pb = S.pb || {};
+      const t15 = parseTime(pb.pb1500) || 270, t5 = parseTime(pb.pb5000) || 1020;
+      const lines = ["我的配速卡 · Beyond Best", "1500 米 " + (pb.pb1500 || "") + "｜5000 米 " + (pb.pb5000 || ""), ""];
+      MID_OFF.forEach((x) => lines.push("中距离 " + x[0] + "：" + fmt(t15 / 1.5 + x[1]) + "/km"));
       lines.push("");
-      LONG_OFF.forEach(function (x) {
-        lines.push("长距离 " + x[0] + "：" + fmt(t5 / 5 + x[1]) + "/km（400 米 " + fmt((t5 / 5 + x[1]) * 0.4) + "）");
-      });
-      copyText(lines.join("\n"));
-    } else if (act === "theme") {
-      toggleTheme();
-    } else if (act === "open-search") {
-      openSearch();
-    } else if (act === "close-search") {
-      closeSearch();
-    } else if (act === "sr") {
-      gotoResult(t.dataset.i);
-    } else if (act === "open-auth") {
-      openAccount();
-    } else if (act === "close-auth") {
-      closeAuth();
-    } else if (act === "auth-submit") {
-      submitAuth();
-    } else if (act === "close-account") {
-      closeAccount();
-    } else if (act === "logout") {
-      logout(); closeAccount();
-      toast("已退出登录");
-      if (S.tab === "records") renderRecords();
-    } else if (act === "pick-file") {
-      const fi = $("#fileInput");
-      if (fi) fi.click();
-    } else if (act === "add-record") {
-      const date = $("#rDate").value || dstr(new Date());
-      const km = parseFloat($("#rKm").value);
-      const sec = parseTime($("#rTime").value);
-      if (!km || !sec) { toast("填一下距离和用时，例如 5 / 17:32"); return; }
-      importRecords([{ date: date, km: km, sec: sec, src: "手动" }]);
-    } else if (act === "del-record") {
+      LONG_OFF.forEach((x) => lines.push("长距离 " + x[0] + "：" + fmt(t5 / 5 + x[1]) + "/km"));
+      copy(lines.join("\n"));
+    } else if (act === "print") { window.print(); }
+    else if (act === "pick-shot") pickShot();
+    else if (act === "add-record") addRecord();
+    else if (act === "del-record") {
       const id = t.dataset.id;
-      const idx = S.records.findIndex(function (r) { return r.id === id; });
-      if (idx >= 0) S.records.splice(idx, 1);
+      bucket().records = bucket().records.filter((r) => r.id !== id);
       save(); renderRecords(); toast("已删除");
     } else if (act === "use-pb") {
-      const b = bestFor(5, S.records);
-      if (b) { S.pb5000 = fmtHMS(b.sec); save(); toast("已更新 5000 米成绩"); go("pace"); }
+      const b = bestFor(5, bucket().records);
+      if (b) { S.pb = S.pb || {}; S.pb.pb5000 = fmtHMS(b.sec); save(); toast("已更新 5000 米成绩"); go("pace"); }
+    } else if (act === "open-post") {
+      if (!user()) { toast("先登录再发布"); openAuth("login"); return; }
+      const now = new Date();
+      $("#pTime").value = dstr(now) + "T" + pad(now.getHours()) + ":" + pad(now.getMinutes());
+      $("#postModal").classList.add("show");
+      document.body.classList.add("no-scroll");
+    } else if (act === "close-post") {
+      $("#postModal").classList.remove("show");
+      document.body.classList.remove("no-scroll");
+    } else if (act === "do-post") doPost();
+    else if (act === "join-post") doJoin(t.dataset.id);
+    else if (act === "del-post") {
+      const id = t.dataset.id;
+      if (!confirm("删除这条邀请？")) return;
+      DB.posts = DB.posts.filter((p) => p.id !== id);
+      save();
+      if (VIEW === "admin") renderAdmin(); else renderPlaza();
+      toast("已删除");
     }
   });
 
-  document.addEventListener("input", function (e) {
-    if (e.target && e.target.id === "gsearch") renderSearch(e.target.value);
-  });
+  $$(".auth-tab").forEach((b) => b.addEventListener("click", () => switchAuth(b.dataset.authTab)));
 
-  document.addEventListener("keydown", function (e) {
+  function doLogin() {
+    const r = login($("#loginName").value, $("#loginPass").value);
+    if (!r.ok) { $("#loginMsg").textContent = r.msg; return; }
+    closeAuth(); closeAccount(); toast("欢迎回来"); go(VIEW, { keep: true });
+  }
+  function doRegister() {
+    const r = reg($("#regName").value, $("#regPass").value, ($("#regPhone").value || "").trim());
+    if (!r.ok) { $("#regMsg").textContent = r.msg; return; }
+    closeAuth(); closeAccount(); toast("注册成功，已登录"); go(VIEW, { keep: true });
+  }
+  let forgotUser = null;
+  function doForgot() {
+    const phone = ($("#forgotPhone").value || "").trim();
+    if (!/^1\d{10}$/.test(phone)) { $("#forgotMsg").textContent = "请输入 11 位手机号"; return; }
+    const u = forgot(phone);
+    if (!u) { $("#forgotMsg").textContent = "该手机号未注册"; $("#forgotResult").style.display = "none"; return; }
+    forgotUser = u.name;
+    $("#forgotMsg").textContent = "";
+    $("#forgotWho").textContent = "找到账号：" + u.name + "，设置新密码即可登录。";
+    $("#forgotResult").style.display = "";
+  }
+  function doReset() {
+    if (!forgotUser) return;
+    const pass = $("#forgotNew").value;
+    if ((pass || "").length < 4) { $("#forgotMsg").textContent = "密码至少 4 位"; return; }
+    if (resetPass(forgotUser, pass)) {
+      closeAuth(); closeAccount(); toast("密码已重设，已登录"); go(VIEW, { keep: true });
+    }
+  }
+
+  function pickBg() {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.onchange = () => {
+      const f = input.files[0];
+      if (!f) return;
+      compress(f, (data) => {
+        if (!data) { toast("图片读取失败"); return; }
+        S.bg = data; save(); applyTheme(); renderMe(); toast("背景已设置");
+      });
+    };
+    input.click();
+  }
+
+  function pickShot() {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.setAttribute("capture", "environment");
+    input.onchange = () => {
+      const f = input.files[0];
+      if (!f) return;
+      compress(f, (data) => {
+        if (!data) { toast("图片读取失败"); return; }
+        pendingShot = data;
+        const img = $("#shotPreview"), plus = $("#shotPlus");
+        if (img) { img.src = data; img.style.display = ""; }
+        if (plus) plus.style.display = "none";
+        toast("截图已添加，填一下距离和用时");
+      });
+    };
+    input.click();
+  }
+
+  function addRecord() {
+    const km = parseFloat($("#rKm").value);
+    const sec = parseTime($("#rTime").value);
+    const date = $("#rDate").value || dstr(new Date());
+    if (!km || !sec) { toast("填一下距离和用时"); return; }
+    const before = STD.map((s) => bestFor(s.km, bucket().records));
+    bucket().records.push({
+      id: uid(), date, km: +km.toFixed(3), sec: Math.round(sec),
+      src: pendingShot ? "截图" : "手动", shot: pendingShot || ""
+    });
+    bucket().records.sort((a, b) => (b.date || "").localeCompare(a.date || ""));
+    const after = STD.map((s) => bestFor(s.km, bucket().records));
+    const news = [];
+    after.forEach((a, i) => { if (a && (!before[i] || a.sec < before[i].sec)) news.push(STD[i].name + " " + fmtHMS(a.sec)); });
+    const pb5 = bestFor(5, bucket().records);
+    if (pb5) { S.pb = S.pb || {}; S.pb.pb5000 = fmtHMS(pb5.sec); }
+    pendingShot = "";
+    save(); renderRecords();
+    toast(news.length ? "新 PB：" + news.join("、") : "已保存");
+  }
+
+  function doPost() {
+    const u = user();
+    if (!u) { toast("请先登录"); return; }
+    const title = $("#pTitle").value.trim();
+    const place = $("#pPlace").value.trim();
+    const time = $("#pTime").value;
+    const content = $("#pContent").value.trim();
+    if (!title || !place || !content || !time) { $("#postMsg").textContent = "标题、地点、时间、内容都要填"; return; }
+    const dt = new Date(time);
+    DB.posts.push({
+      id: uid(), author: u.name, title, place,
+      timeText: (dt.getMonth() + 1) + " 月 " + dt.getDate() + " 日 " + pad(dt.getHours()) + ":" + pad(dt.getMinutes()),
+      content, distance: $("#pDistance").value.trim(), pace: $("#pPace").value.trim(),
+      contact: $("#pContact").value.trim(), createdAt: Date.now(), joins: []
+    });
+    save();
+    $("#pTitle").value = ""; $("#pPlace").value = ""; $("#pContent").value = "";
+    $("#pDistance").value = ""; $("#pPace").value = ""; $("#pContact").value = "";
+    $("#postMsg").textContent = "";
+    $("#postModal").classList.remove("show");
+    document.body.classList.remove("no-scroll");
+    go("plaza");
+    toast("已发布");
+  }
+
+  function doJoin(id) {
+    const u = user();
+    if (!u) { toast("登录后才能申请加入"); openAuth("login"); return; }
+    const p = DB.posts.find((x) => x.id === id);
+    if (!p) return;
+    if (p.joins.some((j) => j.user === u.name)) { toast("已经申请过了"); return; }
+    const msg = prompt("留个言（可选）：几点到、能不能跟上配速", "") || "";
+    p.joins.push({ user: u.name, msg, at: Date.now() });
+    save(); renderPlaza(); toast("已申请，等发起人联系");
+  }
+
+  /* ================= 键盘 / 遮罩 ================= */
+  document.addEventListener("keydown", (e) => {
     const typing = /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName);
     if (e.key === "Escape") {
-      closeSheet();
-      if ($("#searchModal").classList.contains("show")) closeSearch();
-      if ($("#authModal").classList.contains("show")) closeAuth();
-      if ($("#accountModal").classList.contains("show")) closeAccount();
+      closeSheet(); closeSearch(); closeAuth(); closeAccount();
+      $("#postModal").classList.remove("show");
+      document.body.classList.remove("no-scroll");
     }
-    if ((e.ctrlKey || e.metaKey) && (e.key === "k" || e.key === "K")) {
-      e.preventDefault(); openSearch(); return;
-    }
-    if (typing) {
-      if (e.key === "Enter" && e.target.id === "authPass") submitAuth();
-      if (e.key === "Enter" && e.target.id === "gsearch") {
-        const first = $(".sitem");
-        if (first) first.click();
-      }
-      return;
-    }
-    if (e.key === "/") { e.preventDefault(); openSearch(); return; }
-    const map = { "1": "today", "2": "plan", "3": "pace", "4": "records", "5": "notes" };
+    if ((e.ctrlKey || e.metaKey) && (e.key === "k" || e.key === "K")) { e.preventDefault(); openSearch(); return; }
+    if (typing) return;
+    if (e.key === "/") { e.preventDefault(); openSearch(); }
+    const map = { "1": "today", "2": "plan", "3": "plaza", "4": "records", "5": "me" };
     if (map[e.key]) go(map[e.key]);
-    if (e.key === "d" || e.key === "D") toggleTheme();
   });
-
   $("#backdrop").addEventListener("click", closeSheet);
-  $$(".modal").forEach(function (m) {
-    m.addEventListener("click", function (e) { if (e.target === m) m.classList.remove("show"); });
-  });
-
-  document.addEventListener("change", function (e) {
-    if (e.target && e.target.id === "fileInput" && e.target.files && e.target.files[0]) {
-      readRecordFile(e.target.files[0]);
-      e.target.value = "";
-    }
-  });
-  document.addEventListener("dragover", function (e) {
-    const z = e.target.closest ? e.target.closest("#dropZone") : null;
-    if (z) { e.preventDefault(); z.classList.add("hot"); }
-  });
-  document.addEventListener("dragleave", function (e) {
-    const z = e.target.closest ? e.target.closest("#dropZone") : null;
-    if (z) z.classList.remove("hot");
-  });
-  document.addEventListener("drop", function (e) {
-    const z = e.target.closest ? e.target.closest("#dropZone") : null;
-    if (!z) return;
-    e.preventDefault(); z.classList.remove("hot");
-    const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
-    if (f) readRecordFile(f);
-  });
+  $$(".modal").forEach((m) => m.addEventListener("click", (e) => { if (e.target === m) { m.classList.remove("show"); document.body.classList.remove("no-scroll"); } }));
+  document.addEventListener("input", (e) => { if (e.target.id === "gsearch") renderSearch(e.target.value); });
 
   /* ================= 启动 ================= */
+  if (!S.pb) S.pb = { pb1500: "4:30", pb5000: "17:00" };
   applyTheme();
-  updateAuthUI();
-  const wk = $("#weekmeta");
-  if (wk) wk.textContent = S.plan + " · 第 " + (S.block + 1) + " 周";
-  const hashTab = (location.hash || "").slice(1);
-  if (["today", "plan", "pace", "records", "notes"].indexOf(hashTab) >= 0) S.tab = hashTab;
-  try {
-    const qs = new URLSearchParams(location.search);
-    const th = qs.get("theme");
-    if (th === "light" || th === "dark") { S.theme = th; applyTheme(); }
-  } catch (e) {}
-  window.__q = window.__q || "";
-  go(S.tab, { keepScroll: true });
+  refreshAuth();
+  const wm = $("#weekmeta"); if (wm) wm.textContent = S.plan + " · 第 " + (S.block + 1) + " 周";
+  const h = (location.hash || "").slice(1);
+  if (["today", "plan", "plaza", "records", "me", "pace", "notes", "admin"].indexOf(h) >= 0) VIEW = h;
+  go(VIEW, { keep: true });
 })();
 </script>
 </body>
