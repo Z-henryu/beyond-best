@@ -483,6 +483,20 @@ table.num tr.near td:first-child{color:var(--accent)}
   .rec .when{width:70px;font-size:11px}
   .acct-label{display:none}
 }
+
+/* 桌面端右上角固定搜索 */
+.desk-search{display:none}
+@media (min-width:1025px){
+  main{padding-top:78px}
+  .desk-search{
+    display:flex;align-items:center;gap:8px;position:fixed;top:20px;right:28px;z-index:26;
+    padding:9px 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface);
+    color:var(--muted);font-size:13px;font-weight:650;box-shadow:var(--shadow);transition:.16s;
+  }
+  .desk-search:hover{color:var(--ink);background:var(--surface-2);transform:translateY(-1px)}
+  .desk-search svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2}
+  .desk-search kbd{font:inherit;font-size:10px;padding:2px 6px;border-radius:6px;border:1px solid var(--line);background:var(--surface-2)}
+}
 </style>
 </head>
 <body>
@@ -556,6 +570,11 @@ table.num tr.near td:first-child{color:var(--accent)}
       </button>
     </div>
   </header>
+
+  <button class="desk-search" data-act="open-search" aria-label="搜索全站">
+    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg>
+    搜索全站 <kbd>Ctrl K</kbd>
+  </button>
 
   <main>
     <section class="view" id="view-today" aria-label="今天"></section>
