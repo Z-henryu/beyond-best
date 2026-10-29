@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="zh-CN" data-mode="light">
 <head>
-<script>window.__BUILD__ = "20261029045949";</script>
+<script>window.__BUILD__ = "20261029051644";</script>
 <script>
   window.__bipEvent = null;
   window.addEventListener("beforeinstallprompt", function (e) {
@@ -652,6 +652,14 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
 .plan-banner { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: 12px; background: rgba(255,107,61,.09); border: 1px solid rgba(255,107,61,.2); font-size: 12.5px; line-height: 1.65; margin-bottom: 16px; }
 .disc-bottom { margin-top: 22px; padding: 16px 18px; border-radius: 14px; border: 1px solid var(--line); background: var(--surface-2); font-size: 12px; line-height: 1.85; color: var(--muted); }
 .disc-bottom b { display: block; margin-bottom: 8px; color: var(--ink); font-size: 12.5px; }
+
+.vol-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+@media (max-width: 640px) { .vol-grid { grid-template-columns: repeat(2, 1fr); } }
+.vol-card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; }
+.vol-card .k { font-size: 11.5px; color: var(--muted); font-weight: 700; }
+.vol-card .v { font-size: 22px; font-weight: 800; margin-top: 6px; font-variant-numeric: tabular-nums; }
+.vol-card .v span { font-size: 11px; color: var(--muted); font-weight: 600; margin-left: 3px; }
+.plan-periods { display: flex; gap: 8px; margin-bottom: 12px; }
 </style>
 </head>
 <body>
@@ -876,7 +884,7 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
             <div class="small muted">中长跑训练课表 · 可离线使用</div>
           </div>
         </div>
-        <a class="btn btn-primary install-btn" href="beyond-best.apk" download="BeyondBest-1.1.0.apk">下载安卓版 APK（v1.1.0）</a>
+        <a class="btn btn-primary install-btn" href="beyond-best.apk" download="BeyondBest-1.2.0.apk">下载安卓版 APK（v1.2.0）</a>
         <ol class="install-steps">
           <li>点上面的按钮下载安装包</li>
           <li>在通知栏或「文件管理」里点开它</li>
@@ -1347,7 +1355,8 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
       (rest.length ? '<div class="small muted" style="margin:12px 0 8px">全部计划</div>' + rest.map(card).join("") : "");
   }
 
-  async function openPlan(id) {
+  async function openPlan(id, period) {
+    const per = period || "month";
     const plan = state.plans.find((p) => p.id === id);
     if (!plan) return;
     closeModals("planModal");
@@ -1358,15 +1367,16 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
     document.body.classList.add("no-scroll");
     let rows = [];
     try {
-      rows = await api("/rest/v1/rpc/plan_leaderboard", { method: "POST", body: { p_plan_id: id } }) || [];
+      rows = await api("/rest/v1/rpc/plan_leaderboard", { method: "POST", body: { p_plan_id: id, p_period: per } }) || [];
     } catch (e) {
       $("#planBody").innerHTML = '<div class="sempty">排行榜加载失败：' + esc(e.message) + "</div>";
       return;
     }
-    renderPlanDetail(plan, rows);
+    renderPlanDetail(plan, rows, per);
   }
 
-  function renderPlanDetail(plan, rows) {
+  function renderPlanDetail(plan, rows, period) {
+    period = period || "month";
     const mine = !!state.myPlanIds[plan.id];
     const owner = state.profile && plan.owner_id === state.profile.id;
     const byCheck = rows.slice().sort((a, b) => (b.checkins - a.checkins) || (b.km - a.km));
@@ -1381,6 +1391,10 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
       : '<div class="plan-empty">还没有人加入</div>';
     $("#planBody").innerHTML = `
       ${plan.description ? `<div class="plan-desc">${esc(plan.description)}</div>` : ""}
+      <div class="plan-periods">
+        ${[["month", "月榜"], ["year", "年榜"], ["all", "总榜"]].map(([k, label]) =>
+          `<button class="btn btn-sm ${period === k ? "btn-primary" : ""}" data-act="plan-period" data-id="${plan.id}" data-period="${k}">${label}</button>`).join("")}
+      </div>
       <div class="lb-grid">
         <div class="lb-col"><h4>打卡次数榜</h4>${list(byCheck, "checkins", (v) => v + " 次")}</div>
         <div class="lb-col"><h4>跑步距离榜</h4>${list(byKm, "km", (v) => (+v).toFixed(1) + " km")}</div>
@@ -1988,6 +2002,25 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
   }
 
   /* ================= 记录 ================= */
+  function volumeStats() {
+    const now = new Date();
+    const wk = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    wk.setDate(wk.getDate() - ((now.getDay() + 6) % 7));
+    const mo = new Date(now.getFullYear(), now.getMonth(), 1);
+    const yr = new Date(now.getFullYear(), 0, 1);
+    let w = 0, m = 0, y = 0, t = 0;
+    (state.records || []).forEach((r) => {
+      const d = new Date(String(r.date) + "T00:00:00");
+      if (isNaN(d.getTime())) return;
+      const km = +r.km || 0;
+      t += km;
+      if (d >= yr) y += km;
+      if (d >= mo) m += km;
+      if (d >= wk) w += km;
+    });
+    return { w: w, m: m, y: y, t: t };
+  }
+
   function renderRecords() {
     const recs = state.records;
     const checks = state.checks;
@@ -2011,6 +2044,13 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
           <p class="page-sub">${logged() ? "账号：" + esc(state.profile.username) : "未登录 · 数据存在本机"} · 打卡 ${total} 次 · 连续 ${streak()} 天</p></div>
         <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-primary" data-act="pick-shot">上传跑步截图</button></div>
       </div>
+      <div class="section"><div class="section-head"><h2>跑量统计</h2><span class="hint">按记录日期计算</span></div>
+        <div class="vol-grid">
+          <div class="vol-card"><div class="k">本周</div><div class="v">${volumeStats().w.toFixed(1)}<span>km</span></div></div>
+          <div class="vol-card"><div class="k">本月</div><div class="v">${volumeStats().m.toFixed(1)}<span>km</span></div></div>
+          <div class="vol-card"><div class="k">今年</div><div class="v">${volumeStats().y.toFixed(1)}<span>km</span></div></div>
+          <div class="vol-card"><div class="k">总计</div><div class="v">${volumeStats().t.toFixed(1)}<span>km</span></div></div>
+        </div></div>
       <div class="section"><div class="section-head"><h2>个人最好成绩</h2><span class="hint">自动识别 ±3%</span></div>
         <div class="pb-grid">${pbs.map((p) => p.rec
           ? `<div class="pb-item has"><div class="k">${p.name}</div><div class="v">${fmtHMS(p.rec.sec)}</div><div class="s">${esc(p.rec.date)} · ${(+p.rec.km).toFixed(2)} km</div></div>`
@@ -2549,6 +2589,7 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
     else if (act === "ack-disc") ackDisc();
     else if (act === "open-plan") openPlan(t.dataset.id);
     else if (act === "close-plan") closeModals();
+    else if (act === "plan-period") openPlan(t.dataset.id, t.dataset.period);
     else if (act === "join-plan") joinPlan(t.dataset.id);
     else if (act === "leave-plan") leavePlan(t.dataset.id);
     else if (act === "del-plan") deletePlan(t.dataset.id);
