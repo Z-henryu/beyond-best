@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="zh-CN" data-mode="light">
 <head>
-<script>window.__BUILD__ = "20261029054356";</script>
+<script>window.__BUILD__ = "20261029055258";</script>
 <script>
   window.__bipEvent = null;
   window.addEventListener("beforeinstallprompt", function (e) {
@@ -683,6 +683,16 @@ html[data-app="1"] main { margin-left: 0; max-width: none; padding-bottom: calc(
 .input, input, select, textarea { min-width: 0; max-width: 100%; box-sizing: border-box; }
 .row-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 main, .view, .card, .section { max-width: 100%; }
+
+/* 窄屏：截图区与表单上下排列，避免输入框被挤窄 / 撑宽页面 */
+@media (max-width: 640px) {
+  .shot-pick { flex-direction: column; align-items: stretch; }
+  .shot-box { width: 100%; height: 150px; }
+  .shot-box img { object-fit: contain; background: #fff; }
+  .rec-head { flex-wrap: wrap; }
+  .rec-head > div:last-child { width: 100%; }
+  .rec-head .btn { width: 100%; }
+}
 </style>
 </head>
 <body>
