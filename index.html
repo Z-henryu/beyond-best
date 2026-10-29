@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="zh-CN" data-mode="light">
 <head>
-<script>window.__BUILD__ = "20261029051644";</script>
+<script>window.__BUILD__ = "20261029052829";</script>
 <script>
   window.__bipEvent = null;
   window.addEventListener("beforeinstallprompt", function (e) {
@@ -660,6 +660,24 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
 .vol-card .v { font-size: 22px; font-weight: 800; margin-top: 6px; font-variant-numeric: tabular-nums; }
 .vol-card .v span { font-size: 11px; color: var(--muted); font-weight: 600; margin-left: 3px; }
 .plan-periods { display: flex; gap: 8px; margin-bottom: 12px; }
+
+/* 安卓 WebView：长页面上 backdrop-filter 会导致固定底栏不绘制，改成实底 + 独立图层 */
+.tabbar {
+  background: var(--surface);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  box-shadow: 0 -10px 28px -24px rgba(8, 15, 30, .6);
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* App 内嵌时强制手机布局：即使视口被放大，底部导航也始终显示 */
+html[data-app=1] .side,
+html[data-app=1] .search-trigger,
+html[data-app=1] .acct-btn { display: none; }
+html[data-app=1] .topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+html[data-app=1] .tabbar { display: grid; }
+html[data-app=1] main { margin-left: 0; max-width: none; padding-bottom: calc(96px + var(--safe-b)); }
 </style>
 </head>
 <body>
@@ -884,7 +902,7 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
             <div class="small muted">中长跑训练课表 · 可离线使用</div>
           </div>
         </div>
-        <a class="btn btn-primary install-btn" href="beyond-best.apk" download="BeyondBest-1.2.0.apk">下载安卓版 APK（v1.2.0）</a>
+        <a class="btn btn-primary install-btn" href="beyond-best.apk" download="BeyondBest-1.2.1.apk">下载安卓版 APK（v1.2.1）</a>
         <ol class="install-steps">
           <li>点上面的按钮下载安装包</li>
           <li>在通知栏或「文件管理」里点开它</li>
@@ -2951,6 +2969,10 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
   document.addEventListener("input", (e) => { if (e.target.id === "gsearch") renderSearch(e.target.value); });
 
   /* ================= 启动 ================= */
+  if (/BeyondBestApp/i.test(navigator.userAgent)) {
+    document.documentElement.setAttribute("data-app", "1");
+  }
+
   applyTheme();
   refreshAuth();
   const wm = $("#weekmeta"); if (wm) wm.textContent = S.plan + " · 第 " + (S.block + 1) + " 周";
