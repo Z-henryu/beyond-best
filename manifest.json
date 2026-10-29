@@ -19,5 +19,17 @@
       "sizes": "512x512",
       "type": "image/png"
     }
+  ],
+  "id": "./",
+  "lang": "zh-CN",
+  "dir": "ltr",
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
+  "categories": [
+    "health",
+    "fitness",
+    "sports"
   ]
 }
