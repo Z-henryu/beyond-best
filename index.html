@@ -1890,7 +1890,8 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
           <div class="link-row" data-act="goto" data-view="records">打卡与记录 ›</div>
           <div class="link-row" data-act="goto" data-view="pace">配速换算 ›</div>
           <div class="link-row" data-act="goto" data-view="notes">训练说明 ›</div>
-          <div class="link-row" data-act="open-search">全站搜索 ›</div></div></div>`;
+          <div class="link-row" data-act="open-search">全站搜索 ›</div>
+          <div class="link-row" data-act="toggle-fullscreen">全屏模式（隐藏地址栏）<b>${fsWanted() ? "已开启" : "关闭"}</b></div></div></div>`;
   }
 
   /* ================= 管理后台 ================= */
@@ -2198,6 +2199,7 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
     else if (act === "close-install") closeInstall();
     else if (act === "do-install") doInstall();
     else if (act === "open-in-chrome") openInChrome();
+    else if (act === "toggle-fullscreen") toggleFullscreenMode();
     else if (act === "plaza-clear") {
       plazaFilter = { q: "", from: "", to: "" };
       renderPlaza();
@@ -2318,6 +2320,59 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
     if (deferredPrompt) return "已就绪：点「立即安装到桌面」即可。";
     return "浏览器还没给出安装弹窗（刚更新过就先刷新一次）：也可以点右上角 ⋮ 菜单 →「安装应用 / 添加到主屏幕」。";
   }
+
+  const fsWanted = () => {
+    const v = localStorage.getItem("bb.fs");
+    if (v === "0") return false;
+    if (v === "1") return true;
+    return /android/i.test(navigator.userAgent) && !isStandalone();
+  };
+  const fsActive = () => !!(document.fullscreenElement || document.webkitFullscreenElement);
+
+  function enterFullscreen(silent) {
+    const el = document.documentElement;
+    const fn = el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen;
+    if (!fn) {
+      if (!silent) toast("这台浏览器不支持网页全屏，请用 Chrome 安装到桌面");
+      return;
+    }
+    try {
+      const r = fn.call(el);
+      if (r && r.catch) r.catch(function () {
+        if (!silent) toast(isIOS() ? "iPhone 需要在 Safari 里用「添加到主屏幕」" : "全屏被浏览器拒绝，请再点一次");
+      });
+    } catch (e) {
+      if (!silent) toast("全屏失败");
+    }
+  }
+
+  function toggleFullscreenMode() {
+    if (fsWanted()) {
+      localStorage.setItem("bb.fs", "0");
+      if (fsActive()) {
+        const ex = document.exitFullscreen || document.webkitExitFullscreen;
+        if (ex) try { ex.call(document); } catch (e) {}
+      }
+      toast("已关闭全屏模式");
+    } else {
+      localStorage.setItem("bb.fs", "1");
+      enterFullscreen(false);
+      toast("已开启：下次从桌面打开，点一下自动全屏");
+    }
+    if (VIEW === "me") renderMe();
+  }
+
+  // 从桌面快捷方式打开时，第一次点击就进全屏
+  (function armFullscreen() {
+    if (!fsWanted() || isStandalone() || fsActive()) return;
+    const arm = function () {
+      document.removeEventListener("pointerdown", arm, true);
+      document.removeEventListener("touchstart", arm, true);
+      enterFullscreen(true);
+    };
+    document.addEventListener("pointerdown", arm, true);
+    document.addEventListener("touchstart", arm, true);
+  })();
 
   function openInstall() {
     closeModals("installModal");
