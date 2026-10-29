@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="zh-CN" data-mode="light">
 <head>
-<script>window.__BUILD__ = "20261029042410";</script>
+<script>window.__BUILD__ = "20261029045629";</script>
 <script>
   window.__bipEvent = null;
   window.addEventListener("beforeinstallprompt", function (e) {
@@ -621,6 +621,37 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
   .install-grid { grid-template-columns: 1fr; }
   .install-img { max-height: 38vh; }
 }
+
+/* 新手引导 / 免责声明 / 计划 */
+.onb-opts { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+.onb-opt { text-align: left; border: 1px solid var(--line); background: var(--surface); border-radius: 14px; padding: 14px 16px; cursor: pointer; display: flex; flex-direction: column; gap: 4px; }
+.onb-opt b { font-size: 15px; }
+.onb-opt span { font-size: 12.5px; color: var(--muted); }
+.onb-opt:hover { border-color: var(--brand); }
+.disc-card { width: min(680px, 96vw); }
+.disc-body { font-size: 12.5px; line-height: 1.85; color: var(--ink); max-height: 56vh; overflow: auto; padding-right: 6px; }
+.disc-body p { margin: 0 0 8px; }
+.disc-note { margin-top: 16px; padding: 12px 14px; border-radius: 12px; background: rgba(255,107,61,.1); border: 1px solid rgba(255,107,61,.22); font-size: 12.5px; line-height: 1.7; color: var(--ink); }
+.plan-card { width: min(760px, 96vw); }
+.plan-desc { font-size: 13px; line-height: 1.75; color: var(--ink); white-space: pre-wrap; margin-bottom: 12px; }
+.lb-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 640px) { .lb-grid { grid-template-columns: 1fr; } }
+.lb-col { border: 1px solid var(--line); border-radius: 14px; padding: 12px; background: var(--surface); }
+.lb-col h4 { margin: 0 0 10px; font-size: 13px; }
+.lb-row { display: flex; align-items: center; gap: 8px; padding: 7px 0; border-bottom: 1px dashed var(--line); font-size: 12.5px; }
+.lb-row:last-child { border-bottom: 0; }
+.lb-rank { width: 20px; font-weight: 800; color: var(--muted); font-size: 11px; }
+.lb-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lb-val { font-weight: 800; font-variant-numeric: tabular-nums; }
+.plan-item { cursor: pointer; padding: 14px 16px; margin-bottom: 10px; }
+.plan-item:hover { border-color: var(--brand); }
+.plan-item-head { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+.plan-item-head b { font-size: 14px; }
+.plan-actions { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+.plan-empty { font-size: 12.5px; color: var(--muted); padding: 6px 2px; }
+.plan-banner { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: 12px; background: rgba(255,107,61,.09); border: 1px solid rgba(255,107,61,.2); font-size: 12.5px; line-height: 1.65; margin-bottom: 16px; }
+.disc-bottom { margin-top: 22px; padding: 16px 18px; border-radius: 14px; border: 1px solid var(--line); background: var(--surface-2); font-size: 12px; line-height: 1.85; color: var(--muted); }
+.disc-bottom b { display: block; margin-bottom: 8px; color: var(--ink); font-size: 12.5px; }
 </style>
 </head>
 <body>
@@ -845,7 +876,7 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
             <div class="small muted">中长跑训练课表 · 可离线使用</div>
           </div>
         </div>
-        <a class="btn btn-primary install-btn" href="beyond-best.apk" download="BeyondBest-1.0.0.apk">下载安卓版 APK（v1.0.0）</a>
+        <a class="btn btn-primary install-btn" href="beyond-best.apk" download="BeyondBest-1.1.0.apk">下载安卓版 APK（v1.1.0）</a>
         <ol class="install-steps">
           <li>点上面的按钮下载安装包</li>
           <li>在通知栏或「文件管理」里点开它</li>
@@ -856,6 +887,65 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
       </div>
     </div>
     <div class="install-tip" id="installTip"></div>
+  </div>
+</div>
+
+<!-- 新手引导 -->
+<div class="modal" id="onboardModal" aria-hidden="true">
+  <div class="modal-card onb-card" role="dialog" aria-label="选择跑者类型">
+    <h3>开始之前，了解一下你</h3>
+    <div id="onbStep1">
+      <p class="auth-sub">我们会把适合你的课表排在前面，并默认打开对应周期。</p>
+      <div class="onb-opts">
+        <button class="onb-opt" data-act="onboard-level" data-level="novice">
+          <b>跑步新手</b><span>刚开始系统训练，周跑量不大</span></button>
+        <button class="onb-opt" data-act="onboard-level" data-level="advanced">
+          <b>进阶跑者</b><span>有稳定训练基础，想提高成绩</span></button>
+      </div>
+    </div>
+    <div id="onbStep2" style="display:none">
+      <p class="auth-sub">你主要练哪个方向？</p>
+      <div class="onb-opts">
+        <button class="onb-opt" data-act="onboard-focus" data-focus="middle">
+          <b>中距离</b><span>800 / 1500 米为主</span></button>
+        <button class="onb-opt" data-act="onboard-focus" data-focus="long">
+          <b>长距离</b><span>5000 米以上 / 半马</span></button>
+      </div>
+      <button class="btn btn-sm" data-act="onboard-back" style="margin-top:12px">返回上一步</button>
+    </div>
+    <button class="btn btn-sm" data-act="close-onboard" style="margin-top:14px">以后再说</button>
+  </div>
+</div>
+
+<!-- 免责声明 -->
+<div class="modal" id="discModal" aria-hidden="true">
+  <div class="modal-card disc-card" role="dialog" aria-label="训练免责声明">
+    <h3>温馨提示 · 训练免责声明</h3>
+    <div class="disc-body" id="discBody"></div>
+    <button class="btn btn-primary install-btn" data-act="ack-disc">我已阅读并同意</button>
+  </div>
+</div>
+
+<!-- 计划详情 -->
+<div class="modal" id="planModal" aria-hidden="true">
+  <div class="modal-card plan-card" role="dialog" aria-label="计划详情">
+    <button class="modal-x" data-act="close-plan" aria-label="关闭">×</button>
+    <h3 id="planTitle">训练计划</h3>
+    <p class="auth-sub" id="planSub"></p>
+    <div id="planBody"></div>
+  </div>
+</div>
+
+<!-- 创建计划 -->
+<div class="modal" id="planCreate" aria-hidden="true">
+  <div class="modal-card" role="dialog" aria-label="创建计划">
+    <button class="modal-x" data-act="close-plan-create" aria-label="关闭">×</button>
+    <h3>创建训练计划</h3>
+    <div class="field"><label>计划名称</label><input id="plName" placeholder="例如：冬训 10 公里破 40"></div>
+    <div class="field"><label>计划说明</label><textarea id="plDesc" rows="3" placeholder="目标、周期、每周安排……"></textarea></div>
+    <div class="field"><label>目标（可选）</label><input id="plGoal" placeholder="例如：5 公里 20 分"></div>
+    <div class="auth-msg" id="plMsg"></div>
+    <button class="btn btn-primary install-btn" data-act="do-create-plan">创建</button>
   </div>
 </div>
 
@@ -875,6 +965,14 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
     url: "https://unzognpfxixciyhycaqs.supabase.co",
     key: "sb_publishable_SEGwaLNgUO34EOPurY4pnA_AjN5I_-X"
   };
+  const DISCLAIMER = [
+    "1. 本中长跑训练方案仅为训练参考，不属于医疗诊断、专业执教指导，无法保证训练效果、达标成绩。",
+    "2. 本人知晓长跑运动存在固有风险，包含但不限于肌肉拉伤、关节损伤、摔倒、心脑血管意外等。参与训练前，确认自身无心脏病、高血压等不适合剧烈运动的疾病，身体条件允许开展训练；如有既往伤病，务必遵医嘱。",
+    "3. 所有训练为自愿参与，训练安排、配速、组数均可自行调整，不强求完成。训练过程中一旦感到疼痛、胸闷、眩晕、呼吸困难，须立即停止休息或就医。",
+    "4. 参与者本人对训练期间的人身安全、个人财产安全负全部责任。因遵循本计划训练所引发的一切意外、伤病、损失，计划编写者不承担赔偿及相关法律责任。",
+    "5. 阅读并使用本训练计划，即代表已阅读、理解并同意以上全部条款。"
+  ];
+
   const LS = { prefs: "bb4.prefs", guest: "bb4.guest", session: "bb4.session" };
 
   const $ = (s, r) => (r || document).querySelector(s);
@@ -933,7 +1031,8 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
   const state = {
     profile: null, cloudReady: false, busy: false,
     checks: guest.checks, notes: guest.notes, records: guest.records,
-    posts: [], joinCounts: {}, myJoins: {}, joinsOfMine: {}, users: [], allRecords: []
+    posts: [], joinCounts: {}, myJoins: {}, joinsOfMine: {}, users: [], allRecords: [],
+    plans: [], myPlanIds: {}
   };
   const logged = () => !!state.profile;
   const admin = () => !!(state.profile && state.profile.role === "admin");
@@ -1156,11 +1255,23 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
   async function hydrate() {
     state.busy = true;
     try {
-      const me = await apiSoft(
-        "/rest/v1/profiles?select=id,username,phone,role,avatar_url&id=eq." + session.uid,
-        "/rest/v1/profiles?select=id,username,phone,role&id=eq." + session.uid
-      );
-      state.profile = me && me[0] ? { id: me[0].id, username: me[0].username, phone: me[0].phone, role: me[0].role, avatar_url: me[0].avatar_url || "" } : null;
+      let me = null;
+      try {
+        me = await api("/rest/v1/profiles?select=id,username,phone,role,avatar_url,level,focus,onboarded,disclaimer_ack&id=eq." + session.uid);
+      } catch (e1) {
+        if (!missingCol(e1)) throw e1;
+        try {
+          me = await api("/rest/v1/profiles?select=id,username,phone,role,avatar_url&id=eq." + session.uid);
+        } catch (e2) {
+          me = await api("/rest/v1/profiles?select=id,username,phone,role&id=eq." + session.uid);
+        }
+      }
+      state.profile = me && me[0] ? {
+        id: me[0].id, username: me[0].username, phone: me[0].phone, role: me[0].role,
+        avatar_url: me[0].avatar_url || "",
+        level: me[0].level || "", focus: me[0].focus || "",
+        onboarded: !!me[0].onboarded, disclaimer_ack: !!me[0].disclaimer_ack
+      } : null;
       const [cins, recs] = await Promise.all([
         api("/rest/v1/checkins?select=plan_key,block,day,note,updated_at"),
         api("/rest/v1/records?select=id,date,km,sec,src,shot,created_at&order=date.desc")
@@ -1177,6 +1288,7 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
       state.busy = false;
       refreshAuth();
       renderCurrent();
+      maybeOnboard();
     }
   }
 
@@ -1199,6 +1311,214 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
       state.posts = [];
       if (state.cloudReady) toast("广场加载失败：" + e.message);
     }
+  }
+
+  async function loadPlans() {
+    if (!session) { state.plans = []; state.myPlanIds = {}; return; }
+    try {
+      const plans = await api("/rest/v1/plans?select=id,owner_id,owner_name,name,description,goal,created_at&order=created_at.desc");
+      state.plans = plans || [];
+    } catch (e) {
+      state.plans = [];
+      if (!missingCol(e) && e.code !== "PGRST205") console.warn(e.message);
+    }
+    try {
+      const mine = await api("/rest/v1/plan_members?select=plan_id&user_id=eq." + state.profile.id);
+      state.myPlanIds = {};
+      (mine || []).forEach((m) => { state.myPlanIds[m.plan_id] = true; });
+    } catch (e) {
+      state.myPlanIds = {};
+    }
+  }
+
+  function planListHTML() {
+    if (!session) return '<div class="plan-empty">登录后可以创建或加入计划。</div>';
+    if (!state.plans.length) return '<div class="plan-empty">还没有计划。点右上角「创建计划」发起一个，加入后打卡和跑量会自动算进排行榜。</div>';
+    const card = (p) => `<div class="card plan-item" data-act="open-plan" data-id="${p.id}">
+      <div class="plan-item-head"><b>${esc(p.name)}</b>${state.myPlanIds[p.id] ? '<span class="badge user">已加入</span>' : ""}</div>
+      ${p.description ? `<div class="small muted">${esc(p.description).slice(0, 90)}</div>` : ""}
+      ${p.goal ? `<div class="small muted" style="margin-top:4px">目标：${esc(p.goal)}</div>` : ""}
+    </div>`;
+    const mine = state.plans.filter((p) => state.myPlanIds[p.id]);
+    const rest = state.plans.filter((p) => !state.myPlanIds[p.id]);
+    return (mine.length ? '<div class="small muted" style="margin-bottom:8px">我参与的</div>' + mine.map(card).join("") : "") +
+      (rest.length ? '<div class="small muted" style="margin:12px 0 8px">全部计划</div>' + rest.map(card).join("") : "");
+  }
+
+  async function openPlan(id) {
+    const plan = state.plans.find((p) => p.id === id);
+    if (!plan) return;
+    closeModals("planModal");
+    $("#planTitle").textContent = plan.name;
+    $("#planSub").textContent = [plan.owner_name ? "发起人 " + plan.owner_name : "", plan.goal ? "目标 " + plan.goal : ""].filter(Boolean).join(" · ");
+    $("#planBody").innerHTML = '<div class="sempty">加载中…</div>';
+    $("#planModal").classList.add("show");
+    document.body.classList.add("no-scroll");
+    let rows = [];
+    try {
+      rows = await api("/rest/v1/rpc/plan_leaderboard", { method: "POST", body: { p_plan_id: id } }) || [];
+    } catch (e) {
+      $("#planBody").innerHTML = '<div class="sempty">排行榜加载失败：' + esc(e.message) + "</div>";
+      return;
+    }
+    renderPlanDetail(plan, rows);
+  }
+
+  function renderPlanDetail(plan, rows) {
+    const mine = !!state.myPlanIds[plan.id];
+    const owner = state.profile && plan.owner_id === state.profile.id;
+    const byCheck = rows.slice().sort((a, b) => (b.checkins - a.checkins) || (b.km - a.km));
+    const byKm = rows.slice().sort((a, b) => (b.km - a.km) || (b.checkins - a.checkins));
+    const list = (arr, field, fmtv) => arr.length
+      ? arr.slice(0, 20).map((r, i) => `<div class="lb-row">
+          <span class="lb-rank">${i + 1}</span>
+          ${avatarHTML(r.avatar_url, r.username, "", "width:22px;height:22px;font-size:10px")}
+          <span class="lb-name">${esc(r.username)}</span>
+          <span class="lb-val">${fmtv(r[field])}</span>
+        </div>`).join("")
+      : '<div class="plan-empty">还没有人加入</div>';
+    $("#planBody").innerHTML = `
+      ${plan.description ? `<div class="plan-desc">${esc(plan.description)}</div>` : ""}
+      <div class="lb-grid">
+        <div class="lb-col"><h4>打卡次数榜</h4>${list(byCheck, "checkins", (v) => v + " 次")}</div>
+        <div class="lb-col"><h4>跑步距离榜</h4>${list(byKm, "km", (v) => (+v).toFixed(1) + " km")}</div>
+      </div>
+      <div class="plan-actions">
+        ${mine
+          ? '<button class="btn btn-sm" data-act="leave-plan" data-id="' + plan.id + '">退出计划</button>'
+          : '<button class="btn btn-sm btn-primary" data-act="join-plan" data-id="' + plan.id + '">加入计划</button>'}
+        ${(owner || admin()) ? '<button class="btn btn-sm danger-text" data-act="del-plan" data-id="' + plan.id + '">删除计划</button>' : ""}
+      </div>
+      <div class="small muted" style="margin-top:10px">加入后，你的打卡次数和跑步距离会自动计入这两个榜单。</div>`;
+  }
+
+  async function joinPlan(id) {
+    if (!logged()) { toast("请先登录"); return; }
+    try {
+      await api("/rest/v1/plan_members", { method: "POST", body: { plan_id: id, user_id: state.profile.id } });
+      state.myPlanIds[id] = true;
+      await openPlan(id);
+      renderRecords();
+      toast("已加入计划");
+    } catch (e) { toast("加入失败：" + e.message); }
+  }
+
+  async function leavePlan(id) {
+    if (!logged()) return;
+    try {
+      await api("/rest/v1/plan_members?plan_id=eq." + id + "&user_id=eq." + state.profile.id, { method: "DELETE" });
+      delete state.myPlanIds[id];
+      await openPlan(id);
+      renderRecords();
+      toast("已退出计划");
+    } catch (e) { toast("退出失败：" + e.message); }
+  }
+
+  async function deletePlan(id) {
+    if (!confirm("删除这个计划？排行榜数据也会一起删除。")) return;
+    try {
+      await api("/rest/v1/plans?id=eq." + id, { method: "DELETE" });
+      state.plans = state.plans.filter((p) => p.id !== id);
+      delete state.myPlanIds[id];
+      closeModals();
+      renderRecords();
+      toast("计划已删除");
+    } catch (e) { toast("删除失败：" + e.message); }
+  }
+
+  async function doCreatePlan() {
+    if (!logged()) { $("#plMsg").textContent = "请先登录"; return; }
+    const name = $("#plName").value.trim();
+    const desc = $("#plDesc").value.trim();
+    const goal = $("#plGoal").value.trim();
+    if (!name) { $("#plMsg").textContent = "给计划起个名字"; return; }
+    try {
+      const rows = await api("/rest/v1/plans", {
+        method: "POST",
+        body: { owner_id: state.profile.id, owner_name: state.profile.username, name, description: desc, goal },
+        headers: { Prefer: "return=representation" }
+      });
+      const id = rows && rows[0] ? rows[0].id : null;
+      if (id) {
+        try { await api("/rest/v1/plan_members", { method: "POST", body: { plan_id: id, user_id: state.profile.id } }); state.myPlanIds[id] = true; } catch (e) {}
+      }
+      ["#plName", "#plDesc", "#plGoal"].forEach((x) => { const el = $(x); if (el) el.value = ""; });
+      $("#plMsg").textContent = "";
+      closeModals();
+      await loadPlans();
+      renderRecords();
+      toast("计划已创建");
+    } catch (e) { $("#plMsg").textContent = e.message; }
+  }
+
+  /* ---------------- 新手引导 / 免责声明 ---------------- */
+  function maybeOnboard() {
+    if (!logged()) return;
+    const p = state.profile;
+    if (!p) return;
+    if (!p.onboarded) { openOnboard(); return; }
+    if (!p.disclaimer_ack) openDisc();
+  }
+
+  function openOnboard() {
+    closeModals("onboardModal");
+    $("#onbStep1").style.display = "";
+    $("#onbStep2").style.display = "none";
+    $("#onboardModal").classList.add("show");
+    document.body.classList.add("no-scroll");
+  }
+
+  async function chooseLevel(level) {
+    if (level === "advanced") {
+      $("#onbStep1").style.display = "none";
+      $("#onbStep2").style.display = "";
+      return;
+    }
+    await finishOnboard("novice", null);
+  }
+
+  async function finishOnboard(level, focus) {
+    const patch = { level: level, focus: focus, onboarded: true };
+    Object.assign(state.profile, patch);
+    try {
+      await api("/rest/v1/profiles?id=eq." + state.profile.id, {
+        method: "PATCH", body: patch, headers: { Prefer: "return=minimal" }
+      });
+    } catch (e) {}
+    S.plan = pickPlanFor(level, focus);
+    S.block = 0;
+    savePrefs();
+    closeModals();
+    renderCurrent();
+    if (!state.profile.disclaimer_ack) openDisc();
+  }
+
+  async function skipOnboard() {
+    Object.assign(state.profile, { onboarded: true });
+    try {
+      await api("/rest/v1/profiles?id=eq." + state.profile.id, {
+        method: "PATCH", body: { onboarded: true }, headers: { Prefer: "return=minimal" }
+      });
+    } catch (e) {}
+    closeModals();
+    if (!state.profile.disclaimer_ack) openDisc();
+  }
+
+  function openDisc() {
+    closeModals("discModal");
+    $("#discBody").innerHTML = DISCLAIMER.map((x) => "<p>" + esc(x) + "</p>").join("");
+    $("#discModal").classList.add("show");
+    document.body.classList.add("no-scroll");
+  }
+
+  async function ackDisc() {
+    state.profile.disclaimer_ack = true;
+    try {
+      await api("/rest/v1/profiles?id=eq." + state.profile.id, {
+        method: "PATCH", body: { disclaimer_ack: true }, headers: { Prefer: "return=minimal" }
+      });
+    } catch (e) {}
+    closeModals();
   }
 
   async function loadAdmin() {
@@ -1317,7 +1637,24 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
 
   /* ---------------- 课表助手 ---------------- */
   const planByKey = (k) => DATA.plans.find((p) => p.key === k) || DATA.plans[0];
-  const groups = ["中距离", "长距离", "新手入门", "过渡期"];
+  const BASE_GROUPS = ["中距离", "长距离", "新手入门", "过渡期"];
+  function prefGroup() {
+    const p = state.profile;
+    if (!p || !p.level) return null;
+    if (p.level === "novice") return "新手入门";
+    if (p.level === "advanced") return p.focus === "long" ? "长距离" : "中距离";
+    return null;
+  }
+  function groupOrder() {
+    const pref = prefGroup();
+    if (!pref) return BASE_GROUPS;
+    return [pref].concat(BASE_GROUPS.filter((g) => g !== pref));
+  }
+  function pickPlanFor(level, focus) {
+    const g = level === "novice" ? "新手入门" : (focus === "long" ? "长距离" : "中距离");
+    const list = DATA.plans.filter((p) => p.group === g);
+    return ((list.find((p) => p.phase === "基础期") || list[0]) || DATA.plans[0]).key;
+  }
   const phaseList = (g) => DATA.plans.filter((p) => p.group === g);
   function weekParts(t) { const i = t.indexOf("——"); return i > 0 ? [t.slice(0, i), t.slice(i + 2)] : [t, ""]; }
   const todayIdx = (new Date().getDay() + 6) % 7;
@@ -1528,15 +1865,17 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
       <div class="eyebrow">Training plan</div>
       <h1 class="page-title">${esc(cur.key)}</h1>
       <p class="page-sub">共 ${cur.blocks.length} 个周模板 · 内容与 Excel 课表一致</p>
+      <div class="plan-banner"><span>⚠️</span><div>本训练方案仅供参考，跑步运动存在风险，请结合自身健康情况量力而行。</div></div>
       <div class="filter-row">
-        <div class="seg" id="seg-group">${groups.map((g) => `<button data-group="${g}" class="${g === cur.group ? "is-active" : ""}">${g}</button>`).join("")}</div>
+        <div class="seg" id="seg-group">${groupOrder().map((g) => `<button data-group="${g}" class="${g === cur.group ? "is-active" : ""}">${g}</button>`).join("")}</div>
         <div class="search"><input id="q" type="search" placeholder="搜索：阈值 / 力量 / 休息" value="${esc(q0)}" autocomplete="off"></div>
       </div>
       ${(cur.group === "中距离" || cur.group === "长距离") ? `<div class="filter-row" style="margin-top:-8px"><div class="seg" id="seg-phase">
         ${phaseList(cur.group).map((p) => `<button data-plan="${esc(p.key)}" class="${p.key === cur.key ? "is-active" : ""}">${esc(p.phase)}</button>`).join("")}</div></div>` : ""}
       <div id="plan-list"></div>
       <div class="section-head" style="margin-top:26px"><h2>提示</h2></div>
-      <div class="notes-card">质量课日期不要随意挪动；两节质量课之间至少隔 48 小时。状态不好时把当天质量课降级为轻松跑，不要在同一周补课。</div>`;
+      <div class="notes-card">质量课日期不要随意挪动；两节质量课之间至少隔 48 小时。状态不好时把当天质量课降级为轻松跑，不要在同一周补课。</div>
+      <div class="disc-bottom"><b>免责声明</b>${DISCLAIMER.map((x) => "<p>" + esc(x) + "</p>").join("")}</div>`;
     const paint = () => {
       const list = $("#plan-list"); if (!list) return;
       const q = (window.__q || "").trim();
@@ -1675,6 +2014,9 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
           : `<div class="pb-item empty"><div class="k">${p.name}</div><div class="v">暂无</div><div class="s">—</div></div>`).join("")}</div>
         ${bestFor(5, recs) ? `<div style="margin-top:12px"><button class="btn btn-sm" data-act="use-pb">用 5 公里 PB（${fmtHMS(bestFor(5, recs).sec)}）更新配速</button></div>` : ""}
       </div>
+      <div class="section"><div class="section-head"><h2>训练计划</h2>
+        <span class="hint"><button class="btn btn-sm" data-act="open-plan-create">创建计划</button></span></div>
+        ${planListHTML()}</div>
       <div class="section"><div class="section-head"><h2>打卡日历</h2><span class="hint">最近 12 周</span></div>
         <div class="card" style="padding:16px 18px"><div class="hm">${cells}</div></div></div>
       <div class="section"><div class="section-head"><h2>添加记录</h2><span class="hint">截图 + 手填数字</span></div>
@@ -2044,6 +2386,7 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
     renderCurrent();
     if (view === "plaza") loadPlaza().then(renderPlaza);
     if (view === "admin") loadAdmin().catch((e) => toast(e.message));
+    if (view === "records") loadPlans().then(() => { if (VIEW === "records") renderRecords(); }).catch(() => {});
     if (!(opts && opts.keep)) window.scrollTo({ top: 0, behavior: "smooth" });
     if (location.hash.slice(1) !== view) { try { history.replaceState(null, "", "#" + view); } catch (e) {} }
   }
@@ -2072,7 +2415,7 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
   function closeSheet() { $("#sheet").classList.remove("show"); $("#backdrop").classList.remove("show"); document.body.classList.remove("no-scroll"); sheetCtx = null; }
 
   function closeModals(keep) {
-    ["searchModal", "authModal", "accountModal", "postModal", "joinsModal", "installModal"].forEach(function (id) {
+    ["searchModal", "authModal", "accountModal", "postModal", "joinsModal", "installModal", "onboardModal", "discModal", "planModal", "planCreate"].forEach(function (id) {
       if (id === keep) return;
       const el = $("#" + id);
       if (el) el.classList.remove("show");
@@ -2196,6 +2539,23 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
     else if (act === "view-joins") openJoins(t.dataset.id);
     else if (act === "close-joins") closeJoins();
     else if (act === "pick-avatar") pickAvatar();
+    else if (act === "onboard-level") chooseLevel(t.dataset.level);
+    else if (act === "onboard-focus") finishOnboard("advanced", t.dataset.focus);
+    else if (act === "onboard-back") { $("#onbStep2").style.display = "none"; $("#onbStep1").style.display = ""; }
+    else if (act === "close-onboard") skipOnboard();
+    else if (act === "ack-disc") ackDisc();
+    else if (act === "open-plan") openPlan(t.dataset.id);
+    else if (act === "close-plan") closeModals();
+    else if (act === "join-plan") joinPlan(t.dataset.id);
+    else if (act === "leave-plan") leavePlan(t.dataset.id);
+    else if (act === "del-plan") deletePlan(t.dataset.id);
+    else if (act === "open-plan-create") {
+      closeModals("planCreate");
+      $("#planCreate").classList.add("show");
+      document.body.classList.add("no-scroll");
+    }
+    else if (act === "close-plan-create") closeModals();
+    else if (act === "do-create-plan") doCreatePlan();
     else if (act === "open-install") openInstall();
     else if (act === "close-install") closeInstall();
     else if (act === "do-install") doInstall();
