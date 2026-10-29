@@ -1,6 +1,13 @@
 <!doctype html>
 <html lang="zh-CN" data-mode="light">
 <head>
+<script>
+  window.__bipEvent = null;
+  window.addEventListener("beforeinstallprompt", function (e) {
+    e.preventDefault();
+    window.__bipEvent = e;
+  });
+</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Beyond Best · 中长跑训练课表</title>
@@ -837,6 +844,7 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
           </div>
         </div>
         <button class="btn btn-primary install-btn" data-act="do-install" id="installBtn">立即安装到桌面</button>
+        <button class="btn install-btn" data-act="open-in-chrome" id="chromeBtn" style="display:none">用 Chrome 打开并安装</button>
         <ol class="install-steps">
           <li>点上面的按钮，弹窗里选「安装」</li>
           <li>如果没弹窗：点浏览器右上角 ⋮ 菜单</li>
@@ -942,6 +950,8 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
   const isWeChat = () => /micromessenger/i.test(navigator.userAgent);
   const isIOS = () => /iphone|ipad|ipod/i.test(navigator.userAgent) ||
     (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+
+  if (window.__bipEvent) deferredPrompt = window.__bipEvent;
 
   window.addEventListener("beforeinstallprompt", function (e) {
     e.preventDefault();
@@ -2186,6 +2196,7 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
     else if (act === "open-install") openInstall();
     else if (act === "close-install") closeInstall();
     else if (act === "do-install") doInstall();
+    else if (act === "open-in-chrome") openInChrome();
     else if (act === "plaza-clear") {
       plazaFilter = { q: "", from: "", to: "" };
       renderPlaza();
@@ -2287,16 +2298,30 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
     document.body.classList.add("no-scroll");
     const tip = $("#installTip");
     const btn = $("#installBtn");
+    const chromeBtn = $("#chromeBtn");
+    const showChrome = !deferredPrompt && !isIOS() && !isStandalone() && /android/i.test(navigator.userAgent);
     if (btn) {
       btn.disabled = false;
+      btn.style.display = showChrome ? "none" : "";
       btn.textContent = deferredPrompt ? "立即安装到桌面" : "查看安装方法";
     }
+    if (chromeBtn) chromeBtn.style.display = showChrome ? "" : "none";
     if (tip) tip.textContent = installTipText();
   }
 
   function closeInstall() {
     $("#installModal").classList.remove("show");
     document.body.classList.remove("no-scroll");
+  }
+
+  function openInChrome() {
+    const u = location.href.split("#")[0];
+    if (!/android/i.test(navigator.userAgent)) { location.href = u; return; }
+    const rest = u.replace(/^https?:\/\//, "");
+    location.href = "intent://" + rest + "#Intent;scheme=https;package=com.android.chrome;end";
+    setTimeout(function () {
+      toast("如果没跳转，说明没装 Chrome");
+    }, 2500);
   }
 
   async function doInstall() {
@@ -2453,7 +2478,17 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
     if (!("serviceWorker" in navigator)) return;
     if (location.protocol !== "http:" && location.protocol !== "https:") return;
     try {
-      navigator.serviceWorker.register("./sw.js").catch(function () {});
+      navigator.serviceWorker.register("./sw.js").then(function () {
+        if (navigator.serviceWorker.controller) return;
+        if (sessionStorage.getItem("bbSwReload") === "1") return;
+        navigator.serviceWorker.ready.then(function () {
+          setTimeout(function () {
+            if (navigator.serviceWorker.controller) return;
+            sessionStorage.setItem("bbSwReload", "1");
+            location.reload();
+          }, 800);
+        });
+      }).catch(function () {});
     } catch (e) {}
   })();
 
