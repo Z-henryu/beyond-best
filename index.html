@@ -816,6 +816,31 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
     if (/^\d{1,5}$/.test(t)) return +t;
     return null;
   }
+  let toastTimer = null;
+  function toast(msg) {
+    const el = document.getElementById("toast");
+    if (!el) return;
+    el.textContent = msg;
+    el.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { el.classList.remove("show"); }, 2200);
+  }
+
+  function copy(text) {
+    const done = function () { toast("已复制"); };
+    const fail = function () {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand("copy"); done(); } catch (e) { toast("复制失败"); }
+      ta.remove();
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done, fail);
+    } else fail();
+  }
+
   function dstr(d) { return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()); }
   function lsGet(k, def) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : def; } catch (e) { return def; } }
   function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { toast("本地存储已满"); } }
@@ -1476,7 +1501,7 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
         <div class="pace-out" id="out15">${rows(MID_OFF, p15)}</div></div>
       <div class="section"><div class="section-head"><h2>长距离 5000 / 10000 / 半马</h2><span class="hint" id="h5">P5k = ${fmt(p5)}/km</span></div>
         <div class="pace-out" id="out5">${rows(LONG_OFF, p5)}</div></div>
-      <div class="section"><button class="btn btn-primary" data-act="copy-pace">复制配速卡</button></div>${blocks}`;
+      <div class="section"><button class="btn btn-primary" data-act="copy-pace">复制配速卡</button></div><div id="paceBlocks">${blocks}</div>`;
     const bind = (id, key, out, hint, offs, div) => {
       const el = $(id); if (!el) return;
       el.addEventListener("input", () => {
@@ -1489,6 +1514,7 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
     };
     bind("#pb15", "pb1500", "#out15", "#h15", MID_OFF, 1.5);
     bind("#pb5", "pb5000", "#out5", "#h5", LONG_OFF, 5);
+    $$("#paceBlocks > .section").forEach(function (el, i) { el.dataset.sec = i; });
   }
 
   let openAcc = 0;
@@ -1845,18 +1871,48 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
   }
   function openSearch() { closeModals("searchModal"); $("#searchModal").classList.add("show"); document.body.classList.add("no-scroll"); const i = $("#gsearch"); i.value = ""; renderSearch(""); setTimeout(() => i.focus(), 40); }
   function closeSearch() { $("#searchModal").classList.remove("show"); document.body.classList.remove("no-scroll"); }
+  function flashTo(el) {
+    if (!el) return;
+    const y = el.getBoundingClientRect().top + window.scrollY - 90;
+    window.scrollTo(0, Math.max(0, y));
+    el.classList.add("flash");
+    setTimeout(function () { el.classList.remove("flash"); }, 1700);
+  }
+
   function gotoResult(i) {
-    const e = getIndex()[i]; if (!e) return;
+    const e = getIndex()[i];
+    if (!e) return;
     closeSearch();
-    if (e.go.view === "plan") {
-      S.plan = e.go.plan; S.block = e.go.block; savePrefs(); go("plan");
-      setTimeout(() => {
-        const el = $('.day[data-block="' + e.go.block + '"][data-day="' + e.go.day + '"]');
-        if (el) { el.scrollIntoView({ behavior: "smooth", block: "center" }); el.classList.add("flash"); setTimeout(() => el.classList.remove("flash"), 1600); }
-      }, 120);
+    const g = e.go || {};
+
+    if (g.view === "plan") {
+      S.plan = g.plan; S.block = g.block; savePrefs();
+      go("plan");
+      setTimeout(function () {
+        flashTo($('.day[data-block="' + g.block + '"][data-day="' + g.day + '"]'));
+      }, 160);
       return;
     }
-    go(e.go.view);
+
+    if (g.view === "notes") {
+      openAcc = (typeof g.sec === "number") ? g.sec : 0;
+      go("notes");
+      setTimeout(function () {
+        const el = $('[data-acc="' + openAcc + '"]');
+        if (el) { el.classList.add("is-open"); flashTo(el); }
+      }, 160);
+      return;
+    }
+
+    if (g.view === "pace") {
+      go("pace");
+      setTimeout(function () {
+        flashTo($('#view-pace .section[data-sec="' + (g.sec || 0) + '"]'));
+      }, 160);
+      return;
+    }
+
+    go(g.view);
   }
 
   /* ================= 路由 ================= */
@@ -2205,7 +2261,7 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
   }
 
   async function doJoin(id) {
-    if (!logged()) { toast("登录后才能申请加入"); openAuth("login"); return; }
+    if (!logged()) { toast("您尚未登录，请先登录"); openAuth("login"); return; }
     if (state.myJoins[id]) { toast("已经申请过了"); return; }
     const msg = prompt("留个言（可选）：几点到、能不能跟上配速", "") || "";
     try {
@@ -2220,66 +2276,6 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
       state.joinCounts[id] = (state.joinCounts[id] || 0) + 1;
       renderPlaza(); toast("已申请");
     } catch (e) { toast("申请失败：" + e.message); }
-  }
-
-  function avatarHTML(url, name, cls, extra) {
-    const initial = (name || "?").slice(0, 1).toUpperCase();
-    const style = extra || "";
-    if (url) return '<span class="avatar ' + (cls || "") + '" style="' + style + '"><img src="' + url + '" alt=""></span>';
-    return '<span class="avatar ' + (cls || "") + '" style="' + style + '">' + esc(initial) + "</span>";
-  }
-
-  function compressSquare(file, size, quality, cb) {
-    const img = new Image();
-    const url = URL.createObjectURL(file);
-    img.onload = function () {
-      const side = Math.min(img.width, img.height);
-      const c = document.createElement("canvas");
-      c.width = c.height = size;
-      c.getContext("2d").drawImage(
-        img, (img.width - side) / 2, (img.height - side) / 2, side, side, 0, 0, size, size
-      );
-      let out = "";
-      try { out = c.toDataURL("image/jpeg", quality); } catch (e) {}
-      URL.revokeObjectURL(url);
-      cb(out);
-    };
-    img.onerror = function () { URL.revokeObjectURL(url); cb(""); };
-    img.src = url;
-  }
-
-  function pickAvatar() {
-    if (!logged()) { toast("登录后才能设置头像"); return; }
-    const i = document.createElement("input");
-    i.type = "file";
-    i.accept = "image/*";
-    i.onchange = function () {
-      const f = i.files[0];
-      if (!f) return;
-      compressSquare(f, 200, 0.8, async function (data) {
-        if (!data) { toast("图片读取失败"); return; }
-        try {
-          await api("/rest/v1/profiles?id=eq." + state.profile.id, {
-            method: "PATCH", body: { avatar_url: data }, headers: { Prefer: "return=minimal" }
-          });
-          state.profile.avatar_url = data;
-          refreshAuth(); renderMe(); renderPlaza();
-          toast("头像已更新");
-        } catch (e) {
-          toast(missingCol(e) ? "请先在 Supabase 执行 add-social-updates.sql" : "上传失败：" + e.message);
-        }
-      });
-    };
-    i.click();
-  }
-
-  function refreshAuth() {
-    const name = state.profile ? state.profile.username : null;
-    const initial = name ? name.slice(0, 1).toUpperCase() : "登";
-    ["avatarSide", "avatarTop", "avatarBig"].forEach((id) => { const el = $("#" + id); if (el) el.textContent = initial; });
-    const lbl = $("#acctLabelSide"); if (lbl) lbl.textContent = name || "登录 / 注册";
-    const na = $("#navAdmin"); if (na) na.style.display = admin() ? "" : "none";
-    const banner = $("#cloudBanner"); if (banner) banner.style.display = state.cloudReady ? "none" : "";
   }
 
   /* ================= 键盘 / 遮罩 ================= */
