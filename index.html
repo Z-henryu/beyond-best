@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="zh-CN" data-mode="light">
 <head>
-<script>window.__BUILD__ = "20261029064144";</script>
+<script>window.__BUILD__ = "20261029064935";</script>
 <script>
   window.__bipEvent = null;
   window.addEventListener("beforeinstallprompt", function (e) {
@@ -1557,6 +1557,8 @@ main, .view, .card, .section { max-width: 100%; }
         });
       } catch (e) {}
     }
+    S.level = level;
+    S.focus = focus || "";
     S.plan = pickPlanFor(level, focus);
     S.block = 0;
     savePrefs();
@@ -1713,10 +1715,10 @@ main, .view, .card, .section { max-width: 100%; }
   const planByKey = (k) => DATA.plans.find((p) => p.key === k) || DATA.plans[0];
   const BASE_GROUPS = ["中距离", "长距离", "新手入门", "过渡期"];
   function prefGroup() {
-    const p = state.profile;
-    if (!p || !p.level) return null;
-    if (p.level === "novice") return "新手入门";
-    if (p.level === "advanced") return p.focus === "long" ? "长距离" : "中距离";
+    const lv = (state.profile && state.profile.level) || S.level || "";
+    const fc = (state.profile && state.profile.focus) || S.focus || "";
+    if (lv === "novice") return "新手入门";
+    if (lv === "advanced") return fc === "long" ? "长距离" : "中距离";
     return null;
   }
   function groupOrder() {
@@ -1933,10 +1935,11 @@ main, .view, .card, .section { max-width: 100%; }
   }
 
   function prefText() {
-    const p = state.profile;
-    if (!p || !p.level) return "未设置偏好";
-    if (p.level === "novice") return "偏好：新手";
-    return "偏好：进阶 · " + (p.focus === "long" ? "长距离" : "中距离");
+    const lv = (state.profile && state.profile.level) || S.level;
+    const fc = (state.profile && state.profile.focus) || S.focus;
+    if (!lv) return "未设置偏好";
+    if (lv === "novice") return "偏好：新手";
+    return "偏好：进阶 · " + (fc === "long" ? "长距离" : "中距离");
   }
 
   function renderPlan() {
