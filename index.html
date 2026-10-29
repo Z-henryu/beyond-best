@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="zh-CN" data-mode="light">
 <head>
-<script>window.__BUILD__ = "20261029045629";</script>
+<script>window.__BUILD__ = "20261029045949";</script>
 <script>
   window.__bipEvent = null;
   window.addEventListener("beforeinstallprompt", function (e) {
@@ -1266,6 +1266,7 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
           me = await api("/rest/v1/profiles?select=id,username,phone,role&id=eq." + session.uid);
         }
       }
+      state.hasOnboardCols = !!(me && me[0] && ("onboarded" in me[0]));
       state.profile = me && me[0] ? {
         id: me[0].id, username: me[0].username, phone: me[0].phone, role: me[0].role,
         avatar_url: me[0].avatar_url || "",
@@ -1320,7 +1321,7 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
       state.plans = plans || [];
     } catch (e) {
       state.plans = [];
-      if (!missingCol(e) && e.code !== "PGRST205") console.warn(e.message);
+      state.plansMissing = (e.code === "PGRST205" || missingCol(e));
     }
     try {
       const mine = await api("/rest/v1/plan_members?select=plan_id&user_id=eq." + state.profile.id);
@@ -1333,6 +1334,7 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
 
   function planListHTML() {
     if (!session) return '<div class="plan-empty">登录后可以创建或加入计划。</div>';
+    if (state.plansMissing) return '<div class="plan-empty">计划功能还没初始化：在 Supabase 执行 add-plans.sql 后即可使用。</div>';
     if (!state.plans.length) return '<div class="plan-empty">还没有计划。点右上角「创建计划」发起一个，加入后打卡和跑量会自动算进排行榜。</div>';
     const card = (p) => `<div class="card plan-item" data-act="open-plan" data-id="${p.id}">
       <div class="plan-item-head"><b>${esc(p.name)}</b>${state.myPlanIds[p.id] ? '<span class="badge user">已加入</span>' : ""}</div>
@@ -1454,6 +1456,7 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
   /* ---------------- 新手引导 / 免责声明 ---------------- */
   function maybeOnboard() {
     if (!logged()) return;
+    if (!state.hasOnboardCols) return;
     const p = state.profile;
     if (!p) return;
     if (!p.onboarded) { openOnboard(); return; }
