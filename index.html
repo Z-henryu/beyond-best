@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="zh-CN" data-mode="light">
 <head>
-<script>window.__BUILD__ = "20261029055258";</script>
+<script>window.__BUILD__ = "20261029063320";</script>
 <script>
   window.__bipEvent = null;
   window.addEventListener("beforeinstallprompt", function (e) {
@@ -693,6 +693,13 @@ main, .view, .card, .section { max-width: 100%; }
   .rec-head > div:last-child { width: 100%; }
   .rec-head .btn { width: 100%; }
 }
+
+/* 分享二维码 */
+.share-card { width: min(460px, 94vw); text-align: center; }
+.share-qr { display: block; width: 100%; max-width: 340px; margin: 6px auto 12px; border-radius: 14px; border: 1px solid var(--line); background: #fff; }
+.share-url { font-size: 12px; color: var(--muted); margin-bottom: 14px; word-break: break-all; }
+.plan-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.plan-head .btn { flex: none; }
 </style>
 </head>
 <body>
@@ -987,6 +994,19 @@ main, .view, .card, .section { max-width: 100%; }
     <div class="field"><label>目标（可选）</label><input id="plGoal" placeholder="例如：5 公里 20 分"></div>
     <div class="auth-msg" id="plMsg"></div>
     <button class="btn btn-primary install-btn" data-act="do-create-plan">创建</button>
+  </div>
+</div>
+
+<!-- 分享二维码 -->
+<div class="modal" id="shareModal" aria-hidden="true">
+  <div class="modal-card share-card" role="dialog" aria-label="分享二维码">
+    <button class="modal-x" data-act="close-share" aria-label="关闭">×</button>
+    <h3>扫码打开 Beyond Best</h3>
+    <p class="auth-sub">发给跑友：微信扫一扫，或长按图片保存到相册</p>
+    <img id="shareQr" class="share-qr" src="share-qr.png" alt="Beyond Best 二维码"
+         onerror="this.onerror=null;this.src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQ4AAAEOAQMAAABCf2vmAAAABlBMVEUfOGT///9yTLyAAAAB5klEQVR42u1ZQY7EIAyLlgf0SXydJ/EApCy2U6SZS6U9raUiDtMOh1pJHMdEPq0V75H3yHvk+Uhg9ZYjroHHK1tmm3i7f6yfeFz/6QgQ7c/OSUTR984ZDbvrL0tE/P4mIDn2BsDZGThjRKkYXfvFWPu9P6J1jb2VgQu554xIdQRQSXJAjKzrqLhufm1jrtP6zEAGTgTviIgolG9sRgOgQA6+/QiMveNCZkARiSWSpeSICDk2VVDIN7KcAjR82Xsn20FBogsGyBVRBYVSgTQeSDwoItc6YuGkgsIM7BQPA33WlxlEd4QgIUR0rlkXZDkJBrVaCaFmqxkWNUOQuhWyQB2VEDJVQZR2wTBp1lPD9dUMJeSUeKfh+vYjZF2NEsi3EN0VP5gyw1ApKS6QQ5zNfftRsB/JPAEEcrh6k6+uk2fSZoGiFioC94wRvlyPogjKodCU5NphSwiFmEFDk7NfB81zprwlHU4VlM7OidIvz+hHBW7sbjFGZIbUlmbwdbdkDivfglpIBlE6e0FUQTDzOaGLwzOd/TpNENR1qQwM2/momGHGh3GXae2ccICNcrRm3N020vu2pa970JPb4DvxHUQakc5Iu8zvJsraoupm4hn7DHfrObZJ3D6D993Ee+P+HnmP/PXIL8EJIH7uHYPTAAAAAElFTkSuQmCC';">
+    <div class="share-url">z-henryu.github.io/beyond-best/</div>
+    <a class="btn btn-primary install-btn" href="share-qr.png" download="BeyondBest-二维码.png">保存二维码图片</a>
   </div>
 </div>
 
@@ -1908,13 +1928,25 @@ main, .view, .card, .section { max-width: 100%; }
       }).join("")}</div></div>`;
   }
 
+  function prefText() {
+    const p = state.profile;
+    if (!p || !p.level) return "未设置偏好";
+    if (p.level === "novice") return "偏好：新手";
+    return "偏好：进阶 · " + (p.focus === "long" ? "长距离" : "中距离");
+  }
+
   function renderPlan() {
     const cur = planByKey(S.plan);
     const q0 = (window.__q || "").trim();
     $("#view-plan").innerHTML = `
-      <div class="eyebrow">Training plan</div>
-      <h1 class="page-title">${esc(cur.key)}</h1>
-      <p class="page-sub">共 ${cur.blocks.length} 个周模板 · 内容与 Excel 课表一致</p>
+      <div class="plan-head">
+        <div>
+          <div class="eyebrow">Training plan</div>
+          <h1 class="page-title">${esc(cur.key)}</h1>
+        </div>
+        <button class="btn btn-sm" data-act="open-onboard">更换偏好</button>
+      </div>
+      <p class="page-sub">${prefText()} · 共 ${cur.blocks.length} 个周模板 · 内容与 Excel 课表一致</p>
       <div class="plan-banner"><span>⚠️</span><div>本训练方案仅供参考，跑步运动存在风险，请结合自身健康情况量力而行。</div></div>
       <div class="filter-row">
         <div class="seg" id="seg-group">${groupOrder().map((g) => `<button data-group="${g}" class="${g === cur.group ? "is-active" : ""}">${g}</button>`).join("")}</div>
@@ -2270,7 +2302,10 @@ main, .view, .card, .section { max-width: 100%; }
     $("#view-me").innerHTML = `
       <div class="me-head">
         <div><div class="eyebrow">Me</div><h1 class="page-title">我的</h1></div>
-        ${isStandalone() ? '<span class="badge user">已安装</span>' : '<button class="btn btn-sm btn-primary" data-act="open-install">添加到桌面</button>'}
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <button class="btn btn-sm" data-act="open-share">分享二维码</button>
+          ${isStandalone() ? '<span class="badge user">已安装</span>' : '<button class="btn btn-sm btn-primary" data-act="open-install">添加到桌面</button>'}
+        </div>
       </div>
       <p class="page-sub">${logged() ? "已登录：" + esc(state.profile.username) + (admin() ? " · 管理员" : "") : "未登录也能用，数据存本机"}</p>
       <div class="card"><div class="row" style="gap:14px">
@@ -2489,7 +2524,7 @@ main, .view, .card, .section { max-width: 100%; }
   function closeSheet() { $("#sheet").classList.remove("show"); $("#backdrop").classList.remove("show"); document.body.classList.remove("no-scroll"); sheetCtx = null; }
 
   function closeModals(keep) {
-    ["searchModal", "authModal", "accountModal", "postModal", "joinsModal", "installModal", "onboardModal", "discModal", "planModal", "planCreate"].forEach(function (id) {
+    ["searchModal", "authModal", "accountModal", "postModal", "joinsModal", "installModal", "shareModal", "onboardModal", "discModal", "planModal", "planCreate"].forEach(function (id) {
       if (id === keep) return;
       const el = $("#" + id);
       if (el) el.classList.remove("show");
@@ -2632,6 +2667,12 @@ main, .view, .card, .section { max-width: 100%; }
     else if (act === "close-plan-create") closeModals();
     else if (act === "do-create-plan") doCreatePlan();
     else if (act === "open-install") openInstall();
+    else if (act === "open-share") {
+      closeModals("shareModal");
+      $("#shareModal").classList.add("show");
+      document.body.classList.add("no-scroll");
+    }
+    else if (act === "close-share") closeModals();
     else if (act === "close-install") closeInstall();
     else if (act === "do-install") doInstall();
     else if (act === "open-in-chrome") openInChrome();
