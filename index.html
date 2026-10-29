@@ -939,6 +939,7 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
   const isStandalone = () =>
     (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) ||
     window.navigator.standalone === true;
+  const isWeChat = () => /micromessenger/i.test(navigator.userAgent);
   const isIOS = () => /iphone|ipad|ipod/i.test(navigator.userAgent) ||
     (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
 
@@ -947,7 +948,7 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
     deferredPrompt = e;
     const tip = document.getElementById("installTip");
     const btn = document.getElementById("installBtn");
-    if (btn) btn.disabled = false;
+    if (btn) { btn.disabled = false; btn.textContent = "立即安装到桌面"; }
     if (tip) tip.textContent = "已就绪：点「立即安装到桌面」即可。";
   });
   window.addEventListener("appinstalled", function () {
@@ -2272,19 +2273,25 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
     }
   }
 
+  function installTipText() {
+    if (isStandalone()) return "已经装过了：从桌面图标打开就是全屏模式。";
+    if (isWeChat()) return "微信里装不了：点右上角「···」→ 在浏览器打开，再回来安装。";
+    if (isIOS()) return "检测到 iPhone / iPad：请按左侧步骤用 Safari 添加。";
+    if (deferredPrompt) return "已就绪：点「立即安装到桌面」即可。";
+    return "浏览器还没给出安装弹窗（刚更新过就先刷新一次）：也可以点右上角 ⋮ 菜单 →「安装应用 / 添加到主屏幕」。";
+  }
+
   function openInstall() {
     closeModals("installModal");
     $("#installModal").classList.add("show");
     document.body.classList.add("no-scroll");
     const tip = $("#installTip");
     const btn = $("#installBtn");
-    if (btn) btn.disabled = !deferredPrompt;
-    if (tip) {
-      if (isStandalone()) tip.textContent = "已经装过了：从桌面图标打开就是全屏模式。";
-      else if (isIOS()) tip.textContent = "检测到 iPhone / iPad：请按左侧步骤用 Safari 添加。";
-      else if (deferredPrompt) tip.textContent = "已就绪：点「立即安装到桌面」即可。";
-      else tip.textContent = "没看到弹窗？用浏览器右上角 ⋮ 菜单 →「安装应用」。";
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = deferredPrompt ? "立即安装到桌面" : "查看安装方法";
     }
+    if (tip) tip.textContent = installTipText();
   }
 
   function closeInstall() {
@@ -2294,7 +2301,15 @@ textarea:focus { border-color: var(--brand-3); background: var(--surface); }
 
   async function doInstall() {
     if (!deferredPrompt) {
-      toast("没检测到安装弹窗，用浏览器菜单里的「安装应用」");
+      const tip = $("#installTip");
+      if (tip) {
+        tip.textContent = isWeChat()
+          ? "微信里装不了：点右上角「···」→ 在浏览器打开，再回到本页安装。"
+          : isIOS()
+            ? "iPhone 只能在 Safari 里：分享按钮 → 添加到主屏幕。"
+            : "这台浏览器没给出安装弹窗：点右上角 ⋮ →「安装应用」或「添加到主屏幕」。";
+      }
+      toast(isWeChat() ? "请先在浏览器中打开" : "用浏览器菜单安装");
       return;
     }
     deferredPrompt.prompt();
