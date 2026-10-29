@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="zh-CN" data-mode="light">
 <head>
-<script>window.__BUILD__ = "20261029063320";</script>
+<script>window.__BUILD__ = "20261029064144";</script>
 <script>
   window.__bipEvent = null;
   window.addEventListener("beforeinstallprompt", function (e) {
@@ -1549,21 +1549,25 @@ main, .view, .card, .section { max-width: 100%; }
 
   async function finishOnboard(level, focus) {
     const patch = { level: level, focus: focus, onboarded: true };
-    Object.assign(state.profile, patch);
-    try {
-      await api("/rest/v1/profiles?id=eq." + state.profile.id, {
-        method: "PATCH", body: patch, headers: { Prefer: "return=minimal" }
-      });
-    } catch (e) {}
+    if (logged()) {
+      Object.assign(state.profile, patch);
+      try {
+        await api("/rest/v1/profiles?id=eq." + state.profile.id, {
+          method: "PATCH", body: patch, headers: { Prefer: "return=minimal" }
+        });
+      } catch (e) {}
+    }
     S.plan = pickPlanFor(level, focus);
     S.block = 0;
     savePrefs();
     closeModals();
     renderCurrent();
+    if (!logged()) { toast("已切换默认课表（登录后会保存偏好）"); return; }
     if (!state.profile.disclaimer_ack) openDisc();
   }
 
   async function skipOnboard() {
+    if (!logged()) { closeModals(); return; }
     Object.assign(state.profile, { onboarded: true });
     try {
       await api("/rest/v1/profiles?id=eq." + state.profile.id, {
@@ -2648,6 +2652,7 @@ main, .view, .card, .section { max-width: 100%; }
     else if (act === "view-joins") openJoins(t.dataset.id);
     else if (act === "close-joins") closeJoins();
     else if (act === "pick-avatar") pickAvatar();
+    else if (act === "open-onboard") openOnboard();
     else if (act === "onboard-level") chooseLevel(t.dataset.level);
     else if (act === "onboard-focus") finishOnboard("advanced", t.dataset.focus);
     else if (act === "onboard-back") { $("#onbStep2").style.display = "none"; $("#onbStep1").style.display = ""; }
