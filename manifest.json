@@ -31,5 +31,6 @@
     "health",
     "fitness",
     "sports"
-  ]
+  ],
+  "prefer_related_applications": false
 }
