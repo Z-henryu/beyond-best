@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="zh-CN" data-mode="light">
 <head>
-<script>window.__BUILD__ = "20261105041555";</script>
+<script>window.__BUILD__ = "20261105045432";</script>
 <script>
   window.__bipEvent = null;
   window.addEventListener("beforeinstallprompt", function (e) {
@@ -714,6 +714,25 @@ main, .view, .card, .section { max-width: 100%; }
 /* 工具弹层 */
 .tool-card { width: min(680px, 96vw); }
 .tool-body { max-height: 62vh; overflow: auto; }
+
+.custom-add { display: flex; align-items: center; gap: 10px; margin: 4px 0 12px; }
+.custom-row .del { border: 1px solid var(--line); background: var(--surface); color: var(--muted); border-radius: 9px; padding: 7px 9px; cursor: pointer; font-size: 12px; }
+.custom-row { grid-template-columns: 52px 118px 1fr 34px; }
+@media (max-width: 640px) {
+  .custom-row { grid-template-columns: 44px 1fr 32px; }
+  .custom-row input.c { grid-column: 1 / -1; }
+  .custom-row .del { grid-row: 1; grid-column: 3; }
+}
+.week-strip.is-scroll { overflow-x: auto; padding-bottom: 6px; }
+
+/* 分享课表 */
+.pv-body { max-height: 52vh; overflow: auto; margin-bottom: 14px; }
+.pv-day { display: flex; gap: 10px; padding: 9px 0; border-bottom: 1px dashed var(--line); font-size: 12.5px; }
+.pv-day:last-child { border-bottom: 0; }
+.pv-day .n { width: 44px; flex: none; font-weight: 800; color: var(--muted); font-size: 11.5px; }
+.pv-day .t { font-weight: 700; margin-right: 6px; }
+.plaza-tabs { display: flex; gap: 8px; margin: 4px 0 14px; flex-wrap: wrap; }
+.plaza-tabs .btn.on { background: var(--brand); color: #fff; border-color: transparent; }
 </style>
 </head>
 <body>
@@ -938,7 +957,7 @@ main, .view, .card, .section { max-width: 100%; }
             <div class="small muted">中长跑训练课表 · 可离线使用</div>
           </div>
         </div>
-        <a class="btn btn-primary install-btn" href="beyond-best.apk" download="BeyondBest-1.4.0.apk">下载安卓版 APK（v1.4.0）</a>
+        <a class="btn btn-primary install-btn" href="beyond-best.apk" download="BeyondBest-1.5.0.apk">下载安卓版 APK（v1.5.0）</a>
         <ol class="install-steps">
           <li>点上面的按钮下载安装包</li>
           <li>在通知栏或「文件管理」里点开它</li>
@@ -1033,6 +1052,10 @@ main, .view, .card, .section { max-width: 100%; }
     <h3>自定义课表</h3>
     <p class="auth-sub">给自己排一周。类型写「轻松跑 / 阈值跑 / 间歇 / 长距离 / 力量 / 休息」都可以。</p>
     <div class="custom-rows" id="customRows"></div>
+    <div class="custom-add">
+      <button class="btn btn-sm" data-act="custom-add-day">+ 添加一天</button>
+      <span class="small muted" id="customCount"></span>
+    </div>
     <div class="plan-actions">
       <button class="btn btn-primary" data-act="save-custom">保存并应用</button>
       <button class="btn" data-act="close-custom">取消</button>
@@ -1046,6 +1069,30 @@ main, .view, .card, .section { max-width: 100%; }
     <button class="modal-x" data-act="close-tool" aria-label="关闭">×</button>
     <h3 id="toolTitle">训练工具</h3>
     <div class="tool-body" id="toolBody"></div>
+  </div>
+</div>
+
+<!-- 分享课表 -->
+<div class="modal" id="sharePlanModal" aria-hidden="true">
+  <div class="modal-card" role="dialog" aria-label="分享课表">
+    <button class="modal-x" data-act="close-share-plan" aria-label="关闭">×</button>
+    <h3>分享我的课表到广场</h3>
+    <p class="auth-sub" id="sharePlanSub"></p>
+    <div class="field"><label>标题</label><input id="spTitle" placeholder="例如：10 天基础期循环"></div>
+    <div class="field"><label>说明</label><textarea id="spDesc" rows="3" placeholder="适合谁、怎么安排、注意事项……"></textarea></div>
+    <div class="auth-msg" id="spMsg"></div>
+    <button class="btn btn-primary install-btn" data-act="do-share-plan">发布到广场</button>
+  </div>
+</div>
+
+<!-- 查看分享的课表 -->
+<div class="modal" id="planViewModal" aria-hidden="true">
+  <div class="modal-card plan-card" role="dialog" aria-label="课表详情">
+    <button class="modal-x" data-act="close-plan-view" aria-label="关闭">×</button>
+    <h3 id="pvTitle">课表</h3>
+    <p class="auth-sub" id="pvSub"></p>
+    <div id="pvBody" class="pv-body"></div>
+    <button class="btn btn-primary install-btn" data-act="use-shared-plan">使用这个课表</button>
   </div>
 </div>
 
@@ -1629,29 +1676,54 @@ main, .view, .card, .section { max-width: 100%; }
     }));
   }
 
+  function readCustomRows() {
+    return $$("#customRows .custom-row").map((row) => {
+      const type = row.querySelector("input.t").value.trim() || "休息";
+      const content = row.querySelector("input.c").value.trim();
+      return { type: type, content: content, quality: /阈值|间歇|VO2|速度|比赛|质量/i.test(type) };
+    });
+  }
+
+  function paintCustomRows(days) {
+    $("#customRows").innerHTML = days.map((d, i) => `
+      <div class="custom-row">
+        <div class="d">第 ${i + 1} 天</div>
+        <input class="t" value="${esc(d.type || "")}" placeholder="类型">
+        <input class="c" value="${esc(d.content || "")}" placeholder="内容，例如 轻松跑 30 分钟">
+        <button class="del" data-act="custom-del-day" data-i="${i}" aria-label="删除">✕</button>
+      </div>`).join("");
+    const n = $("#customCount");
+    if (n) n.textContent = "共 " + days.length + " 天（周期长度）";
+  }
+
   function openCustom() {
     closeModals("customModal");
-    const days = (S.custom && S.custom.days && S.custom.days.length === 7) ? S.custom.days : defaultCustomDays();
-    $("#customRows").innerHTML = DAYS.map((d, i) => `
-      <div class="custom-row">
-        <div class="d">${d}</div>
-        <input class="t" value="${esc(days[i].type || "")}" placeholder="类型">
-        <input class="c" value="${esc(days[i].content || "")}" placeholder="内容，例如 轻松跑 30 分钟">
-      </div>`).join("");
+    const days = (S.custom && S.custom.days && S.custom.days.length) ? S.custom.days : defaultCustomDays();
+    paintCustomRows(days);
     $("#customModal").classList.add("show");
     document.body.classList.add("no-scroll");
   }
 
+  function addCustomDay() {
+    const days = readCustomRows();
+    days.push({ type: "轻松跑", content: "", quality: false });
+    paintCustomRows(days);
+  }
+
+  function delCustomDay(i) {
+    const days = readCustomRows();
+    if (days.length <= 1) { toast("至少保留一天"); return; }
+    days.splice(i, 1);
+    paintCustomRows(days);
+  }
+
   function saveCustom() {
-    const rows = $$("#customRows .custom-row");
-    const days = rows.map((row) => {
-      const type = row.querySelector("input.t").value.trim() || "休息";
-      const content = row.querySelector("input.c").value.trim();
-      const quality = /阈值|间歇|VO2|速度|比赛|质量/i.test(type);
-      return { type: type, content: content, quality: quality };
-    });
-    if (days.length !== 7) { toast("需要填满七天"); return; }
-    S.custom = { days: days };
+    const days = readCustomRows();
+    if (!days.length) { toast("至少填一天"); return; }
+    S.custom = {
+      days: days,
+      start: (S.custom && S.custom.start) || dayKey(new Date())
+    };
     S.plan = CUSTOM_KEY;
     S.block = 0;
     S.blockStart = 0;
@@ -1659,7 +1731,7 @@ main, .view, .card, .section { max-width: 100%; }
     savePrefs();
     closeModals();
     renderCurrent();
-    toast("已切换到自定义课表");
+    toast("已切换到自定义课表（" + days.length + " 天）");
   }
 
   function openTool(kind) {
@@ -1817,21 +1889,40 @@ main, .view, .card, .section { max-width: 100%; }
 
   function customPlan() {
     const c = S.custom;
-    const days = (c && c.days && c.days.length === 7) ? c.days : [];
+    const days = (c && c.days && c.days.length) ? c.days : [];
     return {
       key: CUSTOM_KEY,
       group: "自定义",
       phase: "",
       blocks: [{
-        title: "自定义周 · 按自己的安排",
+        title: "自定义周期 · " + days.length + " 天",
         days: days.map((d, i) => ({
-          day: DAYS[i],
+          day: "第 " + (i + 1) + " 天",
           type: (d && d.type) || "休息",
           content: (d && d.content) || "",
           quality: !!(d && d.quality)
         }))
       }]
     };
+  }
+
+  function cycleDate(i) {
+    const c = S.custom;
+    const start = new Date(((c && c.start) || dayKey(new Date())) + "T00:00:00");
+    const d = new Date(start);
+    d.setDate(d.getDate() + i);
+    return d;
+  }
+
+  function customDayIndex() {
+    const c = S.custom;
+    const n = (c && c.days && c.days.length) || 0;
+    if (!n) return 0;
+    const start = new Date(((c && c.start) || dayKey(new Date())) + "T00:00:00");
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const diff = Math.floor((today - start) / 86400000);
+    return ((diff % n) + n) % n;
   }
 
   const planByKey = (k) => {
@@ -1982,34 +2073,63 @@ main, .view, .card, .section { max-width: 100%; }
     const p = planByKey(S.plan);
     if (S.block >= p.blocks.length) S.block = 0;
     const block = p.blocks[S.block];
-    const day = block.days[todayIdx];
-    const done = isDone(p.key, S.block, todayIdx);
+    const isCustom = p.key === CUSTOM_KEY;
+    const N = block.days.length || 1;
+    const di = isCustom ? customDayIndex() : todayIdx;
+    const day = block.days[di] || block.days[0] || { type: "休息", content: "" };
+    const done = isDone(p.key, S.block, di);
     const total = doneCount(p.key, S.block);
-    const d = dateOf(todayIdx);
+    const d = isCustom ? cycleDate(di) : dateOf(todayIdx);
     const rest = /休息/.test(day.type);
-    let nextQ = "本周期已练完";
-    const hasQ = p.blocks.some((b) => b.days.some((x) => x.quality));
-    if (day.quality && !done) nextQ = "今天 · " + day.type;
-    else if (hasQ) {
-      let found = "";
-      for (let step = 1; step <= 10 && !found; step++) {
-        const dd = todayIdx + step;
-        const bi = S.block + Math.floor(dd / 7);
-        const di = dd % 7;
-        if (bi >= p.blocks.length) break;
-        const x = p.blocks[bi].days[di];
-        if (x && x.quality) found = DAYS[di] + " · " + x.type;
-      }
-      nextQ = found || "本周期已练完";
-    } else nextQ = "本周没有质量课";
+    const dayLabel = isCustom ? ("第 " + (di + 1) + " 天 / 共 " + N + " 天") : DAYS[todayIdx];
 
-    const planOpts = DATA.plans.map((x) => `<option value="${esc(x.key)}"${x.key === p.key ? " selected" : ""}>${esc(x.key)}</option>`).join("");
-    const blockOpts = p.blocks.map((b, i) => `<option value="${i}"${i === S.block ? " selected" : ""}>第 ${i + 1} 周 · ${esc(weekParts(b.title)[0])}</option>`).join("");
+    let nextQ = "本周期已练完";
+    if (isCustom) {
+      let found = "";
+      for (let step = 1; step <= N && !found; step++) {
+        const idx = (di + step) % N;
+        const x = block.days[idx];
+        if (x && x.quality) found = "第 " + (idx + 1) + " 天 · " + x.type;
+      }
+      nextQ = found || "本周期没有质量课";
+    } else {
+      const hasQ = p.blocks.some((b) => b.days.some((x) => x.quality));
+      if (day.quality && !done) nextQ = "今天 · " + day.type;
+      else if (hasQ) {
+        let found = "";
+        for (let step = 1; step <= 10 && !found; step++) {
+          const dd = todayIdx + step;
+          const bi = S.block + Math.floor(dd / 7);
+          const dIdx = dd % 7;
+          if (bi >= p.blocks.length) break;
+          const x = p.blocks[bi].days[dIdx];
+          if (x && x.quality) found = DAYS[dIdx] + " · " + x.type;
+        }
+        nextQ = found || "本周期已练完";
+      } else nextQ = "本周没有质量课";
+    }
+
+    const planOpts = DATA.plans.map((x) => `<option value="${esc(x.key)}"${x.key === p.key ? " selected" : ""}>${esc(x.key)}</option>`).join("") +
+      (S.custom ? `<option value="${CUSTOM_KEY}"${p.key === CUSTOM_KEY ? " selected" : ""}>${CUSTOM_KEY}</option>` : "");
+    const blockOpts = p.blocks.map((b, i) => `<option value="${i}"${i === S.block ? " selected" : ""}>第 ${i + 1} 个周期 · ${esc(weekParts(b.title)[0])}</option>`).join("");
+
+    const strip = isCustom
+      ? block.days.map((x, i) => {
+          const dd = cycleDate(i);
+          const dn = isDone(p.key, S.block, i);
+          return `<div class="daycell${i === di ? " is-today" : ""}${dn ? " is-done" : ""}" data-act="day" data-day="${i}">
+            <div class="w">${i + 1}</div><div class="d">${dd.getMonth() + 1}/${dd.getDate()}</div><div class="dot${x.quality ? " q" : ""}"></div></div>`;
+        }).join("")
+      : DAYS.map((w, i) => {
+          const dd = dateOf(i), x = block.days[i] || {}, dn = isDone(p.key, S.block, i);
+          return `<div class="daycell${i === todayIdx ? " is-today" : ""}${dn ? " is-done" : ""}" data-act="day" data-day="${i}">
+            <div class="w">${w.slice(1)}</div><div class="d">${dd.getDate()}</div><div class="dot${x.quality ? " q" : ""}"></div></div>`;
+        }).join("");
 
     $("#view-today").innerHTML = `
       <div class="today-top">
         <div><div class="eyebrow">Beyond Best · 今日</div>
-          <div class="date-big">${d.getMonth() + 1} 月 ${d.getDate()} 日<small>${DAYS[todayIdx]}</small></div></div>
+          <div class="date-big">${d.getMonth() + 1} 月 ${d.getDate()} 日<small>${dayLabel}</small></div></div>
         <div class="pickers"><select class="sel" id="sel-plan">${planOpts}</select><select class="sel" id="sel-block">${blockOpts}</select></div>
       </div>
       <div class="hero${rest ? " hero-rest" : ""}">
@@ -2025,36 +2145,30 @@ main, .view, .card, .section { max-width: 100%; }
         </div>
       </div>
       <div class="stats">
-        <div class="stat"><div class="k">本周完成</div><div class="v">${total}<span>/ 7 天</span></div></div>
+        <div class="stat"><div class="k">${isCustom ? "本周期完成" : "本周完成"}</div><div class="v">${total}<span>/ ${N} 天</span></div></div>
         <div class="stat"><div class="k">连续打卡</div><div class="v">${streak()}<span>天</span></div></div>
         <div class="stat"><div class="k">下一节质量课</div><div class="v" style="font-size:15px;line-height:1.4">${esc(nextQ)}</div></div>
       </div>
-      <div class="section"><div class="section-head"><h2>本周进度</h2><span class="hint">点日期看详情</span></div>
+      <div class="section"><div class="section-head"><h2>${isCustom ? "周期进度" : "本周进度"}</h2><span class="hint">点日期看详情</span></div>
         <div class="card" style="padding:18px"><div class="ring-wrap">
           <div style="position:relative;flex:none">
             <svg class="ring" width="76" height="76" viewBox="0 0 76 76">
               <defs><linearGradient id="rg" x1="0" y1="0" x2="1" y2="1">
                 <stop offset="0" stop-color="${theme().brand2}"/><stop offset="1" stop-color="${theme().accent}"/></linearGradient></defs>
               <circle class="bg" cx="38" cy="38" r="32"/>
-              <circle class="fg" cx="38" cy="38" r="32" stroke="url(#rg)" stroke-dasharray="${(total / 7 * 201).toFixed(1)} 201"/>
+              <circle class="fg" cx="38" cy="38" r="32" stroke="url(#rg)" stroke-dasharray="${(total / N * 201).toFixed(1)} 201"/>
             </svg>
-            <div style="position:absolute;inset:0;display:grid;place-items:center"><div class="ring-num">${Math.round(total / 7 * 100)}<span>%</span></div></div>
+            <div style="position:absolute;inset:0;display:grid;place-items:center"><div class="ring-num">${Math.round(total / N * 100)}<span>%</span></div></div>
           </div>
-          <div style="flex:1;min-width:0"><div class="week-strip">
-            ${DAYS.map((w, i) => {
-              const dd = dateOf(i), x = block.days[i] || {}, dn = isDone(p.key, S.block, i);
-              return `<div class="daycell${i === todayIdx ? " is-today" : ""}${dn ? " is-done" : ""}" data-act="day" data-day="${i}">
-                <div class="w">${w.slice(1)}</div><div class="d">${dd.getDate()}</div><div class="dot${x.quality ? " q" : ""}"></div></div>`;
-            }).join("")}
-          </div></div>
+          <div style="flex:1;min-width:0"><div class="week-strip ${isCustom && N > 7 ? "is-scroll" : ""}">${strip}</div></div>
         </div></div>
       </div>
-      <div class="section"><div class="section-head"><h2>周模板一览</h2><span class="hint">${p.blocks.length} 个 · ${esc(p.group)}${p.phase ? " · " + esc(p.phase) : ""}</span></div>
+      <div class="section"><div class="section-head"><h2>周期一览</h2><span class="hint">${p.blocks.length} 个 · ${esc(p.group)}${p.phase ? " · " + esc(p.phase) : ""}</span></div>
         ${p.blocks.map((b, i) => {
           const parts = weekParts(b.title);
           return `<div class="card week-card" style="margin-bottom:10px"><div class="week-head" style="border-bottom:0">
             <div class="week-top"><div class="week-title"><span class="wname">${esc(parts[0])}</span></div>
-            <div class="week-badge">${doneCount(p.key, i)}/7 已完成</div></div>
+            <div class="week-badge">${doneCount(p.key, i)}/${b.days.length} 已完成</div></div>
             <div class="week-sub">${esc(parts[1])}</div></div></div>`;
         }).join("")}
       </div>
@@ -2069,7 +2183,7 @@ main, .view, .card, .section { max-width: 100%; }
         </div></div>`;
 
     const sp = $("#sel-plan"), sb = $("#sel-block");
-    const wm = $("#weekmeta"); if (wm) wm.textContent = p.key + " · 第 " + (S.block + 1) + " 周";
+    const wm = $("#weekmeta"); if (wm) wm.textContent = p.key + " · 第 " + (S.block + 1) + " 个周期";
     if (sp) sp.addEventListener("change", () => {
       S.plan = sp.value; S.block = 0; S.blockStart = 0;
       S.weekStart = dayKey(mondayOf(new Date()));
@@ -2084,6 +2198,8 @@ main, .view, .card, .section { max-width: 100%; }
 
   function planCard(cur, b, bi, q) {
     const parts = weekParts(b.title);
+    const isCustom = cur.key === CUSTOM_KEY;
+    const curDi = isCustom ? customDayIndex() : todayIdx;
     const days = b.days.map((d, di) => Object.assign({}, d, { di })).filter((d) =>
       !q || (d.type + d.content + d.day).toLowerCase().indexOf(q.toLowerCase()) >= 0);
     if (!days.length) return "";
@@ -2091,11 +2207,11 @@ main, .view, .card, .section { max-width: 100%; }
     return `<div class="card week-card" ${isCur ? 'style="border-color:rgba(75,123,236,.45)"' : ""}>
       <div class="week-head"><div class="week-top">
         <div class="week-title"><span class="wname">${esc(parts[0])}</span>${isCur ? ' <span class="chip chip-brand" style="margin-left:6px">今日所在</span>' : ""}</div>
-        <div class="week-badge">${doneCount(cur.key, bi)}/7 已完成</div></div>
+        <div class="week-badge">${doneCount(cur.key, bi)}/${b.days.length} 已完成</div></div>
         <div class="week-sub">${esc(parts[1])}</div></div>
       <div class="days">${days.map((d) => {
         const rest = /休息/.test(d.type), done = isDone(cur.key, bi, d.di);
-        return `<div class="day${isCur && d.di === todayIdx ? " is-today" : ""}${rest ? " is-rest" : ""}" data-act="day" data-day="${d.di}" data-block="${bi}">
+        return `<div class="day${isCur && d.di === curDi ? " is-today" : ""}${rest ? " is-rest" : ""}" data-act="day" data-day="${d.di}" data-block="${bi}">
           <div class="day-w">${esc(d.day)}</div>
           <div class="day-main"><div class="day-line">
             <span class="chip ${d.quality ? "chip-q" : rest ? "chip-r" : "chip-e"}">${esc(d.type)}</span>
@@ -2345,9 +2461,32 @@ main, .view, .card, .section { max-width: 100%; }
 
   /* ================= 广场 ================= */
   let plazaFilter = { q: "", from: "", to: "" };
+  let plazaKind = "all";
 
   function plazaCardHTML(p) {
     const me = state.profile;
+    if (p.kind === "plan") {
+      const mineP = me && p.author_id === me.id;
+      const days = (p.plan_data && p.plan_data.days) || [];
+      return `<div class="card plaza-card">
+        <div class="plaza-head">
+          ${avatarHTML(p.author_avatar, p.author_name, "", "width:30px;height:30px;font-size:12px")}
+          <div style="flex:1"><div style="font-weight:700;font-size:12.5px">${esc(p.author_name)}</div>
+          <div class="small muted">${timeAgo(Date.parse(p.created_at))}</div></div>
+          ${mineP ? '<span class="badge user">我发的</span>' : ""}
+        </div>
+        <div class="plaza-title">${esc(p.title)}</div>
+        <div class="plaza-meta"><span>📋 课表分享</span><span>${days.length} 天 / 周期</span></div>
+        <div class="plaza-body">${esc(p.content)}</div>
+        <div class="plaza-foot">
+          <div class="plaza-tags"><span class="chip chip-e">${days.length} 天</span></div>
+          <div class="plaza-acts">
+            <button class="btn btn-sm" data-act="view-shared-plan" data-id="${p.id}">查看课表</button>
+            ${mineP || admin() ? `<button class="btn btn-sm" data-act="del-post" data-id="${p.id}">删除</button>` : ""}
+          </div>
+        </div>
+      </div>`;
+    }
     const mine = me && p.author_id === me.id;
     const joined = !!state.myJoins[p.id];
     const n = state.joinCounts[p.id] || 0;
@@ -2380,6 +2519,8 @@ main, .view, .card, .section { max-width: 100%; }
   function filteredPosts() {
     const q = (plazaFilter.q || "").trim().toLowerCase();
     return state.posts.filter((p) => {
+      const kind = p.kind === "plan" ? "plan" : "team";
+      if (plazaKind !== "all" && kind !== plazaKind) return false;
       if (q) {
         const hay = (p.title + " " + p.place + " " + (p.content || "")).toLowerCase();
         if (hay.indexOf(q) < 0) return false;
@@ -2413,7 +2554,15 @@ main, .view, .card, .section { max-width: 100%; }
     $("#view-plaza").innerHTML = `
       <div class="rec-head"><div><div class="eyebrow">Plaza</div><h1 class="page-title">跑步广场</h1>
         <p class="page-sub">约跑、拉练、比赛同行，都可以发在这里</p></div>
-        <button class="btn btn-primary" data-act="open-post">发布组队邀请</button></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-sm" data-act="open-share-plan">分享课表</button>
+          <button class="btn btn-primary" data-act="open-post">发布组队邀请</button>
+        </div></div>
+
+      <div class="plaza-tabs">
+        ${[["all", "全部"], ["team", "组队邀请"], ["plan", "课表分享"]].map(([k, label]) =>
+          `<button class="btn btn-sm ${plazaKind === k ? "on" : ""}" data-act="plaza-kind" data-kind="${k}">${label}</button>`).join("")}
+      </div>
 
       ${me ? "" : '<div class="card" style="padding:16px 18px;background:var(--surface-2)"><div class="small">登录后可发布邀请或申请加入；未登录可以浏览。</div><button class="btn btn-sm" style="margin-top:10px" data-act="open-auth">登录 / 注册</button></div>'}
 
@@ -2710,7 +2859,7 @@ main, .view, .card, .section { max-width: 100%; }
   function closeSheet() { $("#sheet").classList.remove("show"); $("#backdrop").classList.remove("show"); document.body.classList.remove("no-scroll"); sheetCtx = null; }
 
   function closeModals(keep) {
-    ["searchModal", "authModal", "accountModal", "postModal", "joinsModal", "installModal", "shareModal", "onboardModal", "customModal", "toolModal", "discModal", "planModal", "planCreate"].forEach(function (id) {
+    ["searchModal", "authModal", "accountModal", "postModal", "joinsModal", "installModal", "shareModal", "onboardModal", "customModal", "toolModal", "sharePlanModal", "planViewModal", "discModal", "planModal", "planCreate"].forEach(function (id) {
       if (id === keep) return;
       const el = $("#" + id);
       if (el) el.classList.remove("show");
@@ -2838,6 +2987,8 @@ main, .view, .card, .section { max-width: 100%; }
     else if (act === "onboard-custom") { closeModals(); openCustom(); }
     else if (act === "close-custom") closeModals();
     else if (act === "save-custom") saveCustom();
+    else if (act === "custom-add-day") addCustomDay();
+    else if (act === "custom-del-day") delCustomDay(+t.dataset.i);
     else if (act === "open-tool") openTool(t.dataset.tool);
     else if (act === "close-tool") closeModals();
     else if (act === "onboard-level") chooseLevel(t.dataset.level);
@@ -3180,6 +3331,84 @@ main, .view, .card, .section { max-width: 100%; }
       $("#postModal").classList.remove("show"); document.body.classList.remove("no-scroll");
       await loadPlaza(); go("plaza"); toast("已发布");
     } catch (e) { $("#postMsg").textContent = e.message; }
+  }
+
+  function openSharePlan() {
+    if (!logged()) { toast("请先登录"); openAuth("login"); return; }
+    if (!S.custom || !S.custom.days || !S.custom.days.length) {
+      toast("先创建自定义课表再分享");
+      openCustom();
+      return;
+    }
+    closeModals("sharePlanModal");
+    $("#sharePlanSub").textContent = "将分享你的自定义课表（" + S.custom.days.length + " 天）。";
+    $("#spTitle").value = "我的 " + S.custom.days.length + " 天训练课表";
+    $("#spDesc").value = "";
+    $("#spMsg").textContent = "";
+    $("#sharePlanModal").classList.add("show");
+    document.body.classList.add("no-scroll");
+  }
+
+  async function doSharePlan() {
+    if (!logged()) { toast("请先登录"); return; }
+    const title = $("#spTitle").value.trim();
+    const desc = $("#spDesc").value.trim();
+    if (!title) { $("#spMsg").textContent = "给课表起个标题"; return; }
+    try {
+      await api("/rest/v1/posts", {
+        method: "POST",
+        body: {
+          author_id: state.profile.id,
+          author_name: state.profile.username,
+          author_avatar: state.profile.avatar_url || null,
+          kind: "plan",
+          plan_data: { days: S.custom.days },
+          title: title,
+          content: desc,
+          place: "",
+          run_time: ""
+        }
+      });
+      closeModals();
+      plazaKind = "plan";
+      await loadPlaza();
+      go("plaza");
+      toast("课表已分享");
+    } catch (e) {
+      $("#spMsg").textContent = missingCol(e) ? "请先在 Supabase 执行 add-plan-share.sql" : e.message;
+    }
+  }
+
+  function viewSharedPlan(id) {
+    const p = state.posts.find((x) => x.id === id);
+    if (!p) return;
+    const days = (p.plan_data && p.plan_data.days) || [];
+    closeModals("planViewModal");
+    $("#pvTitle").textContent = p.title;
+    $("#pvSub").textContent = "来自 " + (p.author_name || "跑友") + " · " + days.length + " 天 / 周期";
+    $("#pvBody").innerHTML = days.length
+      ? days.map((d, i) => `<div class="pv-day"><div class="n">第 ${i + 1} 天</div>
+          <div><span class="t">${esc(d.type || "休息")}</span>${esc(d.content || "")}</div></div>`).join("")
+      : '<div class="plan-empty">这个课表没有内容</div>';
+    $("#pvUse").dataset.id = id;
+    $("#planViewModal").classList.add("show");
+    document.body.classList.add("no-scroll");
+  }
+
+  function useSharedPlan() {
+    const id = $("#pvUse").dataset.id;
+    const p = state.posts.find((x) => x.id === id);
+    const days = (p && p.plan_data && p.plan_data.days) || [];
+    if (!days.length) { toast("这个课表没有内容"); return; }
+    S.custom = { days: days, start: dayKey(new Date()) };
+    S.plan = CUSTOM_KEY;
+    S.block = 0;
+    S.blockStart = 0;
+    S.weekStart = dayKey(mondayOf(new Date()));
+    savePrefs();
+    closeModals();
+    go("today");
+    toast("已使用这个课表（" + days.length + " 天）");
   }
 
   async function doJoin(id) {
