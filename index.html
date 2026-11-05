@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="zh-CN" data-mode="light">
 <head>
-<script>window.__BUILD__ = "20261105045432";</script>
+<script>window.__BUILD__ = "20261105053239";</script>
 <script>
   window.__bipEvent = null;
   window.addEventListener("beforeinstallprompt", function (e) {
@@ -2991,6 +2991,13 @@ main, .view, .card, .section { max-width: 100%; }
     else if (act === "custom-del-day") delCustomDay(+t.dataset.i);
     else if (act === "open-tool") openTool(t.dataset.tool);
     else if (act === "close-tool") closeModals();
+    else if (act === "open-share-plan") openSharePlan();
+    else if (act === "close-share-plan") closeModals();
+    else if (act === "do-share-plan") doSharePlan();
+    else if (act === "view-shared-plan") viewSharedPlan(t.dataset.id);
+    else if (act === "close-plan-view") closeModals();
+    else if (act === "use-shared-plan") useSharedPlan();
+    else if (act === "plaza-kind") { plazaKind = t.dataset.kind; renderPlaza(); }
     else if (act === "onboard-level") chooseLevel(t.dataset.level);
     else if (act === "onboard-focus") finishOnboard("advanced", t.dataset.focus);
     else if (act === "onboard-back") { $("#onbStep2").style.display = "none"; $("#onbStep1").style.display = ""; }
