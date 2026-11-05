@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="zh-CN" data-mode="light">
 <head>
-<script>window.__BUILD__ = "20261029064935";</script>
+<script>window.__BUILD__ = "20261105041555";</script>
 <script>
   window.__bipEvent = null;
   window.addEventListener("beforeinstallprompt", function (e) {
@@ -700,6 +700,20 @@ main, .view, .card, .section { max-width: 100%; }
 .share-url { font-size: 12px; color: var(--muted); margin-bottom: 14px; word-break: break-all; }
 .plan-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 .plan-head .btn { flex: none; }
+
+/* 自定义课表 */
+.custom-card { width: min(720px, 96vw); }
+.custom-rows { display: flex; flex-direction: column; gap: 8px; margin: 12px 0 6px; max-height: 56vh; overflow: auto; }
+.custom-row { display: grid; grid-template-columns: 52px 118px 1fr; gap: 8px; align-items: center; }
+.custom-row .d { font-weight: 800; font-size: 12.5px; color: var(--muted); }
+.custom-row input { width: 100%; min-width: 0; padding: 9px 11px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font-size: 13px; }
+@media (max-width: 640px) {
+  .custom-row { grid-template-columns: 44px 1fr; }
+  .custom-row input.c { grid-column: 1 / -1; }
+}
+/* 工具弹层 */
+.tool-card { width: min(680px, 96vw); }
+.tool-body { max-height: 62vh; overflow: auto; }
 </style>
 </head>
 <body>
@@ -924,7 +938,7 @@ main, .view, .card, .section { max-width: 100%; }
             <div class="small muted">中长跑训练课表 · 可离线使用</div>
           </div>
         </div>
-        <a class="btn btn-primary install-btn" href="beyond-best.apk" download="BeyondBest-1.3.0.apk">下载安卓版 APK（v1.3.0）</a>
+        <a class="btn btn-primary install-btn" href="beyond-best.apk" download="BeyondBest-1.4.0.apk">下载安卓版 APK（v1.4.0）</a>
         <ol class="install-steps">
           <li>点上面的按钮下载安装包</li>
           <li>在通知栏或「文件管理」里点开它</li>
@@ -949,6 +963,8 @@ main, .view, .card, .section { max-width: 100%; }
           <b>跑步新手</b><span>刚开始系统训练，周跑量不大</span></button>
         <button class="onb-opt" data-act="onboard-level" data-level="advanced">
           <b>进阶跑者</b><span>有稳定训练基础，想提高成绩</span></button>
+        <button class="onb-opt" data-act="onboard-custom">
+          <b>自定义课表</b><span>自己排一周七天，按你的安排来</span></button>
       </div>
     </div>
     <div id="onbStep2" style="display:none">
@@ -1007,6 +1023,29 @@ main, .view, .card, .section { max-width: 100%; }
          onerror="this.onerror=null;this.src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQ4AAAEOAQMAAABCf2vmAAAABlBMVEUfOGT///9yTLyAAAAB5klEQVR42u1ZQY7EIAyLlgf0SXydJ/EApCy2U6SZS6U9raUiDtMOh1pJHMdEPq0V75H3yHvk+Uhg9ZYjroHHK1tmm3i7f6yfeFz/6QgQ7c/OSUTR984ZDbvrL0tE/P4mIDn2BsDZGThjRKkYXfvFWPu9P6J1jb2VgQu554xIdQRQSXJAjKzrqLhufm1jrtP6zEAGTgTviIgolG9sRgOgQA6+/QiMveNCZkARiSWSpeSICDk2VVDIN7KcAjR82Xsn20FBogsGyBVRBYVSgTQeSDwoItc6YuGkgsIM7BQPA33WlxlEd4QgIUR0rlkXZDkJBrVaCaFmqxkWNUOQuhWyQB2VEDJVQZR2wTBp1lPD9dUMJeSUeKfh+vYjZF2NEsi3EN0VP5gyw1ApKS6QQ5zNfftRsB/JPAEEcrh6k6+uk2fSZoGiFioC94wRvlyPogjKodCU5NphSwiFmEFDk7NfB81zprwlHU4VlM7OidIvz+hHBW7sbjFGZIbUlmbwdbdkDivfglpIBlE6e0FUQTDzOaGLwzOd/TpNENR1qQwM2/momGHGh3GXae2ccICNcrRm3N020vu2pa970JPb4DvxHUQakc5Iu8zvJsraoupm4hn7DHfrObZJ3D6D993Ee+P+HnmP/PXIL8EJIH7uHYPTAAAAAElFTkSuQmCC';">
     <div class="share-url">z-henryu.github.io/beyond-best/</div>
     <a class="btn btn-primary install-btn" href="share-qr.png" download="BeyondBest-二维码.png">保存二维码图片</a>
+  </div>
+</div>
+
+<!-- 自定义课表 -->
+<div class="modal" id="customModal" aria-hidden="true">
+  <div class="modal-card custom-card" role="dialog" aria-label="自定义课表">
+    <button class="modal-x" data-act="close-custom" aria-label="关闭">×</button>
+    <h3>自定义课表</h3>
+    <p class="auth-sub">给自己排一周。类型写「轻松跑 / 阈值跑 / 间歇 / 长距离 / 力量 / 休息」都可以。</p>
+    <div class="custom-rows" id="customRows"></div>
+    <div class="plan-actions">
+      <button class="btn btn-primary" data-act="save-custom">保存并应用</button>
+      <button class="btn" data-act="close-custom">取消</button>
+    </div>
+  </div>
+</div>
+
+<!-- 工具：力量 / 热身 -->
+<div class="modal" id="toolModal" aria-hidden="true">
+  <div class="modal-card tool-card" role="dialog" aria-label="训练工具">
+    <button class="modal-x" data-act="close-tool" aria-label="关闭">×</button>
+    <h3 id="toolTitle">训练工具</h3>
+    <div class="tool-body" id="toolBody"></div>
   </div>
 </div>
 
@@ -1561,6 +1600,8 @@ main, .view, .card, .section { max-width: 100%; }
     S.focus = focus || "";
     S.plan = pickPlanFor(level, focus);
     S.block = 0;
+    S.blockStart = 0;
+    S.weekStart = dayKey(mondayOf(new Date()));
     savePrefs();
     closeModals();
     renderCurrent();
@@ -1578,6 +1619,66 @@ main, .view, .card, .section { max-width: 100%; }
     } catch (e) {}
     closeModals();
     if (!state.profile.disclaimer_ack) openDisc();
+  }
+
+  function defaultCustomDays() {
+    return DAYS.map((d, i) => ({
+      type: i === 6 ? "休息" : "轻松跑",
+      content: i === 6 ? "休息或散步" : "轻松跑 30-40 分钟",
+      quality: false
+    }));
+  }
+
+  function openCustom() {
+    closeModals("customModal");
+    const days = (S.custom && S.custom.days && S.custom.days.length === 7) ? S.custom.days : defaultCustomDays();
+    $("#customRows").innerHTML = DAYS.map((d, i) => `
+      <div class="custom-row">
+        <div class="d">${d}</div>
+        <input class="t" value="${esc(days[i].type || "")}" placeholder="类型">
+        <input class="c" value="${esc(days[i].content || "")}" placeholder="内容，例如 轻松跑 30 分钟">
+      </div>`).join("");
+    $("#customModal").classList.add("show");
+    document.body.classList.add("no-scroll");
+  }
+
+  function saveCustom() {
+    const rows = $$("#customRows .custom-row");
+    const days = rows.map((row) => {
+      const type = row.querySelector("input.t").value.trim() || "休息";
+      const content = row.querySelector("input.c").value.trim();
+      const quality = /阈值|间歇|VO2|速度|比赛|质量/i.test(type);
+      return { type: type, content: content, quality: quality };
+    });
+    if (days.length !== 7) { toast("需要填满七天"); return; }
+    S.custom = { days: days };
+    S.plan = CUSTOM_KEY;
+    S.block = 0;
+    S.blockStart = 0;
+    S.weekStart = dayKey(mondayOf(new Date()));
+    savePrefs();
+    closeModals();
+    renderCurrent();
+    toast("已切换到自定义课表");
+  }
+
+  function openTool(kind) {
+    const kw = kind === "strength" ? "力量" : "热身";
+    const notes = DATA.notes || [];
+    let idx = -1;
+    for (let i = 0; i < notes.length; i++) {
+      if (notes[i].kind === "section" && notes[i].title.indexOf(kw) >= 0) { idx = i; break; }
+    }
+    if (idx < 0) { toast("没有找到相关内容"); return; }
+    const rows = [];
+    for (let i = idx + 1; i < notes.length && notes[i].kind !== "section"; i++) rows.push(notes[i]);
+    closeModals("toolModal");
+    $("#toolTitle").textContent = notes[idx].title;
+    $("#toolBody").innerHTML = rows.length
+      ? rows.map((r) => `<div class="nrow"><div class="lbl">${esc(r.label)}</div><div>${esc(r.text)}</div></div>`).join("")
+      : '<div class="plan-empty">这一节暂时没有内容</div>';
+    $("#toolModal").classList.add("show");
+    document.body.classList.add("no-scroll");
   }
 
   function openDisc() {
@@ -1712,8 +1813,55 @@ main, .view, .card, .section { max-width: 100%; }
   }
 
   /* ---------------- 课表助手 ---------------- */
-  const planByKey = (k) => DATA.plans.find((p) => p.key === k) || DATA.plans[0];
+  const CUSTOM_KEY = "自定义课表";
+
+  function customPlan() {
+    const c = S.custom;
+    const days = (c && c.days && c.days.length === 7) ? c.days : [];
+    return {
+      key: CUSTOM_KEY,
+      group: "自定义",
+      phase: "",
+      blocks: [{
+        title: "自定义周 · 按自己的安排",
+        days: days.map((d, i) => ({
+          day: DAYS[i],
+          type: (d && d.type) || "休息",
+          content: (d && d.content) || "",
+          quality: !!(d && d.quality)
+        }))
+      }]
+    };
+  }
+
+  const planByKey = (k) => {
+    if (k === CUSTOM_KEY && S.custom) return customPlan();
+    return DATA.plans.find((p) => p.key === k) || DATA.plans[0];
+  };
   const BASE_GROUPS = ["中距离", "长距离", "新手入门", "过渡期"];
+  function syncWeek(silent) {
+    const nowKey = dayKey(mondayOf(new Date()));
+    if (!S.weekStart) {
+      S.weekStart = nowKey;
+      if (typeof S.blockStart !== "number") S.blockStart = S.block || 0;
+      savePrefs();
+      return false;
+    }
+    if (S.weekStart === nowKey) return false;
+    const prev = new Date(S.weekStart + "T00:00:00");
+    const weeks = Math.round((mondayOf(new Date()) - prev) / (7 * 86400000));
+    if (!(weeks > 0)) { S.weekStart = nowKey; savePrefs(); return false; }
+    const p = planByKey(S.plan);
+    const n = Math.max(1, p.blocks.length);
+    const base = (typeof S.blockStart === "number") ? S.blockStart : (S.block || 0);
+    S.block = ((base + weeks) % n + n) % n;
+    S.blockStart = S.block;
+    S.weekStart = nowKey;
+    savePrefs();
+    if (!silent) toast("新的一周，已切换到第 " + (S.block + 1) + " 周");
+    return true;
+  }
+
   function prefGroup() {
     const lv = (state.profile && state.profile.level) || S.level || "";
     const fc = (state.profile && state.profile.focus) || S.focus || "";
@@ -1723,8 +1871,9 @@ main, .view, .card, .section { max-width: 100%; }
   }
   function groupOrder() {
     const pref = prefGroup();
-    if (!pref) return BASE_GROUPS;
-    return [pref].concat(BASE_GROUPS.filter((g) => g !== pref));
+    const base = pref ? [pref].concat(BASE_GROUPS.filter((g) => g !== pref)) : BASE_GROUPS.slice();
+    if (S.custom) base.unshift("自定义");
+    return base;
   }
   function pickPlanFor(level, focus) {
     const g = level === "novice" ? "新手入门" : (focus === "long" ? "长距离" : "中距离");
@@ -1733,8 +1882,18 @@ main, .view, .card, .section { max-width: 100%; }
   }
   const phaseList = (g) => DATA.plans.filter((p) => p.group === g);
   function weekParts(t) { const i = t.indexOf("——"); return i > 0 ? [t.slice(0, i), t.slice(i + 2)] : [t, ""]; }
-  const todayIdx = (new Date().getDay() + 6) % 7;
-  const todayDate = new Date();
+  let todayDate = new Date();
+  let todayIdx = (todayDate.getDay() + 6) % 7;
+  function syncToday() {
+    todayDate = new Date();
+    todayIdx = (todayDate.getDay() + 6) % 7;
+  }
+  function mondayOf(d) {
+    const x = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    x.setDate(x.getDate() - ((x.getDay() + 6) % 7));
+    return x;
+  }
+  const dayKey = (d) => d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
   function dateOf(i) { const d = new Date(todayDate); d.setDate(d.getDate() + (i - todayIdx)); return d; }
   const ckey = (pi, bi, di) => pi + "|" + bi + "|" + di;
   const isDone = (pi, bi, di) => !!state.checks[ckey(pi, bi, di)];
@@ -1819,6 +1978,7 @@ main, .view, .card, .section { max-width: 100%; }
 
   /* ================= 渲染（今天 / 课表 / 配速 / 说明） ================= */
   function renderToday() {
+    syncToday();
     const p = planByKey(S.plan);
     if (S.block >= p.blocks.length) S.block = 0;
     const block = p.blocks[S.block];
@@ -1902,14 +2062,24 @@ main, .view, .card, .section { max-width: 100%; }
         <div style="display:flex;gap:10px;flex-wrap:wrap">
           <button class="btn" data-act="goto" data-view="pace">配速换算</button>
           <button class="btn" data-act="goto" data-view="records">打卡与记录</button>
+          <button class="btn" data-act="open-tool" data-tool="strength">力量训练</button>
+          <button class="btn" data-act="open-tool" data-tool="warmup">热身与放松</button>
           <button class="btn" data-act="open-search">搜索全站</button>
           <button class="btn" data-act="print">打印 / 存 PDF</button>
         </div></div>`;
 
     const sp = $("#sel-plan"), sb = $("#sel-block");
     const wm = $("#weekmeta"); if (wm) wm.textContent = p.key + " · 第 " + (S.block + 1) + " 周";
-    if (sp) sp.addEventListener("change", () => { S.plan = sp.value; S.block = 0; savePrefs(); renderToday(); });
-    if (sb) sb.addEventListener("change", () => { S.block = +sb.value; savePrefs(); renderToday(); });
+    if (sp) sp.addEventListener("change", () => {
+      S.plan = sp.value; S.block = 0; S.blockStart = 0;
+      S.weekStart = dayKey(mondayOf(new Date()));
+      savePrefs(); renderToday();
+    });
+    if (sb) sb.addEventListener("change", () => {
+      S.block = +sb.value; S.blockStart = S.block;
+      S.weekStart = dayKey(mondayOf(new Date()));
+      savePrefs(); renderToday();
+    });
   }
 
   function planCard(cur, b, bi, q) {
@@ -1979,10 +2149,19 @@ main, .view, .card, .section { max-width: 100%; }
     const wm = $("#weekmeta"); if (wm) wm.textContent = cur.key + " · 第 " + (S.block + 1) + " 周";
     $$("#seg-group button").forEach((b) => b.addEventListener("click", () => {
       const g = b.dataset.group;
-      S.plan = (g === "中距离" || g === "长距离")
-        ? (phaseList(g).find((x) => x.phase === "基础期") || phaseList(g)[0]).key
-        : phaseList(g)[0].key;
-      S.block = 0; savePrefs(); renderPlan();
+      if (g === "自定义") {
+        if (!S.custom) { openCustom(); return; }
+        S.plan = CUSTOM_KEY;
+      } else {
+        S.plan = (g === "中距离" || g === "长距离")
+          ? (phaseList(g).find((x) => x.phase === "基础期") || phaseList(g)[0]).key
+          : phaseList(g)[0].key;
+      }
+      S.block = 0;
+      S.blockStart = 0;
+      S.weekStart = dayKey(mondayOf(new Date()));
+      savePrefs();
+      renderPlan();
     }));
     $$("#seg-phase button").forEach((b) => b.addEventListener("click", () => { S.plan = b.dataset.plan; S.block = 0; savePrefs(); renderPlan(); }));
     const qi = $("#q");
@@ -2531,7 +2710,7 @@ main, .view, .card, .section { max-width: 100%; }
   function closeSheet() { $("#sheet").classList.remove("show"); $("#backdrop").classList.remove("show"); document.body.classList.remove("no-scroll"); sheetCtx = null; }
 
   function closeModals(keep) {
-    ["searchModal", "authModal", "accountModal", "postModal", "joinsModal", "installModal", "shareModal", "onboardModal", "discModal", "planModal", "planCreate"].forEach(function (id) {
+    ["searchModal", "authModal", "accountModal", "postModal", "joinsModal", "installModal", "shareModal", "onboardModal", "customModal", "toolModal", "discModal", "planModal", "planCreate"].forEach(function (id) {
       if (id === keep) return;
       const el = $("#" + id);
       if (el) el.classList.remove("show");
@@ -2656,6 +2835,11 @@ main, .view, .card, .section { max-width: 100%; }
     else if (act === "close-joins") closeJoins();
     else if (act === "pick-avatar") pickAvatar();
     else if (act === "open-onboard") openOnboard();
+    else if (act === "onboard-custom") { closeModals(); openCustom(); }
+    else if (act === "close-custom") closeModals();
+    else if (act === "save-custom") saveCustom();
+    else if (act === "open-tool") openTool(t.dataset.tool);
+    else if (act === "close-tool") closeModals();
     else if (act === "onboard-level") chooseLevel(t.dataset.level);
     else if (act === "onboard-focus") finishOnboard("advanced", t.dataset.focus);
     else if (act === "onboard-back") { $("#onbStep2").style.display = "none"; $("#onbStep1").style.display = ""; }
@@ -3042,6 +3226,18 @@ main, .view, .card, .section { max-width: 100%; }
   if (["today", "plan", "plaza", "records", "me", "pace", "notes", "admin"].indexOf(h) >= 0) VIEW = h;
   go(VIEW, { keep: true });
 
+  let lastTickDay = dayKey(new Date());
+  function tickClock() {
+    const todayKey = new Date().getFullYear() + "-" + pad(new Date().getMonth() + 1) + "-" + pad(new Date().getDate());
+    const dayChanged = todayKey !== lastTickDay;
+    lastTickDay = todayKey;
+    syncToday();
+    const weekChanged = syncWeek(false);
+    if (weekChanged || (dayChanged && (VIEW === "today" || VIEW === "records"))) {
+      renderCurrent();
+    }
+  }
+
   (function registerSW() {
     if (!("serviceWorker" in navigator)) return;
     if (location.protocol !== "http:" && location.protocol !== "https:") return;
@@ -3059,6 +3255,12 @@ main, .view, .card, .section { max-width: 100%; }
       }).catch(function () {});
     } catch (e) {}
   })();
+
+  if (syncWeek(true)) renderCurrent();
+  setInterval(tickClock, 60000);
+  document.addEventListener("visibilitychange", function () {
+    if (!document.hidden) tickClock();
+  });
 
   (async function boot() {
     await checkCloud();
