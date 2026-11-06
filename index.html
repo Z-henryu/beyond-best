@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="zh-CN" data-mode="light">
 <head>
-<script>window.__BUILD__ = "20261105053239";</script>
+<script>window.__BUILD__ = "20261106044922";</script>
 <script>
   window.__bipEvent = null;
   window.addEventListener("beforeinstallprompt", function (e) {
@@ -1176,7 +1176,7 @@ main, .view, .card, .section { max-width: 100%; }
   const guest = Object.assign({ checks: {}, notes: {}, records: [] }, lsGet(LS.guest, {}));
   let session = lsGet(LS.session, null);
   const state = {
-    profile: null, cloudReady: false, busy: false,
+    profile: null, cloudReady: true, busy: false,
     checks: guest.checks, notes: guest.notes, records: guest.records,
     posts: [], joinCounts: {}, myJoins: {}, joinsOfMine: {}, users: [], allRecords: [],
     plans: [], myPlanIds: {}
@@ -1223,11 +1223,18 @@ main, .view, .card, .section { max-width: 100%; }
       "Content-Type": "application/json",
       Authorization: "Bearer " + (opts.token || (session && session.access) || CFG.key)
     }, opts.headers || {});
-    const res = await fetch(CFG.url + path, {
-      method: opts.method || "GET",
-      headers: headers,
-      body: opts.body ? JSON.stringify(opts.body) : undefined
-    });
+    let res;
+    try {
+      res = await fetch(CFG.url + path, {
+        method: opts.method || "GET",
+        headers: headers,
+        body: opts.body ? JSON.stringify(opts.body) : undefined
+      });
+    } catch (netErr) {
+      const e = new Error("网络连接失败，请检查网络后重试");
+      e.network = true;
+      throw e;
+    }
     if (res.status === 401 && session && session.refresh && !opts._retried) {
       try {
         await refreshSession();
@@ -1282,7 +1289,9 @@ main, .view, .card, .section { max-width: 100%; }
       state.cloudReady = r.status !== 404;
       if (r.status === 404) state.cloudReady = false;
       else state.cloudReady = true;
-    } catch (e) { state.cloudReady = false; }
+    } catch (e) {
+      // 网络抖动时不做判断，避免误报「云端未初始化」
+    }
   }
 
   /* ---------------- 认证 ---------------- */
@@ -1311,6 +1320,7 @@ main, .view, .card, .section { max-width: 100%; }
     if (/Email not confirmed/i.test(s)) return "请先在 Supabase 关闭邮箱确认（Authentication → Providers → Email）";
     if (/Invalid login credentials/i.test(s)) return "用户名或密码错误";
     if (/Signups not allowed/i.test(s)) return "该站点已关闭注册";
+    if (/failed to fetch|load failed|network|NetworkError/i.test(s)) return "网络连接失败，请检查网络后重试";
     return s;
   }
 
@@ -3492,6 +3502,15 @@ main, .view, .card, .section { max-width: 100%; }
     } catch (e) {}
   })();
 
+  function retrySession() {
+    if (!session || state.profile) return;
+    hydrate().catch(function () {});
+  }
+  window.addEventListener("online", retrySession);
+  document.addEventListener("visibilitychange", function () {
+    if (!document.hidden) retrySession();
+  });
+
   if (syncWeek(true)) renderCurrent();
   setInterval(tickClock, 60000);
   document.addEventListener("visibilitychange", function () {
@@ -3502,8 +3521,18 @@ main, .view, .card, .section { max-width: 100%; }
     await checkCloud();
     refreshAuth();
     if (session) {
-      try { await hydrate(); }
-      catch (e) { session = null; localStorage.removeItem(LS.session); refreshAuth(); }
+      try {
+        await hydrate();
+      } catch (e) {
+        if (e && e.network) {
+          refreshAuth();
+          setTimeout(function () { if (session && !state.profile) hydrate().catch(function () {}); }, 1800);
+        } else {
+          session = null;
+          localStorage.removeItem(LS.session);
+          refreshAuth();
+        }
+      }
     }
     if (VIEW === "plaza") loadPlaza().then(renderPlaza);
     if (VIEW === "admin") loadAdmin().catch(() => {});
