@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="zh-CN" data-mode="light">
 <head>
-<script>window.__BUILD__ = "20261106044922";</script>
+<script>window.__BUILD__ = "20261106045711";</script>
 <script>
   window.__bipEvent = null;
   window.addEventListener("beforeinstallprompt", function (e) {
@@ -1422,6 +1422,20 @@ main, .view, .card, .section { max-width: 100%; }
         } catch (e2) {
           me = await api("/rest/v1/profiles?select=id,username,phone,role&id=eq." + session.uid);
         }
+      }
+      if ((!me || !me.length) && session && session.username) {
+        // 注册时 auth 用户建好了但档案没写进去，会导致「用户名已存在却像没登录」，
+        // 这里用当前会话的 uid 补一条档案
+        try {
+          await api("/rest/v1/profiles", {
+            method: "POST",
+            body: { id: session.uid, username: session.username, role: "user" },
+            headers: { Prefer: "return=minimal" }
+          });
+        } catch (e) {}
+        try {
+          me = await api("/rest/v1/profiles?select=id,username,phone,role,avatar_url&id=eq." + session.uid);
+        } catch (e) {}
       }
       state.hasOnboardCols = !!(me && me[0] && ("onboarded" in me[0]));
       state.profile = me && me[0] ? {
@@ -3526,6 +3540,7 @@ main, .view, .card, .section { max-width: 100%; }
       } catch (e) {
         if (e && e.network) {
           refreshAuth();
+          toast("网络不稳定，正在恢复登录…");
           setTimeout(function () { if (session && !state.profile) hydrate().catch(function () {}); }, 1800);
         } else {
           session = null;
