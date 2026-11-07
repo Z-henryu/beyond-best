@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="zh-CN" data-mode="light">
 <head>
-<script>window.__BUILD__ = "20261107094924";</script>
+<script>window.__BUILD__ = "20261107095902";</script>
 <script>
   window.__bipEvent = null;
   window.addEventListener("beforeinstallprompt", function (e) {
@@ -1231,9 +1231,18 @@ main, .view, .card, .section { max-width: 100%; }
         body: opts.body ? JSON.stringify(opts.body) : undefined
       });
     } catch (netErr) {
-      const e = new Error("网络连接失败，请检查网络后重试");
-      e.network = true;
-      throw e;
+      // fetch 被拦截时改用 XMLHttpRequest 再试一次（部分 iOS / 代理环境会拦 fetch）
+      try {
+        res = await xhrFetch(CFG.url + path, {
+          method: opts.method || "GET",
+          headers: headers,
+          body: opts.body ? JSON.stringify(opts.body) : undefined
+        });
+      } catch (netErr2) {
+        const e = new Error("网络连接失败，请检查网络后重试");
+        e.network = true;
+        throw e;
+      }
     }
     if (res.status === 401 && session && session.refresh && !opts._retried) {
       try {
